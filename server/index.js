@@ -10,6 +10,10 @@ const port = process.env.port ?? 8080;
 
 app.use("/api/v1/swap/", swapRouter);
 
+app.use((err, req, res, next) => {
+  res.status(500).json({ error: err.message });
+});
+
 app.listen(port, () => {
   console.log(`listening at http://localhost:${port}`);
 });

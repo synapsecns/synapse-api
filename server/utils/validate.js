@@ -18,6 +18,11 @@ const tokens = Object.keys(Tokens);
 if (tokens.pop() !== "isMintBurnToken" || tokens.pop() !== "mintBurnTokens")
   throw Error(`failed to clean tokens: [${tokens}]`);
 
+v.alias("address", {
+  type: "string",
+  pattern: /^0x[a-fA-F0-9]{40}$/,
+});
+
 v.add("chainId", function ({ schema, messages }, path, context) {
   return {
     source: `
@@ -38,6 +43,8 @@ v.add("chainId", function ({ schema, messages }, path, context) {
 const bignumberChecker = {
   type: "custom",
   check(value, errors, schema) {
+    if (Number(value) < 0) errors.push({ type: "numberPositive" });
+
     if (isBigNumberish(value)) value = BigNumber.from(value);
     else errors.push({ type: "notBignumberish", actual: value });
 
@@ -67,6 +74,7 @@ const swapQuote = v.compile({
   tokenTo: tokenChecker,
   tokenFrom: tokenChecker,
   amountFrom: bignumberChecker,
+  addressTo: "address",
 });
 
 const swapTokens = v.compile({

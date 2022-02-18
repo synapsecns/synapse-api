@@ -1,3 +1,4 @@
+import asyncHandler from "express-async-handler";
 import express from "express";
 
 import { allTokens, Bridges } from "../../../utils/cache.js";
@@ -27,30 +28,44 @@ router
       );
     else res.json(allTokens);
   })
+  .get(
+    "/quote",
+    asyncHandler(async (req, res) => {
+      const ret = validateData(req.query, "swapQuote");
+      if (ret !== true) return res.status(400).json(ret);
 
-  .get("/quote", async (req, res) => {
-    const ret = validateData(req.query, "swapQuote");
-    if (ret !== true) return res.status(400).json(ret);
+      const {
+        chainIdFrom,
+        amountFrom,
+        addressTo,
+        chainIdTo,
+        tokenFrom,
+        tokenTo,
+      } = req.query;
 
-    const { chainIdFrom, chainIdTo, tokenTo, tokenFrom, amountFrom } =
-      req.query;
+      const bridge = Bridges[chainIdFrom];
 
-    const bridge = Bridges[chainIdFrom];
+      const estimate = await bridge.estimateBridgeTokenOutput({
+        tokenFrom,
+        chainIdTo,
+        tokenTo,
+        amountFrom,
+      });
 
-    // TODO: wrap try-catch into middleware
-    try {
       res.json({
-        ...(await bridge.estimateBridgeTokenOutput({
+        allowanceTarget: tokenFrom.addresses[chainIdFrom] || nullAddr,
+        amountToReceive: estimate.amountToReceive.toString(),
+        bridgeFee: estimate.bridgeFee.toString(),
+        ...(await bridge.buildBridgeTokenTransaction({
           tokenFrom,
           chainIdTo,
           tokenTo,
+          addressTo,
           amountFrom,
+          amountTo: estimate.amountToReceive,
         })),
-        allowanceTarget: tokenFrom.addresses[chainIdFrom] || nullAddr,
       });
-    } catch (e) {
-      res.status(500).json({ error: e.message });
-    }
-  });
+    })
+  );
 
 export default router;
