@@ -14,8 +14,8 @@ const v = new Validator({
 const tokens = Object.keys(Tokens);
 // Remove last 2 elems - the functions ['mintBurnTokens', 'isMintBurnToken']
 // TODO: this WILL break if SDK changes.
-tokens.pop();
-tokens.pop();
+if (tokens.pop() !== "isMintBurnToken" || tokens.pop() !== "mintBurnTokens")
+  throw Error(`failed to clean tokens: [${tokens}]`);
 
 v.add("chainId", function ({ schema, messages }, path, context) {
   return {
@@ -37,10 +37,10 @@ v.add("chainId", function ({ schema, messages }, path, context) {
 const bignumberChecker = {
   type: "custom",
   check(value, errors, schema) {
-    if (!isBigNumberish(value))
-      errors.push({ type: "notBignumberish", actual: value });
+    if (isBigNumberish(value)) value = BigNumber.from(value);
+    else errors.push({ type: "notBignumberish", actual: value });
 
-    return BigNumber.from(value);
+    return value;
   },
 };
 
