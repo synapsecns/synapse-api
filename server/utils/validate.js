@@ -7,6 +7,7 @@ const v = new Validator({
   useNewCustomCheckerFunction: true,
   messages: {
     chainId: `The '{field}' field must be a valid chain in [${supportedChainIds()}]. Got: '{actual}'`,
+    chainIdPairMismatch: `Expected field 'chainIdFrom' to be set with field 'chainIdTo'.`,
     notBignumberish: `The value '{actual}' in '{field}' is not a valid Bignumberish.`,
   },
 });
@@ -68,8 +69,14 @@ const swapQuote = v.compile({
   amountFrom: bignumberChecker,
 });
 
+const swapTokens = v.compile({
+  chainIdFrom: { type: "chainId", optional: true },
+  chainIdTo: { type: "chainId", optional: true },
+});
+
 const schemas = {
   swapQuote,
+  swapTokens,
 };
 
 /**
@@ -79,4 +86,4 @@ const schemas = {
  */
 const validateData = (data, schema) => schemas[schema](data);
 
-export { validateData };
+export { validateData, v };
