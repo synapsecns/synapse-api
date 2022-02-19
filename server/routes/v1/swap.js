@@ -6,6 +6,6 @@ import { tokens, quote } from "../../handlers/swap.js";
 const router = express.Router();
 
 router.get("/tokens/:chainId", tokens);
-router.get("/quote", asyncHandler(quote));
+router.get("/quote/:chainId", asyncHandler(quote));
 
 export default router;

@@ -18,8 +18,13 @@ const quote = async (req, res) => {
   const ret = validateData(req.query, "swapQuote");
   if (ret !== true) return res.status(400).json(ret);
 
+  const ret1 = validateData(req.params, "swapTokens");
+  if (ret1 !== true) return res.status(400).json(ret1);
+
   // TODO: Allow user defined slippage?
-  const { chainId, tokenFrom, tokenTo, amountIn } = req.query;
+  const { tokenFrom, tokenTo, amountIn } = req.query;
+  const { chainId } = req.params;
+
   const args = {
     chainId,
     tokenFrom,
