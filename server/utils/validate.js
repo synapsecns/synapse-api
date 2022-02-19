@@ -68,7 +68,7 @@ const tokenChecker = {
   },
 };
 
-const swapQuote = v.compile({
+const bridgeQuote = v.compile({
   chainIdFrom: "chainId",
   chainIdTo: "chainId",
   tokenTo: tokenChecker,
@@ -77,12 +77,23 @@ const swapQuote = v.compile({
   addressTo: "address",
 });
 
-const swapTokens = v.compile({
+const bridgeTokens = v.compile({
   chainIdFrom: { type: "chainId", optional: true },
   chainIdTo: { type: "chainId", optional: true },
 });
 
+const swapQuote = v.compile({
+  chainId: "chainId",
+  tokenFrom: tokenChecker,
+  tokenTo: tokenChecker,
+  amountIn: bignumberChecker,
+});
+
+const swapTokens = v.compile({ chainId: "chainId" });
+
 const schemas = {
+  bridgeQuote,
+  bridgeTokens,
   swapQuote,
   swapTokens,
 };
