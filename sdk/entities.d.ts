@@ -1,4 +1,4 @@
-import type { SynapseBridgeContract, L1BridgeZapContract, L2BridgeZapContract, GenericZapBridgeContract, BridgeConfigContract } from "./contracts";
+import type { SynapseBridgeContract, L1BridgeZapContract, L2BridgeZapContract, GenericZapBridgeContract, BridgeConfigContract, PoolConfigContract } from "./contracts";
 import type { SignerOrProvider } from "./common/types";
 export declare const newSynapseBridgeInstance: (params: {
     address: string;
@@ -13,7 +13,6 @@ export declare const newL2BridgeZapInstance: (params: {
     signerOrProvider?: SignerOrProvider;
 }) => L2BridgeZapContract;
 export declare namespace SynapseEntities {
-    const bridgeConfigAddress: string;
     function synapseBridge(params: {
         chainId: number;
         signerOrProvider?: SignerOrProvider;
@@ -31,4 +30,5 @@ export declare namespace SynapseEntities {
         signerOrProvider?: SignerOrProvider;
     }): GenericZapBridgeContract;
     function bridgeConfig(): BridgeConfigContract;
+    function poolConfig(): PoolConfigContract;
 }

@@ -1,9 +1,9 @@
-import { ethers, Signer, BigNumber, BigNumberish, PopulatedTransaction, BaseContract, ContractTransaction, Overrides, CallOverrides } from "ethers";
-import { BytesLike } from "@ethersproject/bytes";
+import { BaseContract, BigNumber, BigNumberish, BytesLike, CallOverrides, ContractTransaction, Overrides, PopulatedTransaction, Signer, utils } from "ethers";
+import { FunctionFragment, Result, EventFragment } from "@ethersproject/abi";
 import { Listener, Provider } from "@ethersproject/providers";
-import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import type { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
-export interface SynapseERC20Interface extends ethers.utils.Interface {
+import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
+export interface SynapseERC20Interface extends utils.Interface {
+    contractName: "SynapseERC20";
     functions: {
         "DEFAULT_ADMIN_ROLE()": FunctionFragment;
         "DOMAIN_SEPARATOR()": FunctionFragment;
@@ -159,6 +159,7 @@ export declare type TransferEvent = TypedEvent<[
 }>;
 export declare type TransferEventFilter = TypedEventFilter<TransferEvent>;
 export interface SynapseERC20 extends BaseContract {
+    contractName: "SynapseERC20";
     connect(signerOrProvider: Signer | Provider | string): this;
     attach(addressOrName: string): this;
     deployed(): Promise<this>;
@@ -174,139 +175,367 @@ export interface SynapseERC20 extends BaseContract {
     removeListener: OnEvent<this>;
     functions: {
         DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
+        /**
+         * See {IERC20Permit-DOMAIN_SEPARATOR}.
+         */
         DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<[string]>;
         MINTER_ROLE(overrides?: CallOverrides): Promise<[string]>;
+        /**
+         * See {IERC20-allowance}.
+         */
         allowance(owner: string, spender: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+        /**
+         * See {IERC20-approve}. Requirements: - `spender` cannot be the zero address.
+         */
         approve(spender: string, amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
+        /**
+         * See {IERC20-balanceOf}.
+         */
         balanceOf(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+        /**
+         * Destroys `amount` tokens from the caller. See {ERC20-_burn}.
+         */
         burn(amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
+        /**
+         * Destroys `amount` tokens from `account`, deducting from the caller's allowance. See {ERC20-_burn} and {ERC20-allowance}. Requirements: - the caller must have allowance for ``accounts``'s tokens of at least `amount`.
+         */
         burnFrom(account: string, amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
+        /**
+         * Returns the number of decimals used to get its user representation. For example, if `decimals` equals `2`, a balance of `505` tokens should be displayed to a user as `5,05` (`505 / 10 ** 2`). Tokens usually opt for a value of 18, imitating the relationship between Ether and Wei. This is the value {ERC20} uses, unless {_setupDecimals} is called. NOTE: This information is only used for _display_ purposes: it in no way affects any of the arithmetic of the contract, including {IERC20-balanceOf} and {IERC20-transfer}.
+         */
         decimals(overrides?: CallOverrides): Promise<[number]>;
+        /**
+         * Atomically decreases the allowance granted to `spender` by the caller. This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}. Emits an {Approval} event indicating the updated allowance. Requirements: - `spender` cannot be the zero address. - `spender` must have allowance for the caller of at least `subtractedValue`.
+         */
         decreaseAllowance(spender: string, subtractedValue: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
+        /**
+         * Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
+         */
         getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<[string]>;
+        /**
+         * Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.
+         */
         getRoleMember(role: BytesLike, index: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
+        /**
+         * Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.
+         */
         getRoleMemberCount(role: BytesLike, overrides?: CallOverrides): Promise<[BigNumber]>;
+        /**
+         * Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.
+         */
         grantRole(role: BytesLike, account: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
+        /**
+         * Returns `true` if `account` has been granted `role`.
+         */
         hasRole(role: BytesLike, account: string, overrides?: CallOverrides): Promise<[boolean]>;
+        /**
+         * Atomically increases the allowance granted to `spender` by the caller. This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}. Emits an {Approval} event indicating the updated allowance. Requirements: - `spender` cannot be the zero address.
+         */
         increaseAllowance(spender: string, addedValue: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
+        /**
+         * Initializes this ERC20 contract with the given parameters.
+         * @param decimals Token name
+         * @param name Token name
+         * @param owner admin address to be initialized with
+         * @param symbol Token symbol
+         */
         initialize(name: string, symbol: string, decimals: BigNumberish, owner: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
         mint(to: string, amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
+        /**
+         * Returns the name of the token.
+         */
         name(overrides?: CallOverrides): Promise<[string]>;
+        /**
+         * See {IERC20Permit-nonces}.
+         */
         nonces(owner: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+        /**
+         * See {IERC20Permit-permit}.
+         */
         permit(owner: string, spender: string, value: BigNumberish, deadline: BigNumberish, v: BigNumberish, r: BytesLike, s: BytesLike, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
+        /**
+         * Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.
+         */
         renounceRole(role: BytesLike, account: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
+        /**
+         * Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.
+         */
         revokeRole(role: BytesLike, account: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
+        /**
+         * Returns the symbol of the token, usually a shorter version of the name.
+         */
         symbol(overrides?: CallOverrides): Promise<[string]>;
+        /**
+         * See {IERC20-totalSupply}.
+         */
         totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
+        /**
+         * See {IERC20-transfer}. Requirements: - `recipient` cannot be the zero address. - the caller must have a balance of at least `amount`.
+         */
         transfer(recipient: string, amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
+        /**
+         * See {IERC20-transferFrom}. Emits an {Approval} event indicating the updated allowance. This is not required by the EIP. See the note at the beginning of {ERC20}. Requirements: - `sender` and `recipient` cannot be the zero address. - `sender` must have a balance of at least `amount`. - the caller must have allowance for ``sender``'s tokens of at least `amount`.
+         */
         transferFrom(sender: string, recipient: string, amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
     };
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
+    /**
+     * See {IERC20Permit-DOMAIN_SEPARATOR}.
+     */
     DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<string>;
     MINTER_ROLE(overrides?: CallOverrides): Promise<string>;
+    /**
+     * See {IERC20-allowance}.
+     */
     allowance(owner: string, spender: string, overrides?: CallOverrides): Promise<BigNumber>;
+    /**
+     * See {IERC20-approve}. Requirements: - `spender` cannot be the zero address.
+     */
     approve(spender: string, amount: BigNumberish, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
+    /**
+     * See {IERC20-balanceOf}.
+     */
     balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+    /**
+     * Destroys `amount` tokens from the caller. See {ERC20-_burn}.
+     */
     burn(amount: BigNumberish, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
+    /**
+     * Destroys `amount` tokens from `account`, deducting from the caller's allowance. See {ERC20-_burn} and {ERC20-allowance}. Requirements: - the caller must have allowance for ``accounts``'s tokens of at least `amount`.
+     */
     burnFrom(account: string, amount: BigNumberish, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
+    /**
+     * Returns the number of decimals used to get its user representation. For example, if `decimals` equals `2`, a balance of `505` tokens should be displayed to a user as `5,05` (`505 / 10 ** 2`). Tokens usually opt for a value of 18, imitating the relationship between Ether and Wei. This is the value {ERC20} uses, unless {_setupDecimals} is called. NOTE: This information is only used for _display_ purposes: it in no way affects any of the arithmetic of the contract, including {IERC20-balanceOf} and {IERC20-transfer}.
+     */
     decimals(overrides?: CallOverrides): Promise<number>;
+    /**
+     * Atomically decreases the allowance granted to `spender` by the caller. This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}. Emits an {Approval} event indicating the updated allowance. Requirements: - `spender` cannot be the zero address. - `spender` must have allowance for the caller of at least `subtractedValue`.
+     */
     decreaseAllowance(spender: string, subtractedValue: BigNumberish, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
+    /**
+     * Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
+     */
     getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
+    /**
+     * Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.
+     */
     getRoleMember(role: BytesLike, index: BigNumberish, overrides?: CallOverrides): Promise<string>;
+    /**
+     * Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.
+     */
     getRoleMemberCount(role: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+    /**
+     * Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.
+     */
     grantRole(role: BytesLike, account: string, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
+    /**
+     * Returns `true` if `account` has been granted `role`.
+     */
     hasRole(role: BytesLike, account: string, overrides?: CallOverrides): Promise<boolean>;
+    /**
+     * Atomically increases the allowance granted to `spender` by the caller. This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}. Emits an {Approval} event indicating the updated allowance. Requirements: - `spender` cannot be the zero address.
+     */
     increaseAllowance(spender: string, addedValue: BigNumberish, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
+    /**
+     * Initializes this ERC20 contract with the given parameters.
+     * @param decimals Token name
+     * @param name Token name
+     * @param owner admin address to be initialized with
+     * @param symbol Token symbol
+     */
     initialize(name: string, symbol: string, decimals: BigNumberish, owner: string, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
     mint(to: string, amount: BigNumberish, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
+    /**
+     * Returns the name of the token.
+     */
     name(overrides?: CallOverrides): Promise<string>;
+    /**
+     * See {IERC20Permit-nonces}.
+     */
     nonces(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
+    /**
+     * See {IERC20Permit-permit}.
+     */
     permit(owner: string, spender: string, value: BigNumberish, deadline: BigNumberish, v: BigNumberish, r: BytesLike, s: BytesLike, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
+    /**
+     * Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.
+     */
     renounceRole(role: BytesLike, account: string, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
+    /**
+     * Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.
+     */
     revokeRole(role: BytesLike, account: string, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
+    /**
+     * Returns the symbol of the token, usually a shorter version of the name.
+     */
     symbol(overrides?: CallOverrides): Promise<string>;
+    /**
+     * See {IERC20-totalSupply}.
+     */
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
+    /**
+     * See {IERC20-transfer}. Requirements: - `recipient` cannot be the zero address. - the caller must have a balance of at least `amount`.
+     */
     transfer(recipient: string, amount: BigNumberish, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
+    /**
+     * See {IERC20-transferFrom}. Emits an {Approval} event indicating the updated allowance. This is not required by the EIP. See the note at the beginning of {ERC20}. Requirements: - `sender` and `recipient` cannot be the zero address. - `sender` must have a balance of at least `amount`. - the caller must have allowance for ``sender``'s tokens of at least `amount`.
+     */
     transferFrom(sender: string, recipient: string, amount: BigNumberish, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
     callStatic: {
         DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
+        /**
+         * See {IERC20Permit-DOMAIN_SEPARATOR}.
+         */
         DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<string>;
         MINTER_ROLE(overrides?: CallOverrides): Promise<string>;
+        /**
+         * See {IERC20-allowance}.
+         */
         allowance(owner: string, spender: string, overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * See {IERC20-approve}. Requirements: - `spender` cannot be the zero address.
+         */
         approve(spender: string, amount: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
+        /**
+         * See {IERC20-balanceOf}.
+         */
         balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * Destroys `amount` tokens from the caller. See {ERC20-_burn}.
+         */
         burn(amount: BigNumberish, overrides?: CallOverrides): Promise<void>;
+        /**
+         * Destroys `amount` tokens from `account`, deducting from the caller's allowance. See {ERC20-_burn} and {ERC20-allowance}. Requirements: - the caller must have allowance for ``accounts``'s tokens of at least `amount`.
+         */
         burnFrom(account: string, amount: BigNumberish, overrides?: CallOverrides): Promise<void>;
+        /**
+         * Returns the number of decimals used to get its user representation. For example, if `decimals` equals `2`, a balance of `505` tokens should be displayed to a user as `5,05` (`505 / 10 ** 2`). Tokens usually opt for a value of 18, imitating the relationship between Ether and Wei. This is the value {ERC20} uses, unless {_setupDecimals} is called. NOTE: This information is only used for _display_ purposes: it in no way affects any of the arithmetic of the contract, including {IERC20-balanceOf} and {IERC20-transfer}.
+         */
         decimals(overrides?: CallOverrides): Promise<number>;
+        /**
+         * Atomically decreases the allowance granted to `spender` by the caller. This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}. Emits an {Approval} event indicating the updated allowance. Requirements: - `spender` cannot be the zero address. - `spender` must have allowance for the caller of at least `subtractedValue`.
+         */
         decreaseAllowance(spender: string, subtractedValue: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
+        /**
+         * Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
+         */
         getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
+        /**
+         * Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.
+         */
         getRoleMember(role: BytesLike, index: BigNumberish, overrides?: CallOverrides): Promise<string>;
+        /**
+         * Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.
+         */
         getRoleMemberCount(role: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.
+         */
         grantRole(role: BytesLike, account: string, overrides?: CallOverrides): Promise<void>;
+        /**
+         * Returns `true` if `account` has been granted `role`.
+         */
         hasRole(role: BytesLike, account: string, overrides?: CallOverrides): Promise<boolean>;
+        /**
+         * Atomically increases the allowance granted to `spender` by the caller. This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}. Emits an {Approval} event indicating the updated allowance. Requirements: - `spender` cannot be the zero address.
+         */
         increaseAllowance(spender: string, addedValue: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
+        /**
+         * Initializes this ERC20 contract with the given parameters.
+         * @param decimals Token name
+         * @param name Token name
+         * @param owner admin address to be initialized with
+         * @param symbol Token symbol
+         */
         initialize(name: string, symbol: string, decimals: BigNumberish, owner: string, overrides?: CallOverrides): Promise<void>;
         mint(to: string, amount: BigNumberish, overrides?: CallOverrides): Promise<void>;
+        /**
+         * Returns the name of the token.
+         */
         name(overrides?: CallOverrides): Promise<string>;
+        /**
+         * See {IERC20Permit-nonces}.
+         */
         nonces(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * See {IERC20Permit-permit}.
+         */
         permit(owner: string, spender: string, value: BigNumberish, deadline: BigNumberish, v: BigNumberish, r: BytesLike, s: BytesLike, overrides?: CallOverrides): Promise<void>;
+        /**
+         * Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.
+         */
         renounceRole(role: BytesLike, account: string, overrides?: CallOverrides): Promise<void>;
+        /**
+         * Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.
+         */
         revokeRole(role: BytesLike, account: string, overrides?: CallOverrides): Promise<void>;
+        /**
+         * Returns the symbol of the token, usually a shorter version of the name.
+         */
         symbol(overrides?: CallOverrides): Promise<string>;
+        /**
+         * See {IERC20-totalSupply}.
+         */
         totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * See {IERC20-transfer}. Requirements: - `recipient` cannot be the zero address. - the caller must have a balance of at least `amount`.
+         */
         transfer(recipient: string, amount: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
+        /**
+         * See {IERC20-transferFrom}. Emits an {Approval} event indicating the updated allowance. This is not required by the EIP. See the note at the beginning of {ERC20}. Requirements: - `sender` and `recipient` cannot be the zero address. - `sender` must have a balance of at least `amount`. - the caller must have allowance for ``sender``'s tokens of at least `amount`.
+         */
         transferFrom(sender: string, recipient: string, amount: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
     };
     filters: {
@@ -323,110 +552,262 @@ export interface SynapseERC20 extends BaseContract {
     };
     estimateGas: {
         DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * See {IERC20Permit-DOMAIN_SEPARATOR}.
+         */
         DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<BigNumber>;
         MINTER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * See {IERC20-allowance}.
+         */
         allowance(owner: string, spender: string, overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * See {IERC20-approve}. Requirements: - `spender` cannot be the zero address.
+         */
         approve(spender: string, amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
+        /**
+         * See {IERC20-balanceOf}.
+         */
         balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * Destroys `amount` tokens from the caller. See {ERC20-_burn}.
+         */
         burn(amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
+        /**
+         * Destroys `amount` tokens from `account`, deducting from the caller's allowance. See {ERC20-_burn} and {ERC20-allowance}. Requirements: - the caller must have allowance for ``accounts``'s tokens of at least `amount`.
+         */
         burnFrom(account: string, amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
+        /**
+         * Returns the number of decimals used to get its user representation. For example, if `decimals` equals `2`, a balance of `505` tokens should be displayed to a user as `5,05` (`505 / 10 ** 2`). Tokens usually opt for a value of 18, imitating the relationship between Ether and Wei. This is the value {ERC20} uses, unless {_setupDecimals} is called. NOTE: This information is only used for _display_ purposes: it in no way affects any of the arithmetic of the contract, including {IERC20-balanceOf} and {IERC20-transfer}.
+         */
         decimals(overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * Atomically decreases the allowance granted to `spender` by the caller. This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}. Emits an {Approval} event indicating the updated allowance. Requirements: - `spender` cannot be the zero address. - `spender` must have allowance for the caller of at least `subtractedValue`.
+         */
         decreaseAllowance(spender: string, subtractedValue: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
+        /**
+         * Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
+         */
         getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.
+         */
         getRoleMember(role: BytesLike, index: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.
+         */
         getRoleMemberCount(role: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.
+         */
         grantRole(role: BytesLike, account: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
+        /**
+         * Returns `true` if `account` has been granted `role`.
+         */
         hasRole(role: BytesLike, account: string, overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * Atomically increases the allowance granted to `spender` by the caller. This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}. Emits an {Approval} event indicating the updated allowance. Requirements: - `spender` cannot be the zero address.
+         */
         increaseAllowance(spender: string, addedValue: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
+        /**
+         * Initializes this ERC20 contract with the given parameters.
+         * @param decimals Token name
+         * @param name Token name
+         * @param owner admin address to be initialized with
+         * @param symbol Token symbol
+         */
         initialize(name: string, symbol: string, decimals: BigNumberish, owner: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
         mint(to: string, amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
+        /**
+         * Returns the name of the token.
+         */
         name(overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * See {IERC20Permit-nonces}.
+         */
         nonces(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * See {IERC20Permit-permit}.
+         */
         permit(owner: string, spender: string, value: BigNumberish, deadline: BigNumberish, v: BigNumberish, r: BytesLike, s: BytesLike, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
+        /**
+         * Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.
+         */
         renounceRole(role: BytesLike, account: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
+        /**
+         * Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.
+         */
         revokeRole(role: BytesLike, account: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
+        /**
+         * Returns the symbol of the token, usually a shorter version of the name.
+         */
         symbol(overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * See {IERC20-totalSupply}.
+         */
         totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * See {IERC20-transfer}. Requirements: - `recipient` cannot be the zero address. - the caller must have a balance of at least `amount`.
+         */
         transfer(recipient: string, amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
+        /**
+         * See {IERC20-transferFrom}. Emits an {Approval} event indicating the updated allowance. This is not required by the EIP. See the note at the beginning of {ERC20}. Requirements: - `sender` and `recipient` cannot be the zero address. - `sender` must have a balance of at least `amount`. - the caller must have allowance for ``sender``'s tokens of at least `amount`.
+         */
         transferFrom(sender: string, recipient: string, amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
     };
     populateTransaction: {
         DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        /**
+         * See {IERC20Permit-DOMAIN_SEPARATOR}.
+         */
         DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<PopulatedTransaction>;
         MINTER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        /**
+         * See {IERC20-allowance}.
+         */
         allowance(owner: string, spender: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        /**
+         * See {IERC20-approve}. Requirements: - `spender` cannot be the zero address.
+         */
         approve(spender: string, amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
+        /**
+         * See {IERC20-balanceOf}.
+         */
         balanceOf(account: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        /**
+         * Destroys `amount` tokens from the caller. See {ERC20-_burn}.
+         */
         burn(amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
+        /**
+         * Destroys `amount` tokens from `account`, deducting from the caller's allowance. See {ERC20-_burn} and {ERC20-allowance}. Requirements: - the caller must have allowance for ``accounts``'s tokens of at least `amount`.
+         */
         burnFrom(account: string, amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
+        /**
+         * Returns the number of decimals used to get its user representation. For example, if `decimals` equals `2`, a balance of `505` tokens should be displayed to a user as `5,05` (`505 / 10 ** 2`). Tokens usually opt for a value of 18, imitating the relationship between Ether and Wei. This is the value {ERC20} uses, unless {_setupDecimals} is called. NOTE: This information is only used for _display_ purposes: it in no way affects any of the arithmetic of the contract, including {IERC20-balanceOf} and {IERC20-transfer}.
+         */
         decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        /**
+         * Atomically decreases the allowance granted to `spender` by the caller. This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}. Emits an {Approval} event indicating the updated allowance. Requirements: - `spender` cannot be the zero address. - `spender` must have allowance for the caller of at least `subtractedValue`.
+         */
         decreaseAllowance(spender: string, subtractedValue: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
+        /**
+         * Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
+         */
         getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        /**
+         * Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.
+         */
         getRoleMember(role: BytesLike, index: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        /**
+         * Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.
+         */
         getRoleMemberCount(role: BytesLike, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        /**
+         * Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.
+         */
         grantRole(role: BytesLike, account: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
+        /**
+         * Returns `true` if `account` has been granted `role`.
+         */
         hasRole(role: BytesLike, account: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        /**
+         * Atomically increases the allowance granted to `spender` by the caller. This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}. Emits an {Approval} event indicating the updated allowance. Requirements: - `spender` cannot be the zero address.
+         */
         increaseAllowance(spender: string, addedValue: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
+        /**
+         * Initializes this ERC20 contract with the given parameters.
+         * @param decimals Token name
+         * @param name Token name
+         * @param owner admin address to be initialized with
+         * @param symbol Token symbol
+         */
         initialize(name: string, symbol: string, decimals: BigNumberish, owner: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
         mint(to: string, amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
+        /**
+         * Returns the name of the token.
+         */
         name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        /**
+         * See {IERC20Permit-nonces}.
+         */
         nonces(owner: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        /**
+         * See {IERC20Permit-permit}.
+         */
         permit(owner: string, spender: string, value: BigNumberish, deadline: BigNumberish, v: BigNumberish, r: BytesLike, s: BytesLike, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
+        /**
+         * Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.
+         */
         renounceRole(role: BytesLike, account: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
+        /**
+         * Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.
+         */
         revokeRole(role: BytesLike, account: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
+        /**
+         * Returns the symbol of the token, usually a shorter version of the name.
+         */
         symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        /**
+         * See {IERC20-totalSupply}.
+         */
         totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        /**
+         * See {IERC20-transfer}. Requirements: - `recipient` cannot be the zero address. - the caller must have a balance of at least `amount`.
+         */
         transfer(recipient: string, amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
+        /**
+         * See {IERC20-transferFrom}. Emits an {Approval} event indicating the updated allowance. This is not required by the EIP. See the note at the beginning of {ERC20}. Requirements: - `sender` and `recipient` cannot be the zero address. - `sender` must have a balance of at least `amount`. - the caller must have allowance for ``sender``'s tokens of at least `amount`.
+         */
         transferFrom(sender: string, recipient: string, amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;

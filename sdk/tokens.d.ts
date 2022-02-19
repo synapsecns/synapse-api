@@ -1,12 +1,18 @@
 import type { Token } from "./token";
 import { BaseToken, WrappedToken } from "./token";
 export declare namespace Tokens {
+    /**
+     * The DAI stablecoin, available on Arbitrum, Avalanche, Binance Smart Chain, Ethereum, and Polygon.
+     */
     const DAI: BaseToken;
     const BUSD: BaseToken;
     const USDC: BaseToken;
     const USDT: BaseToken;
     const UST: BaseToken;
     const ETH: BaseToken;
+    /**
+     * nETH is a token involved in the bridge.
+     */
     const NETH: BaseToken;
     const WETH: BaseToken;
     const WETHBEAM: BaseToken;
@@ -15,6 +21,9 @@ export declare namespace Tokens {
     const ONE_ETH: BaseToken;
     const FTM_ETH: BaseToken;
     const SYN: BaseToken;
+    /**
+     * nUSD is a token involved in the bridge.
+     */
     const NUSD: BaseToken;
     const AVAX: BaseToken;
     const WAVAX: WrappedToken;

@@ -1,9 +1,9 @@
-import { ethers, Signer, BigNumber, BigNumberish, PopulatedTransaction, BaseContract, ContractTransaction, Overrides, CallOverrides } from "ethers";
-import { BytesLike } from "@ethersproject/bytes";
+import { BaseContract, BigNumber, BigNumberish, BytesLike, CallOverrides, ContractTransaction, Overrides, PopulatedTransaction, Signer, utils } from "ethers";
+import { FunctionFragment, Result, EventFragment } from "@ethersproject/abi";
 import { Listener, Provider } from "@ethersproject/providers";
-import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import type { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
-export interface ERC20Interface extends ethers.utils.Interface {
+import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
+export interface ERC20Interface extends utils.Interface {
+    contractName: "ERC20";
     functions: {
         "name()": FunctionFragment;
         "approve(address,uint256)": FunctionFragment;
@@ -61,6 +61,7 @@ export declare type TransferEvent = TypedEvent<[
 }>;
 export declare type TransferEventFilter = TypedEventFilter<TransferEvent>;
 export interface ERC20 extends BaseContract {
+    contractName: "ERC20";
     connect(signerOrProvider: Signer | Provider | string): this;
     attach(addressOrName: string): this;
     deployed(): Promise<this>;

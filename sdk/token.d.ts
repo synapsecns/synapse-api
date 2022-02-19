@@ -17,6 +17,9 @@ export interface Token extends IBaseToken {
     valueToWei: (amt: BigNumberish, chainId: number) => BigNumber;
     wrapperAddress: (chainId: number) => string | null;
 }
+/**
+ * Token represents an ERC20 token on Ethereum-based blockchains.
+ */
 export declare class BaseToken implements Token {
     readonly name: string;
     readonly symbol: string;
@@ -26,6 +29,19 @@ export declare class BaseToken implements Token {
     readonly hash: symbol;
     private readonly wrapperAddresses;
     protected readonly _decimals: DecimalsMap;
+    /**
+     * Creates a new Token object with the defined arguments.
+     * @param {Object} args Information about this token, including name, symbol, decimals, and
+     * contract addresses.
+     * @param {string} args.name Name of the token (example, "USD Circle")
+     * @param {string} args.symbol Symbol of the token (example, "USDC")
+     * @param {number|Object} args.decimals Either a single value, representing the token's ERC20 decimals value on all chains, or
+     * a map in the format of { chain id => decimals for chain }.
+     * If the latter is passed, values for ALL known chains must be provided.
+     * @param {Object} args.addresses Mapping in the format of { chain id => address of token on chain },
+     * providing the address of this token on different chains.
+     * @param {SwapType} args.swapType Swap type of this token
+     */
     constructor(args: {
         name: string;
         symbol: string;
@@ -35,6 +51,12 @@ export declare class BaseToken implements Token {
         isETH?: boolean;
         wrapperAddresses?: AddressMap;
     });
+    /**
+     * Returns the address of this token on a given network, or null if
+     * the token does not exist on the passed network.
+     * @param {number} chainId Chain ID
+     * @return {string|null} Token's contract address for the queried network, or null
+     */
     address(chainId: number): string | null;
     wrapperAddress(chainId: number): string | null;
     decimals(chainId: number): number | null;

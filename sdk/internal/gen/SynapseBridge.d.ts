@@ -1,9 +1,9 @@
-import { ethers, Signer, BigNumber, BigNumberish, PopulatedTransaction, BaseContract, ContractTransaction, Overrides, CallOverrides } from "ethers";
-import { BytesLike } from "@ethersproject/bytes";
+import { BaseContract, BigNumber, BigNumberish, BytesLike, CallOverrides, ContractTransaction, Overrides, PopulatedTransaction, Signer, utils } from "ethers";
+import { FunctionFragment, Result, EventFragment } from "@ethersproject/abi";
 import { Listener, Provider } from "@ethersproject/providers";
-import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import type { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
-export interface SynapseBridgeInterface extends ethers.utils.Interface {
+import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
+export interface SynapseBridgeInterface extends utils.Interface {
+    contractName: "SynapseBridge";
     functions: {
         "DEFAULT_ADMIN_ROLE()": FunctionFragment;
         "GOVERNANCE_ROLE()": FunctionFragment;
@@ -378,6 +378,7 @@ export declare type UnpausedEvent = TypedEvent<[string], {
 }>;
 export declare type UnpausedEventFilter = TypedEventFilter<UnpausedEvent>;
 export interface SynapseBridge extends BaseContract {
+    contractName: "SynapseBridge";
     connect(signerOrProvider: Signer | Provider | string): this;
     attach(addressOrName: string): this;
     deployed(): Promise<this>;
@@ -401,46 +402,139 @@ export interface SynapseBridge extends BaseContract {
         }): Promise<ContractTransaction>;
         bridgeVersion(overrides?: CallOverrides): Promise<[BigNumber]>;
         chainGasAmount(overrides?: CallOverrides): Promise<[BigNumber]>;
+        /**
+         * Relays to nodes to transfers an ERC20 token cross-chain
+         * @param amount Amount in native token decimals to transfer cross-chain pre-fees*
+         * @param chainId which chain to bridge assets onto
+         * @param to address on other chain to bridge assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         */
         deposit(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
+        /**
+         * Relays to nodes to both transfer an ERC20 token cross-chain, and then have the nodes execute a swap through a liquidity pool on behalf of the user.
+         * @param amount Amount in native token decimals to transfer cross-chain pre-fees
+         * @param chainId which chain to bridge assets onto
+         * @param deadline latest timestamp to accept this transaction*
+         * @param minDy the min amount the user would like to receive, or revert to only minting the SynERC20 token crosschain.
+         * @param to address on other chain to bridge assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         * @param tokenIndexFrom the token the user wants to swap from
+         * @param tokenIndexTo the token the user wants to swap to
+         */
         depositAndSwap(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, tokenIndexFrom: BigNumberish, tokenIndexTo: BigNumberish, minDy: BigNumberish, deadline: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
         getFeeBalance(tokenAddress: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+        /**
+         * Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
+         */
         getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<[string]>;
+        /**
+         * Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.
+         */
         getRoleMember(role: BytesLike, index: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
+        /**
+         * Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.
+         */
         getRoleMemberCount(role: BytesLike, overrides?: CallOverrides): Promise<[BigNumber]>;
+        /**
+         * Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.
+         */
         grantRole(role: BytesLike, account: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
+        /**
+         * Returns `true` if `account` has been granted `role`.
+         */
         hasRole(role: BytesLike, account: string, overrides?: CallOverrides): Promise<[boolean]>;
         initialize(overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
         kappaExists(kappa: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
+        /**
+         * This means the SynapseBridge.sol contract must have minter access to the token attempting to be minted
+         * Nodes call this function to mint a SynERC20 (or any asset that the bridge is given minter access to). This is called by the nodes after a TokenDeposit event is emitted.
+         * @param amount Amount in native token decimals to transfer cross-chain post-fees
+         * @param fee Amount in native token decimals to save to the contract as fees
+         * @param kappa kappa*
+         * @param to address on other chain to redeem underlying assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         */
         mint(to: string, token: string, amount: BigNumberish, fee: BigNumberish, kappa: BytesLike, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
+        /**
+         * This means the BridgeDeposit.sol contract must have minter access to the token attempting to be minted
+         * Nodes call this function to mint a SynERC20 (or any asset that the bridge is given minter access to), and then attempt to swap the SynERC20 into the desired destination asset. This is called by the nodes after a TokenDepositAndSwap event is emitted.
+         * @param amount Amount in native token decimals to transfer cross-chain post-fees
+         * @param deadline Epoch time of the deadline that the swap is allowed to be executed.
+         * @param fee Amount in native token decimals to save to the contract as fees
+         * @param kappa kappa*
+         * @param minDy Minumum amount (in final asset decimals) that must be swapped for, otherwise the user will receive the SynERC20.
+         * @param pool Destination chain's pool to use to swap SynERC20 -> Asset. The nodes determine this by using PoolConfig.sol.
+         * @param to address on other chain to redeem underlying assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         * @param tokenIndexFrom Index of the SynERC20 asset in the pool
+         * @param tokenIndexTo Index of the desired final asset
+         */
         mintAndSwap(to: string, token: string, amount: BigNumberish, fee: BigNumberish, pool: string, tokenIndexFrom: BigNumberish, tokenIndexTo: BigNumberish, minDy: BigNumberish, deadline: BigNumberish, kappa: BytesLike, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
         pause(overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
+        /**
+         * Returns true if the contract is paused, and false otherwise.
+         */
         paused(overrides?: CallOverrides): Promise<[boolean]>;
+        /**
+         * Relays to nodes that (typically) a wrapped synAsset ERC20 token has been burned and the underlying needs to be redeeemed on the native chain
+         * @param amount Amount in native token decimals to transfer cross-chain pre-fees*
+         * @param chainId which underlying chain to bridge assets onto
+         * @param to address on other chain to redeem underlying assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         */
         redeem(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
+        /**
+         * Relays to nodes that (typically) a wrapped synAsset ERC20 token has been burned and the underlying needs to be redeeemed on the native chain. This function indicates to the nodes that they should attempt to redeem the LP token for the underlying assets (E.g "swap" out of the LP token)
+         * @param amount Amount in native token decimals to transfer cross-chain pre-fees
+         * @param chainId which underlying chain to bridge assets onto
+         * @param swapDeadline Specificies the deadline that the nodes are allowed to try to redeem/swap the LP token*
+         * @param swapMinAmount Specifies the minimum amount of the underlying asset needed for the nodes to execute the redeem/swap
+         * @param swapTokenIndex Specifies which of the underlying LP assets the nodes should attempt to redeem for
+         * @param to address on other chain to redeem underlying assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         */
         redeemAndRemove(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, swapTokenIndex: BigNumberish, swapMinAmount: BigNumberish, swapDeadline: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
+        /**
+         * Relays to nodes that (typically) a wrapped synAsset ERC20 token has been burned and the underlying needs to be redeeemed on the native chain. This function indicates to the nodes that they should attempt to redeem the LP token for the underlying assets (E.g "swap" out of the LP token)
+         * @param amount Amount in native token decimals to transfer cross-chain pre-fees
+         * @param chainId which underlying chain to bridge assets onto
+         * @param deadline latest timestamp to accept this transaction*
+         * @param minDy the min amount the user would like to receive, or revert to only minting the SynERC20 token crosschain.
+         * @param to address on other chain to redeem underlying assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         * @param tokenIndexFrom the token the user wants to swap from
+         * @param tokenIndexTo the token the user wants to swap to
+         */
         redeemAndSwap(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, tokenIndexFrom: BigNumberish, tokenIndexTo: BigNumberish, minDy: BigNumberish, deadline: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
+        /**
+         * Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.
+         */
         renounceRole(role: BytesLike, account: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
+        /**
+         * Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.
+         */
         revokeRole(role: BytesLike, account: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
@@ -454,12 +548,37 @@ export interface SynapseBridge extends BaseContract {
         unpause(overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
+        /**
+         * Function to be called by the node group to withdraw the underlying assets from the contract
+         * @param amount Amount in native token decimals to withdraw
+         * @param fee Amount in native token decimals to save to the contract as fees
+         * @param kappa kappa*
+         * @param to address on chain to send underlying assets to
+         * @param token ERC20 compatible token to withdraw from the bridge
+         */
         withdraw(to: string, token: string, amount: BigNumberish, fee: BigNumberish, kappa: BytesLike, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
+        /**
+         * Function to be called by the node group to withdraw the underlying assets from the contract
+         * @param amount Amount in native token decimals to withdraw
+         * @param fee Amount in native token decimals to save to the contract as fees
+         * @param kappa kappa*
+         * @param pool Destination chain's pool to use to swap SynERC20 -> Asset. The nodes determine this by using PoolConfig.sol.
+         * @param swapDeadline Specificies the deadline that the nodes are allowed to try to redeem/swap the LP token
+         * @param swapMinAmount Specifies the minimum amount of the underlying asset needed for the nodes to execute the redeem/swap
+         * @param swapTokenIndex Specifies which of the underlying LP assets the nodes should attempt to redeem for
+         * @param to address on chain to send underlying assets to
+         * @param token ERC20 compatible token to withdraw from the bridge
+         */
         withdrawAndRemove(to: string, token: string, amount: BigNumberish, fee: BigNumberish, pool: string, swapTokenIndex: BigNumberish, swapMinAmount: BigNumberish, swapDeadline: BigNumberish, kappa: BytesLike, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
+        /**
+         * withdraw specified ERC20 token fees to a given address
+         * @param to Address to send the fees to
+         * @param token ERC20 token in which fees acccumulated to transfer
+         */
         withdrawFees(token: string, to: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<ContractTransaction>;
@@ -473,46 +592,139 @@ export interface SynapseBridge extends BaseContract {
     }): Promise<ContractTransaction>;
     bridgeVersion(overrides?: CallOverrides): Promise<BigNumber>;
     chainGasAmount(overrides?: CallOverrides): Promise<BigNumber>;
+    /**
+     * Relays to nodes to transfers an ERC20 token cross-chain
+     * @param amount Amount in native token decimals to transfer cross-chain pre-fees*
+     * @param chainId which chain to bridge assets onto
+     * @param to address on other chain to bridge assets to
+     * @param token ERC20 compatible token to deposit into the bridge
+     */
     deposit(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
+    /**
+     * Relays to nodes to both transfer an ERC20 token cross-chain, and then have the nodes execute a swap through a liquidity pool on behalf of the user.
+     * @param amount Amount in native token decimals to transfer cross-chain pre-fees
+     * @param chainId which chain to bridge assets onto
+     * @param deadline latest timestamp to accept this transaction*
+     * @param minDy the min amount the user would like to receive, or revert to only minting the SynERC20 token crosschain.
+     * @param to address on other chain to bridge assets to
+     * @param token ERC20 compatible token to deposit into the bridge
+     * @param tokenIndexFrom the token the user wants to swap from
+     * @param tokenIndexTo the token the user wants to swap to
+     */
     depositAndSwap(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, tokenIndexFrom: BigNumberish, tokenIndexTo: BigNumberish, minDy: BigNumberish, deadline: BigNumberish, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
     getFeeBalance(tokenAddress: string, overrides?: CallOverrides): Promise<BigNumber>;
+    /**
+     * Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
+     */
     getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
+    /**
+     * Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.
+     */
     getRoleMember(role: BytesLike, index: BigNumberish, overrides?: CallOverrides): Promise<string>;
+    /**
+     * Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.
+     */
     getRoleMemberCount(role: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+    /**
+     * Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.
+     */
     grantRole(role: BytesLike, account: string, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
+    /**
+     * Returns `true` if `account` has been granted `role`.
+     */
     hasRole(role: BytesLike, account: string, overrides?: CallOverrides): Promise<boolean>;
     initialize(overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
     kappaExists(kappa: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+    /**
+     * This means the SynapseBridge.sol contract must have minter access to the token attempting to be minted
+     * Nodes call this function to mint a SynERC20 (or any asset that the bridge is given minter access to). This is called by the nodes after a TokenDeposit event is emitted.
+     * @param amount Amount in native token decimals to transfer cross-chain post-fees
+     * @param fee Amount in native token decimals to save to the contract as fees
+     * @param kappa kappa*
+     * @param to address on other chain to redeem underlying assets to
+     * @param token ERC20 compatible token to deposit into the bridge
+     */
     mint(to: string, token: string, amount: BigNumberish, fee: BigNumberish, kappa: BytesLike, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
+    /**
+     * This means the BridgeDeposit.sol contract must have minter access to the token attempting to be minted
+     * Nodes call this function to mint a SynERC20 (or any asset that the bridge is given minter access to), and then attempt to swap the SynERC20 into the desired destination asset. This is called by the nodes after a TokenDepositAndSwap event is emitted.
+     * @param amount Amount in native token decimals to transfer cross-chain post-fees
+     * @param deadline Epoch time of the deadline that the swap is allowed to be executed.
+     * @param fee Amount in native token decimals to save to the contract as fees
+     * @param kappa kappa*
+     * @param minDy Minumum amount (in final asset decimals) that must be swapped for, otherwise the user will receive the SynERC20.
+     * @param pool Destination chain's pool to use to swap SynERC20 -> Asset. The nodes determine this by using PoolConfig.sol.
+     * @param to address on other chain to redeem underlying assets to
+     * @param token ERC20 compatible token to deposit into the bridge
+     * @param tokenIndexFrom Index of the SynERC20 asset in the pool
+     * @param tokenIndexTo Index of the desired final asset
+     */
     mintAndSwap(to: string, token: string, amount: BigNumberish, fee: BigNumberish, pool: string, tokenIndexFrom: BigNumberish, tokenIndexTo: BigNumberish, minDy: BigNumberish, deadline: BigNumberish, kappa: BytesLike, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
     pause(overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
+    /**
+     * Returns true if the contract is paused, and false otherwise.
+     */
     paused(overrides?: CallOverrides): Promise<boolean>;
+    /**
+     * Relays to nodes that (typically) a wrapped synAsset ERC20 token has been burned and the underlying needs to be redeeemed on the native chain
+     * @param amount Amount in native token decimals to transfer cross-chain pre-fees*
+     * @param chainId which underlying chain to bridge assets onto
+     * @param to address on other chain to redeem underlying assets to
+     * @param token ERC20 compatible token to deposit into the bridge
+     */
     redeem(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
+    /**
+     * Relays to nodes that (typically) a wrapped synAsset ERC20 token has been burned and the underlying needs to be redeeemed on the native chain. This function indicates to the nodes that they should attempt to redeem the LP token for the underlying assets (E.g "swap" out of the LP token)
+     * @param amount Amount in native token decimals to transfer cross-chain pre-fees
+     * @param chainId which underlying chain to bridge assets onto
+     * @param swapDeadline Specificies the deadline that the nodes are allowed to try to redeem/swap the LP token*
+     * @param swapMinAmount Specifies the minimum amount of the underlying asset needed for the nodes to execute the redeem/swap
+     * @param swapTokenIndex Specifies which of the underlying LP assets the nodes should attempt to redeem for
+     * @param to address on other chain to redeem underlying assets to
+     * @param token ERC20 compatible token to deposit into the bridge
+     */
     redeemAndRemove(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, swapTokenIndex: BigNumberish, swapMinAmount: BigNumberish, swapDeadline: BigNumberish, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
+    /**
+     * Relays to nodes that (typically) a wrapped synAsset ERC20 token has been burned and the underlying needs to be redeeemed on the native chain. This function indicates to the nodes that they should attempt to redeem the LP token for the underlying assets (E.g "swap" out of the LP token)
+     * @param amount Amount in native token decimals to transfer cross-chain pre-fees
+     * @param chainId which underlying chain to bridge assets onto
+     * @param deadline latest timestamp to accept this transaction*
+     * @param minDy the min amount the user would like to receive, or revert to only minting the SynERC20 token crosschain.
+     * @param to address on other chain to redeem underlying assets to
+     * @param token ERC20 compatible token to deposit into the bridge
+     * @param tokenIndexFrom the token the user wants to swap from
+     * @param tokenIndexTo the token the user wants to swap to
+     */
     redeemAndSwap(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, tokenIndexFrom: BigNumberish, tokenIndexTo: BigNumberish, minDy: BigNumberish, deadline: BigNumberish, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
+    /**
+     * Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.
+     */
     renounceRole(role: BytesLike, account: string, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
+    /**
+     * Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.
+     */
     revokeRole(role: BytesLike, account: string, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
@@ -526,12 +738,37 @@ export interface SynapseBridge extends BaseContract {
     unpause(overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
+    /**
+     * Function to be called by the node group to withdraw the underlying assets from the contract
+     * @param amount Amount in native token decimals to withdraw
+     * @param fee Amount in native token decimals to save to the contract as fees
+     * @param kappa kappa*
+     * @param to address on chain to send underlying assets to
+     * @param token ERC20 compatible token to withdraw from the bridge
+     */
     withdraw(to: string, token: string, amount: BigNumberish, fee: BigNumberish, kappa: BytesLike, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
+    /**
+     * Function to be called by the node group to withdraw the underlying assets from the contract
+     * @param amount Amount in native token decimals to withdraw
+     * @param fee Amount in native token decimals to save to the contract as fees
+     * @param kappa kappa*
+     * @param pool Destination chain's pool to use to swap SynERC20 -> Asset. The nodes determine this by using PoolConfig.sol.
+     * @param swapDeadline Specificies the deadline that the nodes are allowed to try to redeem/swap the LP token
+     * @param swapMinAmount Specifies the minimum amount of the underlying asset needed for the nodes to execute the redeem/swap
+     * @param swapTokenIndex Specifies which of the underlying LP assets the nodes should attempt to redeem for
+     * @param to address on chain to send underlying assets to
+     * @param token ERC20 compatible token to withdraw from the bridge
+     */
     withdrawAndRemove(to: string, token: string, amount: BigNumberish, fee: BigNumberish, pool: string, swapTokenIndex: BigNumberish, swapMinAmount: BigNumberish, swapDeadline: BigNumberish, kappa: BytesLike, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
+    /**
+     * withdraw specified ERC20 token fees to a given address
+     * @param to Address to send the fees to
+     * @param token ERC20 token in which fees acccumulated to transfer
+     */
     withdrawFees(token: string, to: string, overrides?: Overrides & {
         from?: string | Promise<string>;
     }): Promise<ContractTransaction>;
@@ -543,31 +780,149 @@ export interface SynapseBridge extends BaseContract {
         addKappas(kappas: BytesLike[], overrides?: CallOverrides): Promise<void>;
         bridgeVersion(overrides?: CallOverrides): Promise<BigNumber>;
         chainGasAmount(overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * Relays to nodes to transfers an ERC20 token cross-chain
+         * @param amount Amount in native token decimals to transfer cross-chain pre-fees*
+         * @param chainId which chain to bridge assets onto
+         * @param to address on other chain to bridge assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         */
         deposit(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, overrides?: CallOverrides): Promise<void>;
+        /**
+         * Relays to nodes to both transfer an ERC20 token cross-chain, and then have the nodes execute a swap through a liquidity pool on behalf of the user.
+         * @param amount Amount in native token decimals to transfer cross-chain pre-fees
+         * @param chainId which chain to bridge assets onto
+         * @param deadline latest timestamp to accept this transaction*
+         * @param minDy the min amount the user would like to receive, or revert to only minting the SynERC20 token crosschain.
+         * @param to address on other chain to bridge assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         * @param tokenIndexFrom the token the user wants to swap from
+         * @param tokenIndexTo the token the user wants to swap to
+         */
         depositAndSwap(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, tokenIndexFrom: BigNumberish, tokenIndexTo: BigNumberish, minDy: BigNumberish, deadline: BigNumberish, overrides?: CallOverrides): Promise<void>;
         getFeeBalance(tokenAddress: string, overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
+         */
         getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
+        /**
+         * Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.
+         */
         getRoleMember(role: BytesLike, index: BigNumberish, overrides?: CallOverrides): Promise<string>;
+        /**
+         * Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.
+         */
         getRoleMemberCount(role: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.
+         */
         grantRole(role: BytesLike, account: string, overrides?: CallOverrides): Promise<void>;
+        /**
+         * Returns `true` if `account` has been granted `role`.
+         */
         hasRole(role: BytesLike, account: string, overrides?: CallOverrides): Promise<boolean>;
         initialize(overrides?: CallOverrides): Promise<void>;
         kappaExists(kappa: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+        /**
+         * This means the SynapseBridge.sol contract must have minter access to the token attempting to be minted
+         * Nodes call this function to mint a SynERC20 (or any asset that the bridge is given minter access to). This is called by the nodes after a TokenDeposit event is emitted.
+         * @param amount Amount in native token decimals to transfer cross-chain post-fees
+         * @param fee Amount in native token decimals to save to the contract as fees
+         * @param kappa kappa*
+         * @param to address on other chain to redeem underlying assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         */
         mint(to: string, token: string, amount: BigNumberish, fee: BigNumberish, kappa: BytesLike, overrides?: CallOverrides): Promise<void>;
+        /**
+         * This means the BridgeDeposit.sol contract must have minter access to the token attempting to be minted
+         * Nodes call this function to mint a SynERC20 (or any asset that the bridge is given minter access to), and then attempt to swap the SynERC20 into the desired destination asset. This is called by the nodes after a TokenDepositAndSwap event is emitted.
+         * @param amount Amount in native token decimals to transfer cross-chain post-fees
+         * @param deadline Epoch time of the deadline that the swap is allowed to be executed.
+         * @param fee Amount in native token decimals to save to the contract as fees
+         * @param kappa kappa*
+         * @param minDy Minumum amount (in final asset decimals) that must be swapped for, otherwise the user will receive the SynERC20.
+         * @param pool Destination chain's pool to use to swap SynERC20 -> Asset. The nodes determine this by using PoolConfig.sol.
+         * @param to address on other chain to redeem underlying assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         * @param tokenIndexFrom Index of the SynERC20 asset in the pool
+         * @param tokenIndexTo Index of the desired final asset
+         */
         mintAndSwap(to: string, token: string, amount: BigNumberish, fee: BigNumberish, pool: string, tokenIndexFrom: BigNumberish, tokenIndexTo: BigNumberish, minDy: BigNumberish, deadline: BigNumberish, kappa: BytesLike, overrides?: CallOverrides): Promise<void>;
         pause(overrides?: CallOverrides): Promise<void>;
+        /**
+         * Returns true if the contract is paused, and false otherwise.
+         */
         paused(overrides?: CallOverrides): Promise<boolean>;
+        /**
+         * Relays to nodes that (typically) a wrapped synAsset ERC20 token has been burned and the underlying needs to be redeeemed on the native chain
+         * @param amount Amount in native token decimals to transfer cross-chain pre-fees*
+         * @param chainId which underlying chain to bridge assets onto
+         * @param to address on other chain to redeem underlying assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         */
         redeem(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, overrides?: CallOverrides): Promise<void>;
+        /**
+         * Relays to nodes that (typically) a wrapped synAsset ERC20 token has been burned and the underlying needs to be redeeemed on the native chain. This function indicates to the nodes that they should attempt to redeem the LP token for the underlying assets (E.g "swap" out of the LP token)
+         * @param amount Amount in native token decimals to transfer cross-chain pre-fees
+         * @param chainId which underlying chain to bridge assets onto
+         * @param swapDeadline Specificies the deadline that the nodes are allowed to try to redeem/swap the LP token*
+         * @param swapMinAmount Specifies the minimum amount of the underlying asset needed for the nodes to execute the redeem/swap
+         * @param swapTokenIndex Specifies which of the underlying LP assets the nodes should attempt to redeem for
+         * @param to address on other chain to redeem underlying assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         */
         redeemAndRemove(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, swapTokenIndex: BigNumberish, swapMinAmount: BigNumberish, swapDeadline: BigNumberish, overrides?: CallOverrides): Promise<void>;
+        /**
+         * Relays to nodes that (typically) a wrapped synAsset ERC20 token has been burned and the underlying needs to be redeeemed on the native chain. This function indicates to the nodes that they should attempt to redeem the LP token for the underlying assets (E.g "swap" out of the LP token)
+         * @param amount Amount in native token decimals to transfer cross-chain pre-fees
+         * @param chainId which underlying chain to bridge assets onto
+         * @param deadline latest timestamp to accept this transaction*
+         * @param minDy the min amount the user would like to receive, or revert to only minting the SynERC20 token crosschain.
+         * @param to address on other chain to redeem underlying assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         * @param tokenIndexFrom the token the user wants to swap from
+         * @param tokenIndexTo the token the user wants to swap to
+         */
         redeemAndSwap(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, tokenIndexFrom: BigNumberish, tokenIndexTo: BigNumberish, minDy: BigNumberish, deadline: BigNumberish, overrides?: CallOverrides): Promise<void>;
+        /**
+         * Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.
+         */
         renounceRole(role: BytesLike, account: string, overrides?: CallOverrides): Promise<void>;
+        /**
+         * Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.
+         */
         revokeRole(role: BytesLike, account: string, overrides?: CallOverrides): Promise<void>;
         setChainGasAmount(amount: BigNumberish, overrides?: CallOverrides): Promise<void>;
         setWethAddress(_wethAddress: string, overrides?: CallOverrides): Promise<void>;
         startBlockNumber(overrides?: CallOverrides): Promise<BigNumber>;
         unpause(overrides?: CallOverrides): Promise<void>;
+        /**
+         * Function to be called by the node group to withdraw the underlying assets from the contract
+         * @param amount Amount in native token decimals to withdraw
+         * @param fee Amount in native token decimals to save to the contract as fees
+         * @param kappa kappa*
+         * @param to address on chain to send underlying assets to
+         * @param token ERC20 compatible token to withdraw from the bridge
+         */
         withdraw(to: string, token: string, amount: BigNumberish, fee: BigNumberish, kappa: BytesLike, overrides?: CallOverrides): Promise<void>;
+        /**
+         * Function to be called by the node group to withdraw the underlying assets from the contract
+         * @param amount Amount in native token decimals to withdraw
+         * @param fee Amount in native token decimals to save to the contract as fees
+         * @param kappa kappa*
+         * @param pool Destination chain's pool to use to swap SynERC20 -> Asset. The nodes determine this by using PoolConfig.sol.
+         * @param swapDeadline Specificies the deadline that the nodes are allowed to try to redeem/swap the LP token
+         * @param swapMinAmount Specifies the minimum amount of the underlying asset needed for the nodes to execute the redeem/swap
+         * @param swapTokenIndex Specifies which of the underlying LP assets the nodes should attempt to redeem for
+         * @param to address on chain to send underlying assets to
+         * @param token ERC20 compatible token to withdraw from the bridge
+         */
         withdrawAndRemove(to: string, token: string, amount: BigNumberish, fee: BigNumberish, pool: string, swapTokenIndex: BigNumberish, swapMinAmount: BigNumberish, swapDeadline: BigNumberish, kappa: BytesLike, overrides?: CallOverrides): Promise<void>;
+        /**
+         * withdraw specified ERC20 token fees to a given address
+         * @param to Address to send the fees to
+         * @param token ERC20 token in which fees acccumulated to transfer
+         */
         withdrawFees(token: string, to: string, overrides?: CallOverrides): Promise<void>;
     };
     filters: {
@@ -610,46 +965,139 @@ export interface SynapseBridge extends BaseContract {
         }): Promise<BigNumber>;
         bridgeVersion(overrides?: CallOverrides): Promise<BigNumber>;
         chainGasAmount(overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * Relays to nodes to transfers an ERC20 token cross-chain
+         * @param amount Amount in native token decimals to transfer cross-chain pre-fees*
+         * @param chainId which chain to bridge assets onto
+         * @param to address on other chain to bridge assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         */
         deposit(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
+        /**
+         * Relays to nodes to both transfer an ERC20 token cross-chain, and then have the nodes execute a swap through a liquidity pool on behalf of the user.
+         * @param amount Amount in native token decimals to transfer cross-chain pre-fees
+         * @param chainId which chain to bridge assets onto
+         * @param deadline latest timestamp to accept this transaction*
+         * @param minDy the min amount the user would like to receive, or revert to only minting the SynERC20 token crosschain.
+         * @param to address on other chain to bridge assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         * @param tokenIndexFrom the token the user wants to swap from
+         * @param tokenIndexTo the token the user wants to swap to
+         */
         depositAndSwap(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, tokenIndexFrom: BigNumberish, tokenIndexTo: BigNumberish, minDy: BigNumberish, deadline: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
         getFeeBalance(tokenAddress: string, overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
+         */
         getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.
+         */
         getRoleMember(role: BytesLike, index: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.
+         */
         getRoleMemberCount(role: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.
+         */
         grantRole(role: BytesLike, account: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
+        /**
+         * Returns `true` if `account` has been granted `role`.
+         */
         hasRole(role: BytesLike, account: string, overrides?: CallOverrides): Promise<BigNumber>;
         initialize(overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
         kappaExists(kappa: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * This means the SynapseBridge.sol contract must have minter access to the token attempting to be minted
+         * Nodes call this function to mint a SynERC20 (or any asset that the bridge is given minter access to). This is called by the nodes after a TokenDeposit event is emitted.
+         * @param amount Amount in native token decimals to transfer cross-chain post-fees
+         * @param fee Amount in native token decimals to save to the contract as fees
+         * @param kappa kappa*
+         * @param to address on other chain to redeem underlying assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         */
         mint(to: string, token: string, amount: BigNumberish, fee: BigNumberish, kappa: BytesLike, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
+        /**
+         * This means the BridgeDeposit.sol contract must have minter access to the token attempting to be minted
+         * Nodes call this function to mint a SynERC20 (or any asset that the bridge is given minter access to), and then attempt to swap the SynERC20 into the desired destination asset. This is called by the nodes after a TokenDepositAndSwap event is emitted.
+         * @param amount Amount in native token decimals to transfer cross-chain post-fees
+         * @param deadline Epoch time of the deadline that the swap is allowed to be executed.
+         * @param fee Amount in native token decimals to save to the contract as fees
+         * @param kappa kappa*
+         * @param minDy Minumum amount (in final asset decimals) that must be swapped for, otherwise the user will receive the SynERC20.
+         * @param pool Destination chain's pool to use to swap SynERC20 -> Asset. The nodes determine this by using PoolConfig.sol.
+         * @param to address on other chain to redeem underlying assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         * @param tokenIndexFrom Index of the SynERC20 asset in the pool
+         * @param tokenIndexTo Index of the desired final asset
+         */
         mintAndSwap(to: string, token: string, amount: BigNumberish, fee: BigNumberish, pool: string, tokenIndexFrom: BigNumberish, tokenIndexTo: BigNumberish, minDy: BigNumberish, deadline: BigNumberish, kappa: BytesLike, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
         pause(overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
+        /**
+         * Returns true if the contract is paused, and false otherwise.
+         */
         paused(overrides?: CallOverrides): Promise<BigNumber>;
+        /**
+         * Relays to nodes that (typically) a wrapped synAsset ERC20 token has been burned and the underlying needs to be redeeemed on the native chain
+         * @param amount Amount in native token decimals to transfer cross-chain pre-fees*
+         * @param chainId which underlying chain to bridge assets onto
+         * @param to address on other chain to redeem underlying assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         */
         redeem(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
+        /**
+         * Relays to nodes that (typically) a wrapped synAsset ERC20 token has been burned and the underlying needs to be redeeemed on the native chain. This function indicates to the nodes that they should attempt to redeem the LP token for the underlying assets (E.g "swap" out of the LP token)
+         * @param amount Amount in native token decimals to transfer cross-chain pre-fees
+         * @param chainId which underlying chain to bridge assets onto
+         * @param swapDeadline Specificies the deadline that the nodes are allowed to try to redeem/swap the LP token*
+         * @param swapMinAmount Specifies the minimum amount of the underlying asset needed for the nodes to execute the redeem/swap
+         * @param swapTokenIndex Specifies which of the underlying LP assets the nodes should attempt to redeem for
+         * @param to address on other chain to redeem underlying assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         */
         redeemAndRemove(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, swapTokenIndex: BigNumberish, swapMinAmount: BigNumberish, swapDeadline: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
+        /**
+         * Relays to nodes that (typically) a wrapped synAsset ERC20 token has been burned and the underlying needs to be redeeemed on the native chain. This function indicates to the nodes that they should attempt to redeem the LP token for the underlying assets (E.g "swap" out of the LP token)
+         * @param amount Amount in native token decimals to transfer cross-chain pre-fees
+         * @param chainId which underlying chain to bridge assets onto
+         * @param deadline latest timestamp to accept this transaction*
+         * @param minDy the min amount the user would like to receive, or revert to only minting the SynERC20 token crosschain.
+         * @param to address on other chain to redeem underlying assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         * @param tokenIndexFrom the token the user wants to swap from
+         * @param tokenIndexTo the token the user wants to swap to
+         */
         redeemAndSwap(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, tokenIndexFrom: BigNumberish, tokenIndexTo: BigNumberish, minDy: BigNumberish, deadline: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
+        /**
+         * Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.
+         */
         renounceRole(role: BytesLike, account: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
+        /**
+         * Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.
+         */
         revokeRole(role: BytesLike, account: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
@@ -663,12 +1111,37 @@ export interface SynapseBridge extends BaseContract {
         unpause(overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
+        /**
+         * Function to be called by the node group to withdraw the underlying assets from the contract
+         * @param amount Amount in native token decimals to withdraw
+         * @param fee Amount in native token decimals to save to the contract as fees
+         * @param kappa kappa*
+         * @param to address on chain to send underlying assets to
+         * @param token ERC20 compatible token to withdraw from the bridge
+         */
         withdraw(to: string, token: string, amount: BigNumberish, fee: BigNumberish, kappa: BytesLike, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
+        /**
+         * Function to be called by the node group to withdraw the underlying assets from the contract
+         * @param amount Amount in native token decimals to withdraw
+         * @param fee Amount in native token decimals to save to the contract as fees
+         * @param kappa kappa*
+         * @param pool Destination chain's pool to use to swap SynERC20 -> Asset. The nodes determine this by using PoolConfig.sol.
+         * @param swapDeadline Specificies the deadline that the nodes are allowed to try to redeem/swap the LP token
+         * @param swapMinAmount Specifies the minimum amount of the underlying asset needed for the nodes to execute the redeem/swap
+         * @param swapTokenIndex Specifies which of the underlying LP assets the nodes should attempt to redeem for
+         * @param to address on chain to send underlying assets to
+         * @param token ERC20 compatible token to withdraw from the bridge
+         */
         withdrawAndRemove(to: string, token: string, amount: BigNumberish, fee: BigNumberish, pool: string, swapTokenIndex: BigNumberish, swapMinAmount: BigNumberish, swapDeadline: BigNumberish, kappa: BytesLike, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
+        /**
+         * withdraw specified ERC20 token fees to a given address
+         * @param to Address to send the fees to
+         * @param token ERC20 token in which fees acccumulated to transfer
+         */
         withdrawFees(token: string, to: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<BigNumber>;
@@ -683,46 +1156,139 @@ export interface SynapseBridge extends BaseContract {
         }): Promise<PopulatedTransaction>;
         bridgeVersion(overrides?: CallOverrides): Promise<PopulatedTransaction>;
         chainGasAmount(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        /**
+         * Relays to nodes to transfers an ERC20 token cross-chain
+         * @param amount Amount in native token decimals to transfer cross-chain pre-fees*
+         * @param chainId which chain to bridge assets onto
+         * @param to address on other chain to bridge assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         */
         deposit(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
+        /**
+         * Relays to nodes to both transfer an ERC20 token cross-chain, and then have the nodes execute a swap through a liquidity pool on behalf of the user.
+         * @param amount Amount in native token decimals to transfer cross-chain pre-fees
+         * @param chainId which chain to bridge assets onto
+         * @param deadline latest timestamp to accept this transaction*
+         * @param minDy the min amount the user would like to receive, or revert to only minting the SynERC20 token crosschain.
+         * @param to address on other chain to bridge assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         * @param tokenIndexFrom the token the user wants to swap from
+         * @param tokenIndexTo the token the user wants to swap to
+         */
         depositAndSwap(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, tokenIndexFrom: BigNumberish, tokenIndexTo: BigNumberish, minDy: BigNumberish, deadline: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
         getFeeBalance(tokenAddress: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        /**
+         * Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
+         */
         getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        /**
+         * Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.
+         */
         getRoleMember(role: BytesLike, index: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        /**
+         * Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.
+         */
         getRoleMemberCount(role: BytesLike, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        /**
+         * Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.
+         */
         grantRole(role: BytesLike, account: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
+        /**
+         * Returns `true` if `account` has been granted `role`.
+         */
         hasRole(role: BytesLike, account: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
         initialize(overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
         kappaExists(kappa: BytesLike, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        /**
+         * This means the SynapseBridge.sol contract must have minter access to the token attempting to be minted
+         * Nodes call this function to mint a SynERC20 (or any asset that the bridge is given minter access to). This is called by the nodes after a TokenDeposit event is emitted.
+         * @param amount Amount in native token decimals to transfer cross-chain post-fees
+         * @param fee Amount in native token decimals to save to the contract as fees
+         * @param kappa kappa*
+         * @param to address on other chain to redeem underlying assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         */
         mint(to: string, token: string, amount: BigNumberish, fee: BigNumberish, kappa: BytesLike, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
+        /**
+         * This means the BridgeDeposit.sol contract must have minter access to the token attempting to be minted
+         * Nodes call this function to mint a SynERC20 (or any asset that the bridge is given minter access to), and then attempt to swap the SynERC20 into the desired destination asset. This is called by the nodes after a TokenDepositAndSwap event is emitted.
+         * @param amount Amount in native token decimals to transfer cross-chain post-fees
+         * @param deadline Epoch time of the deadline that the swap is allowed to be executed.
+         * @param fee Amount in native token decimals to save to the contract as fees
+         * @param kappa kappa*
+         * @param minDy Minumum amount (in final asset decimals) that must be swapped for, otherwise the user will receive the SynERC20.
+         * @param pool Destination chain's pool to use to swap SynERC20 -> Asset. The nodes determine this by using PoolConfig.sol.
+         * @param to address on other chain to redeem underlying assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         * @param tokenIndexFrom Index of the SynERC20 asset in the pool
+         * @param tokenIndexTo Index of the desired final asset
+         */
         mintAndSwap(to: string, token: string, amount: BigNumberish, fee: BigNumberish, pool: string, tokenIndexFrom: BigNumberish, tokenIndexTo: BigNumberish, minDy: BigNumberish, deadline: BigNumberish, kappa: BytesLike, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
         pause(overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
+        /**
+         * Returns true if the contract is paused, and false otherwise.
+         */
         paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        /**
+         * Relays to nodes that (typically) a wrapped synAsset ERC20 token has been burned and the underlying needs to be redeeemed on the native chain
+         * @param amount Amount in native token decimals to transfer cross-chain pre-fees*
+         * @param chainId which underlying chain to bridge assets onto
+         * @param to address on other chain to redeem underlying assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         */
         redeem(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
+        /**
+         * Relays to nodes that (typically) a wrapped synAsset ERC20 token has been burned and the underlying needs to be redeeemed on the native chain. This function indicates to the nodes that they should attempt to redeem the LP token for the underlying assets (E.g "swap" out of the LP token)
+         * @param amount Amount in native token decimals to transfer cross-chain pre-fees
+         * @param chainId which underlying chain to bridge assets onto
+         * @param swapDeadline Specificies the deadline that the nodes are allowed to try to redeem/swap the LP token*
+         * @param swapMinAmount Specifies the minimum amount of the underlying asset needed for the nodes to execute the redeem/swap
+         * @param swapTokenIndex Specifies which of the underlying LP assets the nodes should attempt to redeem for
+         * @param to address on other chain to redeem underlying assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         */
         redeemAndRemove(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, swapTokenIndex: BigNumberish, swapMinAmount: BigNumberish, swapDeadline: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
+        /**
+         * Relays to nodes that (typically) a wrapped synAsset ERC20 token has been burned and the underlying needs to be redeeemed on the native chain. This function indicates to the nodes that they should attempt to redeem the LP token for the underlying assets (E.g "swap" out of the LP token)
+         * @param amount Amount in native token decimals to transfer cross-chain pre-fees
+         * @param chainId which underlying chain to bridge assets onto
+         * @param deadline latest timestamp to accept this transaction*
+         * @param minDy the min amount the user would like to receive, or revert to only minting the SynERC20 token crosschain.
+         * @param to address on other chain to redeem underlying assets to
+         * @param token ERC20 compatible token to deposit into the bridge
+         * @param tokenIndexFrom the token the user wants to swap from
+         * @param tokenIndexTo the token the user wants to swap to
+         */
         redeemAndSwap(to: string, chainId: BigNumberish, token: string, amount: BigNumberish, tokenIndexFrom: BigNumberish, tokenIndexTo: BigNumberish, minDy: BigNumberish, deadline: BigNumberish, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
+        /**
+         * Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.
+         */
         renounceRole(role: BytesLike, account: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
+        /**
+         * Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.
+         */
         revokeRole(role: BytesLike, account: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
@@ -736,12 +1302,37 @@ export interface SynapseBridge extends BaseContract {
         unpause(overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
+        /**
+         * Function to be called by the node group to withdraw the underlying assets from the contract
+         * @param amount Amount in native token decimals to withdraw
+         * @param fee Amount in native token decimals to save to the contract as fees
+         * @param kappa kappa*
+         * @param to address on chain to send underlying assets to
+         * @param token ERC20 compatible token to withdraw from the bridge
+         */
         withdraw(to: string, token: string, amount: BigNumberish, fee: BigNumberish, kappa: BytesLike, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
+        /**
+         * Function to be called by the node group to withdraw the underlying assets from the contract
+         * @param amount Amount in native token decimals to withdraw
+         * @param fee Amount in native token decimals to save to the contract as fees
+         * @param kappa kappa*
+         * @param pool Destination chain's pool to use to swap SynERC20 -> Asset. The nodes determine this by using PoolConfig.sol.
+         * @param swapDeadline Specificies the deadline that the nodes are allowed to try to redeem/swap the LP token
+         * @param swapMinAmount Specifies the minimum amount of the underlying asset needed for the nodes to execute the redeem/swap
+         * @param swapTokenIndex Specifies which of the underlying LP assets the nodes should attempt to redeem for
+         * @param to address on chain to send underlying assets to
+         * @param token ERC20 compatible token to withdraw from the bridge
+         */
         withdrawAndRemove(to: string, token: string, amount: BigNumberish, fee: BigNumberish, pool: string, swapTokenIndex: BigNumberish, swapMinAmount: BigNumberish, swapDeadline: BigNumberish, kappa: BytesLike, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;
+        /**
+         * withdraw specified ERC20 token fees to a given address
+         * @param to Address to send the fees to
+         * @param token ERC20 token in which fees acccumulated to transfer
+         */
         withdrawFees(token: string, to: string, overrides?: Overrides & {
             from?: string | Promise<string>;
         }): Promise<PopulatedTransaction>;

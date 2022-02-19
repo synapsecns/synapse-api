@@ -1,5 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { PopulatedTransaction } from "ethers";
+import { PopulatedTransaction } from "@ethersproject/contracts";
 export declare namespace GasUtils {
     interface GasParams {
         maxPriorityFee?: BigNumber;

@@ -14,7 +14,17 @@ export declare namespace Networks {
             chainId: number;
             chainCurrency: string;
         });
+        /**
+         * Returns true if the Bridge Zap contract for this network
+         * is a L2BridgeZap contract.
+         * Currently, Ethereum mainnet is the only network for which the
+         * Bridge Zap contract is a NerveBridgeZap contract.
+         */
         get zapIsL2BridgeZap(): boolean;
+        /**
+         * Returns true if the passed token is available on this network.
+         * @param {BaseToken|string} token Either an instance of {@link BaseToken}, or the address of a token contract.
+         */
         supportsToken(token: Token): boolean;
     }
     const ETH: Network;
@@ -30,6 +40,11 @@ export declare namespace Networks {
     const AURORA: Network;
     const HARMONY: Network;
     const fromChainId: (chainId: BigNumberish) => Network;
+    /**
+     * Returns true if the passed network supports the passed token.
+     * @param {Network | BigNumberish} network Either a {@link Network} instance, or the Chain ID of a supported network.
+     * @param {BaseToken | string} token Either a {@link BaseToken} instance, or the address of a token contract.
+     */
     function networkSupportsToken(network: Network | BigNumberish, token: Token): boolean;
     const supportedNetworks: () => Network[];
 }

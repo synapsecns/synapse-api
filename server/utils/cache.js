@@ -2,7 +2,7 @@
 
 import {
   Bridge,
-  ChainId,
+  supportedChainIds,
   allNetworksSwapTokensMap,
 } from "@synapseprotocol/sdk";
 
@@ -12,7 +12,7 @@ import {
 const Bridges = {};
 const allTokens = allNetworksSwapTokensMap();
 
-ChainId.supportedChainIds().forEach((chainId) => {
+supportedChainIds().forEach((chainId) => {
   Bridges[chainId] = new Bridge.SynapseBridge({
     network: chainId,
   });

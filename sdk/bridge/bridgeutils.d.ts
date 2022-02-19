@@ -1,5 +1,5 @@
-import { GenericZapBridgeContract } from "../contracts";
 import type { Token } from "../token";
+import type { GenericZapBridgeContract } from "../contracts";
 import { BigNumber } from "@ethersproject/bignumber";
 export declare namespace BridgeUtils {
     export const isL2ETHChain: (chainId: number) => boolean;

@@ -90,6 +90,8 @@ export declare namespace SwapPools {
     };
     export function getAllSwappableTokensForNetwork(chainId: number): Token[];
     export const swapGroupsForNetwork: (chainId: number) => string[];
+    export function stableswapPoolForNetwork(chainId: number): SwapPoolToken;
+    export function ethSwapPoolForNetwork(chainId: number): SwapPoolToken;
     export {};
 }
 export interface NetworkSwappableTokensMap {
@@ -98,14 +100,24 @@ export interface NetworkSwappableTokensMap {
 export interface AllNetworksSwappableTokensMap {
     [c: number]: NetworkSwappableTokensMap;
 }
+/**
+ * @deprecated Use {@link networkSwapTokensMap} instead.
+ */
 export declare function swappableTokens(chainIdA: number, chainIdB?: number): NetworkSwappableTokensMap;
+/**
+ * Returns a map of swappable tokens for two given networks; or, if a second chainid isn't passed,
+ * a map of all swappable tokens for the passed chainid between all supported networks.
+ * @param chainIdA
+ * @param chainIdB Optional second network; if passed, a map of swappable tokens between ONLY chainIdA and chainIdB is returned.
+ * @return NetworkSwappableTokensMap
+ */
 export declare function networkSwapTokensMap(chainIdA: number, chainIdB?: number): NetworkSwappableTokensMap;
+/**
+ * @deprecated Use {@link allNetworksSwapTokensMap} instead.
+ */
 export declare function swappableTokensAllNetworks(): AllNetworksSwappableTokensMap;
+/**
+ * Returns map of all swappable tokens between all supported networks.
+ * @return AllNetworksSwappableTokensMap
+ */
 export declare function allNetworksSwapTokensMap(): AllNetworksSwappableTokensMap;
-export interface DetailedTokenSwapMap {
-    [chainId: number]: {
-        token: Token;
-        [chainId: number]: Token[];
-    }[];
-}
-export declare function detailedTokenSwapMap(): DetailedTokenSwapMap;
