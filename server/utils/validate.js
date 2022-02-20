@@ -83,7 +83,6 @@ const bridgeTokens = v.compile({
 });
 
 const swapQuote = v.compile({
-  chainId: "chainId",
   tokenFrom: tokenChecker,
   tokenTo: tokenChecker,
   amountIn: bignumberChecker,
