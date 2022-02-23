@@ -3,14 +3,18 @@
 import express from "express";
 import "dotenv/config";
 
-import bridgeRouter from "./routes/v1/bridge.js";
-import swapRouter from "./routes/v1/swap.js";
+import bridgeRouter from "./routes/beta/bridge.js";
+import swapRouter from "./routes/beta/swap.js";
+import v1Router from "./routes/v1/index.js";
 
 const app = express();
 const port = process.env.port ?? 8080;
 
-app.use("/api/v1/bridge", bridgeRouter);
-app.use("/api/v1/swap", swapRouter);
+app.use("/beta/bridge", bridgeRouter);
+app.use("/beta/swap", swapRouter);
+app.use('/v1', v1Router);
+
+app.set('json spaces', 4);
 
 app.use((err, req, res, next) => {
   res.status(500).json({ error: err.message });

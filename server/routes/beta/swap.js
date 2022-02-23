@@ -1,7 +1,7 @@
 import asyncHandler from "express-async-handler";
 import express from "express";
 
-import { tokens, quote } from "../../handlers/swap.js";
+import { tokens, quote } from "./handlers/swap.js";
 
 const router = express.Router();
 
