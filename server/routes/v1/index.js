@@ -68,11 +68,7 @@ router.get('/estimate_bridge_output',
             return;
         }
 
-        const fromChainId = req.query.fromChainId;
-        const toChainId = req.query.toChainId
-        const fromToken = req.query.fromToken
-        const toToken = req.query.toToken
-        const amount = req.query.amount
+        const {fromChainId, toChainId, fromToken, toToken, amount} = req.query
 
         const estimate = await estimateBridgeOutputs(fromChainId, toChainId, fromToken, toToken, amount);
         res.status(200).json(estimate);
