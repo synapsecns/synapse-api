@@ -1,7 +1,7 @@
 import asyncHandler from "express-async-handler";
 import express from "express";
 
-import { tokens, quote } from "../../handlers/bridge.js";
+import { tokens, quote } from "./handlers/bridge.js";
 
 const router = express.Router();
 
