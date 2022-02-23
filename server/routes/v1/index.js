@@ -1,12 +1,22 @@
 import express from "express";
 const router = express.Router();
 
-import {check, oneOf, validationResult} from "express-validator";
+import {check, oneOf,query, validationResult} from "express-validator";
 import {getBridgeableTokensForChain} from "../../controllers/getBridgeableTokens.js"
 import {getChainsForToken} from "../../controllers/getChainsForToken.js"
 import {estimateBridgeOutputs} from "../../controllers/estimateBridgeOutputs.js"
-import {getChainNames, getChainIds, getChainIdFromParam, getTokenSymbols, getTokenHashes, getTokenSymbolFromParam} from "../../core/utils.js"
+import {generateUnsignedBridgeTxn} from "../../controllers/generateUnsignedBridgeTxn.js"
+
+import {
+    getChainIdFromParam,
+    getChainIds,
+    getChainNames,
+    getTokenHashes,
+    getTokenSymbolFromParam,
+    getTokenSymbols
+} from "../../core/utils.js"
 import {BigNumber} from "ethers";
+
 
 /***
  * /v1/get_bridgable_tokens?chainId=1
@@ -64,7 +74,7 @@ router.get('/estimate_bridge_output',
             BigNumber.from(req.query.amount)
             validationResult(req).throw();
         } catch (err) {
-            res.status(400).json({"error": "Valid arguments for fromChainId, toChainId, fromCoin, toCoin and inputTokenAmount must be passed"});
+            res.status(400).json({"error": "Valid arguments for fromChainId, toChainId, fromToken, toToken and amount must be passed"});
             return;
         }
 
@@ -74,6 +84,33 @@ router.get('/estimate_bridge_output',
         res.status(200).json(estimate);
     });
 
+
+/***
+ * generateUnsignedBridgeTxn(fromChainId, toChainId, fromCoin, toCoin) =>
+ * {unsigned_data: , otherInfo...} /v1/generate_unsigned_bridge_txn?fromChainId=1&toChainId=56&fromCoin="USDC"...
+ */
+router.get('/generate_unsigned_bridge_txn',
+    oneOf([check('fromChainId').isIn(getChainNames()), check('fromChainId').isIn(getChainIds())]),
+    oneOf([check('toChainId').isIn(getChainNames()), check('toChainId').isIn(getChainNames())]),
+    oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenHashes())]),
+    oneOf([check('toToken').isIn(getTokenSymbols()), check('toToken').isIn(getTokenHashes())]),
+    query('address').isString(),
+    async (req, res) => {
+
+        try {
+            BigNumber.from(req.query.amount)
+            validationResult(req).throw();
+        } catch (err) {
+            res.status(400).json({"error": "Valid arguments for fromChainId, toChainId, fromToken, toToken, input and address must be passed"});
+            return;
+        }
+
+        const {fromChainId, toChainId, fromToken, toToken, amount, address} = req.query
+        const unsignedTxn = await generateUnsignedBridgeTxn(fromChainId, toChainId, fromToken, toToken, amount, address);
+        res.status(200).json(unsignedTxn);
+    });
+
+
 /***
  * generateUnsignedBridgeApprovalTxn(fromChainId, fromCoin) =>
  * {unsigned_data: , otherInfo...} /v1/generate_unsigned_bridge_approval_txn?fromChainId=1&fromCoin="USDC"...
@@ -81,14 +118,6 @@ router.get('/estimate_bridge_output',
  ***/
 router.get('/generate_unsigned_bridge_approval_txn', (request, response) => {
 
-});
-
-/***
- * generateUnsignedBridgeTxn(fromChainId, toChainId, fromCoin, toCoin) =>
- * {unsigned_data: , otherInfo...} /v1/generate_unsigned_bridge_txn?fromChainId=1&toChainId=56&fromCoin="USDC"...
- */
-router.get('/generate_unsigned_bridge_txn', (request, response) => {
-    response.send(`users`);
 });
 
 /***
