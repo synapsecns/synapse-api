@@ -4,17 +4,17 @@ import {getChainIdFromParam, getTokenSymbolFromParam} from "../core/utils.js";
 import {Tokens} from "@synapseprotocol/sdk";
 
 /**
- * @param {String} fromChainId
- * @param {String} toChainId
+ * @param {String} fromChain
+ * @param {String} toChain
  * @param {String} fromToken
  * @param {String} toToken
- * @param {String} amount
- * @param {String} address
+ * @param {String} amountFrom
+ * @param {String|undefined} address
  * @returns {Object[]}
  */
-async function generateUnsignedBridgeTxn(fromChainId, toChainId, fromToken, toToken, amount, address) {
-    const fromChainIdNum = getChainIdFromParam(fromChainId)
-    const toChainIdNum = getChainIdFromParam(toChainId)
+async function generateUnsignedBridgeTxn(fromChain, toChain, fromToken, toToken, amountFrom, address) {
+    const fromChainId = getChainIdFromParam(fromChain)
+    const toChainId = getChainIdFromParam(toChain)
 
     const fromTokenSymbol = getTokenSymbolFromParam(fromToken)
     const fromTokenObj = Tokens[fromTokenSymbol]
@@ -22,19 +22,19 @@ async function generateUnsignedBridgeTxn(fromChainId, toChainId, fromToken, toTo
     const toTokenSymbol = getTokenSymbolFromParam(fromToken)
     const toTokenObj = Tokens[toTokenSymbol]
 
-    const bigNumAmount = BigNumber.from(amount);
+    const bigNumAmount = BigNumber.from(amountFrom);
 
-    const bridge = Bridges[fromChainIdNum];
+    const bridge = Bridges[fromChainId];
 
     const estimate = await bridge.estimateBridgeTokenOutput({
         tokenFrom: fromTokenObj,
         tokenTo: toTokenObj,
-        chainIdTo: toChainIdNum,
+        chainIdTo: toChainId,
         amountFrom: bigNumAmount
     });
     const unsignedTxn = await bridge.buildBridgeTokenTransaction({
         tokenFrom: fromTokenObj,
-        chainIdTo: toChainIdNum,
+        chainIdTo: toChainId,
         tokenTo: toTokenObj,
         amountFrom: bigNumAmount,
         amountTo: estimate.amountToReceive,
@@ -42,7 +42,7 @@ async function generateUnsignedBridgeTxn(fromChainId, toChainId, fromToken, toTo
     })
 
     return {
-        data: unsignedTxn.data,
+        unsigned_data: unsignedTxn.data,
         to: unsignedTxn.to,
         gasPrice: unsignedTxn.gasPrice.toString(),
         gasLimit: unsignedTxn.gasPrice.toString(),

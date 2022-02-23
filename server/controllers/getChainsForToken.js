@@ -4,7 +4,7 @@ import {getTokenFromSymbol, getChainFromId} from "../core/utils.js"
  * @param {String} tokenSymbol
  * @returns {Object[]}
  */
-function getChainsForToken(tokenSymbol) {
+async function getChainsForToken(tokenSymbol) {
     let chainObjects = []
 
     let token = getTokenFromSymbol(tokenSymbol);

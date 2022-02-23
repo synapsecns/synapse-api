@@ -4,7 +4,7 @@ import * as tokens from "../core/tokens.js"
  * @param {number} chainId
  * @returns {number[]}
  */
-function getBridgeableTokensForChain(chainId) {
+async function getBridgeableTokensForChain(chainId) {
     let tokenList = []
     for (const [_, tokenObj] of Object.entries(tokens)) {
         if (chainId in tokenObj.addresses) {

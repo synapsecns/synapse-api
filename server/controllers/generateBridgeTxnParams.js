@@ -8,10 +8,12 @@ import {Tokens} from "@synapseprotocol/sdk";
  * @param {String} toChain
  * @param {String} fromToken
  * @param {String} toToken
- * @param {String|undefined} amountFrom
+ * @param {String} amountFrom
+ * @param {String} amountTo
+ * @param {String|undefined} addressTo
  * @returns {Object[]}
  */
-async function estimateBridgeOutputs(fromChain, toChain, fromToken, toToken, amountFrom) {
+async function generateBridgeTxnParams(fromChain, toChain, fromToken, toToken, amountFrom, amountTo, addressTo) {
     const fromChainId = getChainIdFromParam(fromChain)
     const toChainId = getChainIdFromParam(toChain)
 
@@ -21,21 +23,19 @@ async function estimateBridgeOutputs(fromChain, toChain, fromToken, toToken, amo
     const toTokenSymbol = getTokenSymbolFromParam(fromToken)
     const toTokenObj = Tokens[toTokenSymbol]
 
-    const bigNumAmount = amountFrom ? BigNumber.from(amountFrom) : null;
+    const bigNumAmountFrom = BigNumber.from(amountFrom);
+    const bigNumAmountTo = BigNumber.from(amountTo);
 
     const bridge = Bridges[fromChainId];
 
-    const estimate = await bridge.estimateBridgeTokenOutput({
+    return {
         tokenFrom: fromTokenObj,
         tokenTo: toTokenObj,
         chainIdTo: toChainId,
-        amountFrom: bigNumAmount
-    });
-
-    return {
-        amountToReceive: estimate.amountToReceive.toString(),
-        bridgeFee: estimate.bridgeFee.toString(),
+        amountFrom: bigNumAmountFrom,
+        amountTo: bigNumAmountTo,
+        addressTo: addressTo
     }
 }
 
-export { estimateBridgeOutputs };
+export { generateBridgeTxnParams };

@@ -5,30 +5,26 @@ Broad format should be in the form of a rest api, usually likely to be get reque
 Ex: estimateFinalBridgeOutput(fromChainId, toChainId, fromToken, toToken, amount) =>
 `/v1/estimate_final_bridge_amount?fromChainId=1&toChainId=56&fromToken="USDC"...`
 
-- generateUnsignedBridgeApprovalTxn(fromChainId, fromToken) =>  {unsigned_data: <unsigned txn data>, otherInfo...}
-  `/v1/generate_unsigned_bridge_approval_txn?fromChainId=1&fromToken="USDC"...`
+- generateUnsignedBridgeApprovalTxn(fromChain, fromToken) =>  {unsigned_data: <unsigned txn data>, otherInfo...}
+  `/v1/generate_unsigned_bridge_approval_txn?fromChain=1&fromToken="USDC"...`
   Generates the unsigned txn data for approval transaction required for approving spend of a given coin
 
 
-- generateUnsignedBridgeTxn(fromChainId, toChainId, fromToken, toToken) => {unsigned_data: <unsigned txn data>, otherInfo...}
-  `/v1/generate_unsigned_bridge_txn?fromChainId=1&toChainId=56&fromToken="USDC"...`
+- generateUnsignedBridgeTxn(fromChain, toChain, fromToken, toToken, amountFrom, address) => {unsigned_data: <unsigned txn data>, otherInfo...}
+  `/v1/generate_unsigned_bridge_txn?fromChain=1&toChain=56&fromToken="USDC"...`
 
 
+- generateBridgeTxnParams(fromChain, toChain, fromToken, toToken) => <Some Bridge Params Obj>
+  `/v1/generate_unsigned_bridge_txn?fromChain=1&toChain=56&fromToken="USDC"...`
 
-- generateBridgeTxnParams(fromChainId, toChainId, fromToken, toToken) => <Some Bridge Params Obj>
-  `/v1/generate_unsigned_bridge_txn?fromChainId=1&toChainId=56&fromToken="USDC"...`
-
-
-- estimateBridgeOutput(fromChainId, toChainId, fromToken, toToken, amount) => {estimatedRecieveAmount, otherInfo...}
-  `/v1/estimate_bridge_output?fromChainId=1&toChainId=56&fromToken="USDC"...input_token_amount=<BigNumber value>`
+- estimateBridgeOutput(fromChain, toChain, fromToken, toToken, amountFrom) => {estimatedRecieveAmount, otherInfo...}
+  `/v1/estimate_bridge_output?fromChain=1&toChain=56&fromToken="USDC"...input_token_amount=<BigNumber value>`
 
 - getBridgableTokens(chainId) => <list of valid tokens available to bridge from a given chain >
   `/v1/get_bridgable_tokens?chainId=1`
 
 - getChainsForTokens(token) => <list of valid chainIds for a given token>
   `/v1/get_chains_for_token?token_address=<address>`
-
--
 
 
 Broad Guidelines
