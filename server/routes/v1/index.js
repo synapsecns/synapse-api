@@ -4,6 +4,7 @@ const router = express.Router();
 import {check, oneOf, validationResult} from "express-validator";
 import {getBridgeableTokensForChain} from "../../controllers/getBridgeableTokens.js"
 import {getChainsForToken} from "../../controllers/getChainsForToken.js"
+import {estimateBridgeOutputs} from "../../controllers/estimateBridgeOutputs.js"
 import {getChainNames, getChainIds, getChainIdFromParam, getTokenSymbols, getTokenHashes, getTokenSymbolFromParam} from "../../core/utils.js"
 import {BigNumber} from "ethers";
 
@@ -57,7 +58,7 @@ router.get('/estimate_bridge_output',
     oneOf([check('toChainId').isIn(getChainNames()), check('toChainId').isIn(getChainNames())]),
     oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenHashes())]),
     oneOf([check('toToken').isIn(getTokenSymbols()), check('toToken').isIn(getTokenHashes())]),
-    (req, res) => {
+    async (req, res) => {
 
         try {
             BigNumber.from(req.query.amount)
@@ -73,9 +74,8 @@ router.get('/estimate_bridge_output',
         const toToken = req.query.toToken
         const amount = req.query.amount
 
-        const estimate = estimateBridgeOutputs(fromChainId, toChainId, fromToken, toToken, amount);
+        const estimate = await estimateBridgeOutputs(fromChainId, toChainId, fromToken, toToken, amount);
         res.status(200).json(estimate);
-
     });
 
 /***

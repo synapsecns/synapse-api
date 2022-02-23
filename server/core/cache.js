@@ -1,10 +1,10 @@
 // Preload a few things that will be heavily used across the app.
 
-const {
+import {
     Bridge,
     supportedChainIds,
     allNetworksSwapTokensMap,
-} = require("../../../express-api/sdk/index.js");
+} from "@synapseprotocol/sdk";
 
 /**
  * @type {Record<number,Bridge.SynapseBridge>}
@@ -18,4 +18,4 @@ supportedChainIds().forEach((chainId) => {
     });
 });
 
-module.exports = { Bridges, allTokens };
+export { Bridges, allTokens };
