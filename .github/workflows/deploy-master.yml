@@ -1,0 +1,18 @@
+name: deploy master
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: e1c48510-c702-41b6-954e-1ea8904d60a6
+          heroku_app_name: syn-api-x
+          heroku_email: metagabbar@gmail.com
+          usedocker: true
