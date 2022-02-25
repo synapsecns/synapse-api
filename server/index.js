@@ -8,7 +8,7 @@ import swapRouter from "./routes/beta/swap.js";
 import v1Router from "./routes/v1/index.js";
 
 const app = express();
-const port = process.env.port ?? 8080;
+const port = process.env.PORT ?? 8080;
 
 app.use("/beta/bridge", bridgeRouter);
 app.use("/beta/swap", swapRouter);
