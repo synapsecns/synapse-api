@@ -23,6 +23,29 @@ import {BigNumber} from "ethers";
 /***
  * /v1/get_bridgable_tokens?chainId=1
  */
+
+/**
+ * @api {get} /v1/get_bridgable_tokens Get all bridgable tokens
+ * @apiName get_bridgable_tokens
+ * @apiGroup API
+ *
+ * @apiParam {Number} chainId Chain Id passed as a number (1, 56, etc.) or name ("ETH", "BSC", etc.)
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ * [
+ *     {
+ *         "name": "Binance USD",
+ *         "symbol": "BUSD",
+ *         "decimals": 18,
+ *         "addresses": {
+ *             "56": "0xe9e7cea3dedca5984780bafc599bd69add087d56"
+ *         },
+ *         "swapType": "USD"
+ *     }
+ *     ...
+ * ]
+ */
 router.get('/get_bridgable_tokens',
     oneOf([check('chainId').isIn(getChainNames()), check('chainId').isIn(getChainIds())]),
     async (req, res) => {
