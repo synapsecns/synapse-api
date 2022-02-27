@@ -20,16 +20,12 @@ import {
 import {BigNumber} from "ethers";
 
 
-/***
- * /v1/get_bridgable_tokens?chainId=1
- */
-
 /**
- * @api {get} /v1/get_bridgable_tokens Get all bridgable tokens
+ * @api {get} /v1/get_bridgable_tokens Get Bridgeable Tokens
  * @apiName get_bridgable_tokens
  * @apiGroup API
  *
- * @apiParam {Number} chainId Chain Id passed as a number (1, 56, etc.) or name ("ETH", "BSC", etc.)
+ * @apiParam {Number|String} chainId Chain id passed as a number (1, 56, etc.) or name (ETH, BSC, etc.)
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -67,8 +63,23 @@ router.get('/get_bridgable_tokens',
     });
 
 
-/***
- * /v1/get_chains_for_token?token_address=<address>
+/**
+ * @api {get} /v1/get_chains_for_token Get Chains for Token
+ * @apiName get_chains_for_token
+ * @apiGroup API
+ *
+ * @apiParam {Number} token Token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ * [
+ *     {
+ *         "name": "Ethereum Mainnet",
+ *         "chainId": 1,
+ *         "chainCurrency": "ETH"
+ *     },
+ *     ...
+ * ]
  */
 router.get('/get_chains_for_token',
     oneOf([check('token').isIn(getTokenSymbols()), check('token').isIn(getTokenHashes())]),
@@ -92,10 +103,23 @@ router.get('/get_chains_for_token',
 
     });
 
-/***
- * estimateBridgeOutput(fromChain, toChain, fromToken, toToken, input) =>
- * {estimatedRecieveAmount, otherInfo...}
- * /v1/estimate_bridge_output?fromChainId=1&toChain=56&fromToken="USDC"...input_token_amount=<BigNumber value>
+/**
+ * @api {get} /v1/estimate_bridge_output Estimate Bridge Output
+ * @apiName estimate_bridge_output
+ * @apiGroup API
+ *
+ * @apiParam {Number|String} fromChain Name or Id of chain transaction is from
+ * @apiParam {Number|String} toChain Name or Id of chain transaction is to
+ * @apiParam {String} fromToken Token user will send to the bridge on the source chain
+ * @apiParam {String} toToken Token user will receive from the bridge on the destination chain
+ * @apiParam {String} input Transaction input amount
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ * {
+ *     "amountToReceive": "0",
+ *     "bridgeFee": "2000000000000000000"
+ * }
  */
 router.get('/estimate_bridge_output',
     oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds())]),
@@ -121,10 +145,26 @@ router.get('/estimate_bridge_output',
         }
     });
 
-
-/***
- * generateUnsignedBridgeTxn(fromChain, toChain, fromCoin, toCoin) =>
- * {unsigned_data: , otherInfo...} /v1/generate_unsigned_bridge_txn?fromChain=1&toChain=56&fromCoin="USDC"...
+/**
+ * @api {get} /v1/generate_unsigned_bridge_txn Generate Unsigned Bridge Transaction
+ * @apiName generate_unsigned_bridge_txn
+ * @apiGroup API
+ *
+ * @apiParam {Number|String} fromChain Name or Id of chain transaction is from
+ * @apiParam {Number|String} toChain Name or Id of chain transaction is to
+ * @apiParam {String} fromToken Token user will send to the bridge on the source chain
+ * @apiParam {String} toToken Token user will receive from the bridge on the destination chain
+ * @apiParam {Number} amountFrom Amount of tokenFrom (denoted in wei) that the user will send to the bridge on the source chain
+ * @apiParam {String} address Optional, user can provide an address other than the one retrieved from signer to receive tokens
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ * {
+ *     "unsigned_data": "0x9f33072700000000000000...",
+ *     "to": "0xE85429C97589AD793Ca11A8BC3477C03d27ED140",
+ *     "gasPrice": "150000000000",
+ *     "gasLimit": "150000000000"
+ * }
  */
 router.get('/generate_unsigned_bridge_txn',
     oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds())]),
@@ -152,12 +192,25 @@ router.get('/generate_unsigned_bridge_txn',
 
     });
 
-
-/***
- * generateUnsignedBridgeApprovalTxn(fromChain, fromCoin) =>
- * {unsigned_data: , otherInfo...} /v1/generate_unsigned_bridge_approval_txn?fromChain=1&fromCoin="USDC"...
- * Generates the unsigned txn data for approval transaction required for approving spend of a given coin
- ***/
+/**
+ * @api {get} /v1/generate_unsigned_bridge_approval_txn Generate Unsigned Bridge Approval Transaction
+ * @apiName generate_unsigned_bridge_approval_txn
+ * @apiGroup API
+ *
+ * @apiParam {Number|String} fromChain Name or Id of chain
+ * @apiParam {String} fromToken Token instance or valid on-chain address of the token the user will be sending to the bridge on the source chain.
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ * {
+ *     "unsigned_data": "0x095ea7b3000000000000000000000000...",
+ *     "to": "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85",
+ *     "maxPriorityFeePerGas": {
+ *         "type": "BigNumber",
+ *         "hex": "0x59682f00"
+ *     }
+ * }
+ */
 router.get('/generate_unsigned_bridge_approval_txn',
     oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds())]),
     oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenHashes())]),
@@ -179,9 +232,61 @@ router.get('/generate_unsigned_bridge_approval_txn',
         }
 });
 
-/***
- * generateBridgeTxnParams(fromChain, toChain, fromCoin, toCoin) =>
- * /v1/generate_bridge_txn_params?fromChain=1&toChain=56&fromCoin="USDC"...
+/**
+ * @api {get} /v1/generate_bridge_txn_params Generate Bridge Transaction Parameters
+ * @apiName generate_bridge_txn_params
+ * @apiGroup API
+ *
+ * @apiParam {Number|String} fromChain Name or Id of chain transaction is from
+ * @apiParam {Number|String} toChain Name or Id of chain transaction is to
+ * @apiParam {String} fromToken Token user will send to the bridge on the source chain
+ * @apiParam {String} toToken Token user will receive from the bridge on the destination chain
+ * @apiParam {Number} amountFrom Amount of tokenFrom (denoted in wei) that the user will send to the bridge on the source chain
+ * @apiParam {String} address Optional, user can provide an address other than the one retrieved from signer to receive tokens
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ * {
+ *     "tokenFrom": {
+ *         "name": "USD Circle",
+ *         "symbol": "USDC",
+ *         "addresses": {
+ *             "1": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+ *             ...
+ *         },
+ *         "swapType": "USD",
+ *         "isETH": false,
+ *         "wrapperAddresses": {},
+ *         "_decimals": {
+ *             "1": 6,
+ *             ...
+ *         }
+ *     },
+ *     "tokenTo": {
+ *         "name": "USD Circle",
+ *         "symbol": "USDC",
+ *         "addresses": {
+ *             "1": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+ *             ...
+ *         },
+ *         "swapType": "USD",
+ *         "isETH": false,
+ *         "wrapperAddresses": {},
+ *         "_decimals": {
+ *             "1": 6,
+ *             ...
+ *         }
+ *     },
+ *     "chainIdTo": 56,
+ *     "amountFrom": {
+ *         "type": "BigNumber",
+ *         "hex": "0x01"
+ *     },
+ *     "amountTo": {
+ *         "type": "BigNumber",
+ *         "hex": "0x01"
+ *     }
+ * }
  */
 router.get('/generate_bridge_txn_params',
     oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds())]),

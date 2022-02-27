@@ -6,7 +6,7 @@
   "repository": "github.com/synapsecns/synapse-api",
   "main": "server/index.js",
   "scripts": {
-    "docgen": "apidoc -f \"server/routes/v1/index.js$\" -i ./  -o apidoc/\n",
+    "gendoc": "apidoc -f \"server/routes/v1/index.js$\" -i ./  -o apidoc/\n",
     "start": "nodemon ./server/index.js"
   },
   "dependencies": {
