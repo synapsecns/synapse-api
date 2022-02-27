@@ -14,7 +14,7 @@ app.use("/beta/bridge", bridgeRouter);
 app.use("/beta/swap", swapRouter);
 app.use('/v1', v1Router);
 app.get("/", (req, res) => {
-  res.json({"message":"Welcome to Synapse Bridge API"})
+  res.json({"message":"Welcome to Synapse Bridge API. Documentation at /apidoc"})
 })
 
 app.set('json spaces', 4);
