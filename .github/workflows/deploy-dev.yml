@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: metagabbar-heroku
     steps:
       - name: checkout code
         uses: actions/checkout@v2
