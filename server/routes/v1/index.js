@@ -42,6 +42,8 @@ import {BigNumber} from "ethers";
  *     }
  *     ...
  * ]
+ *
+ * @apiSampleRequest /v1/get_bridgable_tokens
  */
 router.get('/get_bridgable_tokens',
     oneOf([
@@ -85,6 +87,8 @@ router.get('/get_bridgable_tokens',
  *     },
  *     ...
  * ]
+ *
+ * @apiSampleRequest /v1/get_chains_for_token
  */
 router.get('/get_chains_for_token',
     oneOf([check('token').isIn(getTokenSymbols()), check('token').isIn(getTokenHashes())]),
@@ -125,6 +129,8 @@ router.get('/get_chains_for_token',
  *     "amountToReceive": "0",
  *     "bridgeFee": "2000000000000000000"
  * }
+ *
+ * @apiSampleRequest /v1/estimate_bridge_output
  */
 router.get('/estimate_bridge_output',
     oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds()), check('fromChain').isIn(getHexChainIds())]),
@@ -170,6 +176,8 @@ router.get('/estimate_bridge_output',
  *     "gasPrice": "150000000000",
  *     "gasLimit": "150000000000"
  * }
+ *
+ * @apiSampleRequest /v1/generate_unsigned_bridge_txn
  */
 router.get('/generate_unsigned_bridge_txn',
     oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds()), check('fromChain').isIn(getHexChainIds())]),
@@ -215,6 +223,8 @@ router.get('/generate_unsigned_bridge_txn',
  *         "hex": "0x59682f00"
  *     }
  * }
+ *
+ * @apiSampleRequest /v1/generate_unsigned_bridge_approval_txn
  */
 router.get('/generate_unsigned_bridge_approval_txn',
     oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds()), check('fromChain').isIn(getHexChainIds())]),
@@ -292,6 +302,8 @@ router.get('/generate_unsigned_bridge_approval_txn',
  *         "hex": "0x01"
  *     }
  * }
+ *
+ * @apiSampleRequest /v1/generate_bridge_txn_params
  */
 router.get('/generate_bridge_txn_params',
     oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds()), check('fromChain').isIn(getHexChainIds())]),
