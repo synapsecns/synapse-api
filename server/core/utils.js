@@ -16,6 +16,15 @@ function getChainIds() {
 }
 
 /**
+ * @returns {number[]}
+ */
+function getHexChainIds() {
+    let hexIds =[]
+    Object.values(chains.ChainId).forEach(id => hexIds.push("0x" + id.toString(16)));
+    return hexIds;
+}
+
+/**
  * @param {string} chainId
  * @returns {Object}
  */
@@ -35,7 +44,9 @@ function getChainFromId(chainId) {
  * @returns {number|null}
  */
 function getChainIdFromParam(chainParam) {
+    // ParseInt converts hex and decimal strings to decimal representations
     let chainId = parseInt(chainParam);
+
     if (chainId in getChainIds()) {
         return chainId;
     }
@@ -108,6 +119,7 @@ function getTokenSymbolFromParam(tokenParam) {
 export {
     getChainNames,
     getChainIds,
+    getHexChainIds,
     getTokenSymbols,
     getTokenHashes,
     getTokenFromAddress,
@@ -116,4 +128,3 @@ export {
     getTokenSymbolFromParam,
     getChainFromId,
 }
-

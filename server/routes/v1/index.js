@@ -12,6 +12,7 @@ import {generateBridgeTxnParams} from "../../controllers/generateBridgeTxnParams
 import {
     getChainIdFromParam,
     getChainIds,
+    getHexChainIds,
     getChainNames,
     getTokenHashes,
     getTokenSymbolFromParam,
@@ -25,7 +26,7 @@ import {BigNumber} from "ethers";
  * @apiName get_bridgable_tokens
  * @apiGroup API
  *
- * @apiParam {Number|String} chainId Chain id passed as a number (1, 56, etc.) or name (ETH, BSC, etc.)
+ * @apiParam {Number|String} chain Chain id passed as a decimal or hex number (56, 0x38 etc.) or name (ETH, BSC, etc.)
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -43,17 +44,21 @@ import {BigNumber} from "ethers";
  * ]
  */
 router.get('/get_bridgable_tokens',
-    oneOf([check('chainId').isIn(getChainNames()), check('chainId').isIn(getChainIds())]),
+    oneOf([
+        check('chain').isIn(getChainNames()),
+        check('chain').isIn(getChainIds()),
+        check('chain').isIn(getHexChainIds())]
+    ),
     async (req, res) => {
         try {
             validationResult(req).throw();
         } catch (err) {
-            res.status(400).json({"error": "A valid chainId must be passed"});
+            res.status(400).json({"error": "A valid value for chain must be passed"});
             return;
         }
 
         try {
-            const chainId = getChainIdFromParam(req.query.chainId)
+            const chainId = getChainIdFromParam(req.query.chain)
             const tokenList = await getBridgeableTokensForChain(chainId)
             res.status(200).json(tokenList);
         } catch (err) {
@@ -108,10 +113,10 @@ router.get('/get_chains_for_token',
  * @apiName estimate_bridge_output
  * @apiGroup API
  *
- * @apiParam {Number|String} fromChain Name or Id of chain transaction is from
- * @apiParam {Number|String} toChain Name or Id of chain transaction is to
- * @apiParam {String} fromToken Token user will send to the bridge on the source chain
- * @apiParam {String} toToken Token user will receive from the bridge on the destination chain
+ * @apiParam {Number|String} fromChain Name or decimal/hex id of chain the transaction is from
+ * @apiParam {Number|String} toChain Name or decimal/hex id of chain transaction is to
+ * @apiParam {String} fromToken Token user will send to the bridge on the source chain. Can be token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
+ * @apiParam {String} toToken Token user will receive from the bridge on the destination chain. Can be token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
  * @apiParam {String} input Transaction input amount
  *
  * @apiSuccessExample Success-Response:
@@ -122,8 +127,8 @@ router.get('/get_chains_for_token',
  * }
  */
 router.get('/estimate_bridge_output',
-    oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds())]),
-    oneOf([check('toChain').isIn(getChainNames()), check('toChain').isIn(getChainNames())]),
+    oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds()), check('fromChain').isIn(getHexChainIds())]),
+    oneOf([check('toChain').isIn(getChainNames()), check('toChain').isIn(getChainIds()), check('toChain').isIn(getHexChainIds())]),
     oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenHashes())]),
     oneOf([check('toToken').isIn(getTokenSymbols()), check('toToken').isIn(getTokenHashes())]),
     async (req, res) => {
@@ -150,10 +155,10 @@ router.get('/estimate_bridge_output',
  * @apiName generate_unsigned_bridge_txn
  * @apiGroup API
  *
- * @apiParam {Number|String} fromChain Name or Id of chain transaction is from
- * @apiParam {Number|String} toChain Name or Id of chain transaction is to
- * @apiParam {String} fromToken Token user will send to the bridge on the source chain
- * @apiParam {String} toToken Token user will receive from the bridge on the destination chain
+ * @apiParam {Number|String} fromChain Name or decimal/hex id of chain transaction is from
+ * @apiParam {Number|String} toChain Name or decimal/hex id of chain transaction is to
+ * @apiParam {String} fromToken Token user will send to the bridge on the source chain. Can be token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
+ * @apiParam {String} toToken Token user will receive from the bridge on the destination chain. Can be token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
  * @apiParam {Number} amountFrom Amount of tokenFrom (denoted in wei) that the user will send to the bridge on the source chain
  * @apiParam {String} address Optional, user can provide an address other than the one retrieved from signer to receive tokens
  *
@@ -167,8 +172,8 @@ router.get('/estimate_bridge_output',
  * }
  */
 router.get('/generate_unsigned_bridge_txn',
-    oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds())]),
-    oneOf([check('toChain').isIn(getChainNames()), check('toChain').isIn(getChainNames())]),
+    oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds()), check('fromChain').isIn(getHexChainIds())]),
+    oneOf([check('toChain').isIn(getChainNames()), check('toChain').isIn(getChainIds()), check('toChain').isIn(getHexChainIds())]),
     oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenHashes())]),
     oneOf([check('toToken').isIn(getTokenSymbols()), check('toToken').isIn(getTokenHashes())]),
     async (req, res) => {
@@ -197,8 +202,8 @@ router.get('/generate_unsigned_bridge_txn',
  * @apiName generate_unsigned_bridge_approval_txn
  * @apiGroup API
  *
- * @apiParam {Number|String} fromChain Name or Id of chain
- * @apiParam {String} fromToken Token instance or valid on-chain address of the token the user will be sending to the bridge on the source chain.
+ * @apiParam {Number|String} fromChain Name or decimal/hex id of chain
+ * @apiParam {String} fromToken Token instance or valid on-chain address of the token the user will be sending to the bridge on the source chain. Can be token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
@@ -212,7 +217,7 @@ router.get('/generate_unsigned_bridge_txn',
  * }
  */
 router.get('/generate_unsigned_bridge_approval_txn',
-    oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds())]),
+    oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds()), check('fromChain').isIn(getHexChainIds())]),
     oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenHashes())]),
     async (req, res) => {
 
@@ -237,8 +242,8 @@ router.get('/generate_unsigned_bridge_approval_txn',
  * @apiName generate_bridge_txn_params
  * @apiGroup API
  *
- * @apiParam {Number|String} fromChain Name or Id of chain transaction is from
- * @apiParam {Number|String} toChain Name or Id of chain transaction is to
+ * @apiParam {Number|String} fromChain Name or decimal/hex id of chain transaction is from
+ * @apiParam {Number|String} toChain Name or decimal/hex id of chain transaction is to
  * @apiParam {String} fromToken Token user will send to the bridge on the source chain
  * @apiParam {String} toToken Token user will receive from the bridge on the destination chain
  * @apiParam {Number} amountFrom Amount of tokenFrom (denoted in wei) that the user will send to the bridge on the source chain
@@ -289,8 +294,8 @@ router.get('/generate_unsigned_bridge_approval_txn',
  * }
  */
 router.get('/generate_bridge_txn_params',
-    oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds())]),
-    oneOf([check('toChain').isIn(getChainNames()), check('toChain').isIn(getChainNames())]),
+    oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds()), check('fromChain').isIn(getHexChainIds())]),
+    oneOf([check('toChain').isIn(getChainNames()), check('toChain').isIn(getChainIds()), check('toChain').isIn(getHexChainIds())]),
     oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenHashes())]),
     oneOf([check('toToken').isIn(getTokenSymbols()), check('toToken').isIn(getTokenHashes())]),
     query('amountFrom').isNumeric(),
