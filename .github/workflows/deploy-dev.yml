@@ -30,3 +30,5 @@ jobs:
           heroku_app_name: syn-api-dev
           heroku_email: metagabbar@gmail.com
           usedocker: true
+        env:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
