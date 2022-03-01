@@ -8,26 +8,22 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [16.x]
-
     steps:
-      - uses: actions/checkout@v2
+      - name: checkout code
+        uses: actions/checkout@v2
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: setup node env
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 16.x
 
-      - name: Install dependencies
+      - name: npm install
         run: npm install
 
-      - name: Run Tests
+      - name: npm test
         run: npm test
 
-      - name: Deploy to Heroku
+      - name: deploy to heroku
         uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: e1c48510-c702-41b6-954e-1ea8904d60a6

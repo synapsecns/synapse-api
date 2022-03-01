@@ -9,7 +9,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: checkout code
+        uses: actions/checkout@v2
+
+      - name: setup node env
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+
+      - name: npm install
+        run: npm install
+
+      - name: npm test
+        run: npm test
+
       - uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: e1c48510-c702-41b6-954e-1ea8904d60a6
