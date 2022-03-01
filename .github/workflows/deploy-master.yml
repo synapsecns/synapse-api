@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: metagabbar-heroku
     steps:
       - name: checkout code
         uses: actions/checkout@v2
@@ -25,7 +26,7 @@ jobs:
 
       - uses: akhileshns/heroku-deploy@v3.12.12
         with:
-          heroku_api_key: e1c48510-c702-41b6-954e-1ea8904d60a6
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: syn-api-x
-          heroku_email: metagabbar@gmail.com
+          heroku_email: ${{ secrets.METAGABBAR_HEROKU_EMAIL }}
           usedocker: true
