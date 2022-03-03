@@ -11,7 +11,7 @@ describe('Synapse API Integration Tests', () => {
         chai.request(app)
             .get('/v1/get_bridgable_tokens')
             .query({
-                chainId: 1,
+                chain: 1,
             })
             .end((err, res) => {
                 res.should.have.status(200);
@@ -30,7 +30,7 @@ describe('Synapse API Integration Tests', () => {
             .get('/v1/generate_unsigned_bridge_txn')
             .query({
                 fromChain: "AVALANCHE",
-                toChain:"BSC",
+                toChain:0x38,
                 fromToken: "USDC",
                 toToken: "USDC",
                 amountFrom: 10,
@@ -89,7 +89,7 @@ describe('Synapse API Integration Tests', () => {
             .get('/v1/generate_bridge_txn_params')
             .query({
                 fromChain: "AVALANCHE",
-                toChain:"BSC",
+                toChain:0x38,
                 fromToken: "USDC",
                 toToken: "USDC",
                 amountFrom: 1,

@@ -1,4 +1,4 @@
-import {getTokenFromSymbol, getChainFromId} from "../core/utils.js"
+import {getTokenFromSymbol, getChainObjFromId} from "../core/utils.js"
 
 /**
  * @param {String} tokenSymbol
@@ -9,7 +9,7 @@ async function getChainsForToken(tokenSymbol) {
 
     let token = getTokenFromSymbol(tokenSymbol);
     for (const [chainId, _] of Object.entries(token.addresses)) {
-        const chainObj = getChainFromId(chainId)
+        const chainObj = getChainObjFromId(chainId)
         chainObjects.push(chainObj);
     }
 
