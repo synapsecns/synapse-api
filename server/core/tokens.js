@@ -1,4 +1,5 @@
-import {ChainId} from "./networks.js"
+import {ChainId} from "@synapseprotocol/sdk"
+
 import {SwapType} from "./swaptype.js"
 
 const DAI = {

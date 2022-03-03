@@ -1,40 +1,54 @@
-import * as chains from "./networks.js"
 import * as tokens from "./tokens.js"
-
-/**
- * @returns {String[]}
- */
-function getChainNames() {
-    return Object.keys(chains.ChainId)
-}
+import {supportedChainIds, Networks, ChainId} from "@synapseprotocol/sdk"
 
 /**
  * @returns {number[]}
  */
 function getChainIds() {
-    return Object.values(chains.ChainId)
+    return supportedChainIds()
 }
 
 /**
- * @returns {number[]}
+ * @returns {String[]}
  */
 function getHexChainIds() {
     let hexIds =[]
-    Object.values(chains.ChainId).forEach(id => hexIds.push("0x" + id.toString(16)));
+    getChainIds().forEach(id => hexIds.push("0x" + id.toString(16)));
     return hexIds;
+}
+
+/**
+ * @returns {String[]}
+ */
+function getChainNames() {
+    // Effectively returns the keys of CHAINID_NETWORK_MAP
+    let chainSymbols = [];
+    Object.keys(Networks).forEach(key => {
+        if (Networks[key] instanceof Networks.Network) {
+            chainSymbols.push(key);
+        }
+    })
+    return chainSymbols;
 }
 
 /**
  * @param {string} chainId
  * @returns {Object}
  */
-function getChainFromId(chainId) {
-    for (const [_, value] of Object.entries(chains)) {
-        if (value.chainId && (value.chainId.toString() === chainId)) {
-            return value;
+function getChainObjFromId(chainId) {
+    let networkObj = null;
+    Object.keys(Networks).forEach(key => {
+        if (Networks[key] instanceof Networks.Network && Networks[key].chainId.toString() === chainId) {
+            networkObj = Networks[key];
         }
-    }
-    return null;
+    })
+
+    // TODO: Expand fields ?
+    return {
+        name: networkObj.name,
+        chainId: networkObj.chainId,
+        chainCurrency: networkObj.chainCurrency
+    };
 }
 
 /**
@@ -43,7 +57,7 @@ function getChainFromId(chainId) {
  * @param {String} chainParam
  * @returns {number|null}
  */
-function getChainIdFromParam(chainParam) {
+function getChainIdFromQueryParam(chainParam) {
     // ParseInt converts hex and decimal strings to decimal representations
     let chainId = parseInt(chainParam);
 
@@ -51,7 +65,7 @@ function getChainIdFromParam(chainParam) {
         return chainId;
     }
     if (isNaN(chainId)) {
-        chainId = chains.ChainId[chainParam]
+        chainId = ChainId[chainParam]
     }
     return chainId ? chainId : null;
 }
@@ -124,7 +138,7 @@ export {
     getTokenHashes,
     getTokenFromAddress,
     getTokenFromSymbol,
-    getChainIdFromParam,
+    getChainIdFromQueryParam,
     getTokenSymbolFromParam,
-    getChainFromId,
+    getChainObjFromId,
 }
