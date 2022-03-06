@@ -28,6 +28,7 @@
   },
   "apidoc": {
     "name": "Synapse",
-    "description": "REST API"
+    "description": "REST API",
+    "theme-color": "#fcba03"
   }
 }
