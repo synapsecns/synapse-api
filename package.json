@@ -11,7 +11,7 @@
     "gendoc": "apidoc -f \"server/routes/v1/index.js$\" -i ./  -o apidoc/\n"
   },
   "dependencies": {
-    "@synapseprotocol/sdk": "./sdk",
+    "@synapseprotocol/sdk": "latest",
     "apidoc": "^0.50.4",
     "dotenv": "^16.0.0",
     "ethers": "^5.5.4",
