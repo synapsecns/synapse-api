@@ -1,6 +1,6 @@
 import {BigNumber} from "ethers";
 import { Bridges } from "../core/cache.js";
-import {getChainIdFromQueryParam, getTokenSymbolFromParam} from "../core/utils.js";
+import {getChainIdFromQueryParam, getTokenSymbolFromQueryParam} from "../core/utils.js";
 import {Tokens} from "@synapseprotocol/sdk";
 
 /**
@@ -16,10 +16,10 @@ async function generateUnsignedBridgeTxn(fromChain, toChain, fromToken, toToken,
     const fromChainId = getChainIdFromQueryParam(fromChain)
     const toChainId = getChainIdFromQueryParam(toChain)
 
-    const fromTokenSymbol = getTokenSymbolFromParam(fromToken)
+    const fromTokenSymbol = getTokenSymbolFromQueryParam(fromToken)
     const fromTokenObj = Tokens[fromTokenSymbol]
 
-    const toTokenSymbol = getTokenSymbolFromParam(fromToken)
+    const toTokenSymbol = getTokenSymbolFromQueryParam(fromToken)
     const toTokenObj = Tokens[toTokenSymbol]
 
     const bigNumAmount = BigNumber.from(amountFrom);
@@ -44,8 +44,10 @@ async function generateUnsignedBridgeTxn(fromChain, toChain, fromToken, toToken,
     return {
         unsigned_data: unsignedTxn.data,
         to: unsignedTxn.to,
-        gasPrice: unsignedTxn.gasPrice.toString(),
-        gasLimit: unsignedTxn.gasPrice.toString(),
+        // Convert BigNumbers to String
+        maxFeePerGas: unsignedTxn.maxFeePerGas.toString(),
+        maxPriorityFeePerGas: unsignedTxn.maxPriorityFeePerGas.toString(),
+        gasLimit: unsignedTxn.gasLimit.toString(),
     }
 }
 

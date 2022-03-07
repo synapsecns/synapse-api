@@ -1,16 +1,16 @@
-import * as tokens from "../core/tokens.js"
+import {getAllTokensObj} from "../core/utils.js";
 
 /**
  * @param {number} chainId
  * @returns {number[]}
  */
 async function getBridgeableTokensForChain(chainId) {
-    let tokenList = []
-    for (const [_, tokenObj] of Object.entries(tokens)) {
+    let tokenList = getAllTokensObj();
+    getAllTokensObj().forEach(tokenObj => {
         if (chainId in tokenObj.addresses) {
             tokenList.push(tokenObj)
         }
-    }
+    })
     return tokenList;
 }
 

@@ -14,8 +14,8 @@ import {
     getChainIds,
     getHexChainIds,
     getChainNames,
-    getTokenHashes,
-    getTokenSymbolFromParam,
+    getTokenAddresses,
+    getTokenSymbolFromQueryParam,
     getTokenSymbols
 } from "../../core/utils.js"
 import {BigNumber} from "ethers";
@@ -91,7 +91,7 @@ router.get('/get_bridgable_tokens',
  * @apiSampleRequest /v1/get_chains_for_token
  */
 router.get('/get_chains_for_token',
-    oneOf([check('token').isIn(getTokenSymbols()), check('token').isIn(getTokenHashes())]),
+    oneOf([check('token').isIn(getTokenSymbols()), check('token').isIn(getTokenAddresses())]),
     async (req, res) => {
 
         try {
@@ -102,7 +102,7 @@ router.get('/get_chains_for_token',
         }
 
         try {
-            const tokenSymbol = getTokenSymbolFromParam(req.query.token)
+            const tokenSymbol = getTokenSymbolFromQueryParam(req.query.token)
             const tokenList = await getChainsForToken(tokenSymbol)
             res.status(200).json(tokenList);
         }  catch (err) {
@@ -135,8 +135,8 @@ router.get('/get_chains_for_token',
 router.get('/estimate_bridge_output',
     oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds()), check('fromChain').isIn(getHexChainIds())]),
     oneOf([check('toChain').isIn(getChainNames()), check('toChain').isIn(getChainIds()), check('toChain').isIn(getHexChainIds())]),
-    oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenHashes())]),
-    oneOf([check('toToken').isIn(getTokenSymbols()), check('toToken').isIn(getTokenHashes())]),
+    oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenAddresses())]),
+    oneOf([check('toToken').isIn(getTokenSymbols()), check('toToken').isIn(getTokenAddresses())]),
     async (req, res) => {
 
         try {
@@ -182,8 +182,8 @@ router.get('/estimate_bridge_output',
 router.get('/generate_unsigned_bridge_txn',
     oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds()), check('fromChain').isIn(getHexChainIds())]),
     oneOf([check('toChain').isIn(getChainNames()), check('toChain').isIn(getChainIds()), check('toChain').isIn(getHexChainIds())]),
-    oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenHashes())]),
-    oneOf([check('toToken').isIn(getTokenSymbols()), check('toToken').isIn(getTokenHashes())]),
+    oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenAddresses())]),
+    oneOf([check('toToken').isIn(getTokenSymbols()), check('toToken').isIn(getTokenAddresses())]),
     async (req, res) => {
 
         try {
@@ -199,7 +199,7 @@ router.get('/generate_unsigned_bridge_txn',
             const unsignedTxn = await generateUnsignedBridgeTxn(fromChain, toChain, fromToken, toToken, amountFrom, address);
             res.status(200).json(unsignedTxn);
         } catch (err) {
-            console.log(e);
+            console.error(err);
             res.status(500).json({"error": "Internal Server Error"});
         }
 
@@ -228,7 +228,7 @@ router.get('/generate_unsigned_bridge_txn',
  */
 router.get('/generate_unsigned_bridge_approval_txn',
     oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds()), check('fromChain').isIn(getHexChainIds())]),
-    oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenHashes())]),
+    oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenAddresses())]),
     async (req, res) => {
 
         try {
@@ -308,8 +308,8 @@ router.get('/generate_unsigned_bridge_approval_txn',
 router.get('/generate_bridge_txn_params',
     oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds()), check('fromChain').isIn(getHexChainIds())]),
     oneOf([check('toChain').isIn(getChainNames()), check('toChain').isIn(getChainIds()), check('toChain').isIn(getHexChainIds())]),
-    oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenHashes())]),
-    oneOf([check('toToken').isIn(getTokenSymbols()), check('toToken').isIn(getTokenHashes())]),
+    oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenAddresses())]),
+    oneOf([check('toToken').isIn(getTokenSymbols()), check('toToken').isIn(getTokenAddresses())]),
     query('amountFrom').isNumeric(),
     query('amountTo').isNumeric(),
     async (req, res) => {

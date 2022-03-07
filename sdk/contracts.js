@@ -1,1 +1,0 @@
-export { SynapseBridge__factory as SynapseBridgeFactory, L1BridgeZap__factory as L1BridgeZapFactory, L2BridgeZap__factory as L2BridgeZapFactory, SynapseERC20__factory as SynapseERC20Factory, SwapFlashLoan__factory as SwapFactory, BridgeConfig__factory as BridgeConfigFactory, PoolConfig__factory as PoolConfigFactory, ERC20__factory as ERC20Factory } from "./internal/gen/index.js";

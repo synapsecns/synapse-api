@@ -1,5 +1,4 @@
-import * as tokens from "./tokens.js"
-import {supportedChainIds, Networks, ChainId} from "@synapseprotocol/sdk"
+import {supportedChainIds, Networks, ChainId, Tokens, BaseToken} from "@synapseprotocol/sdk"
 
 /**
  * @returns {number[]}
@@ -18,6 +17,7 @@ function getHexChainIds() {
 }
 
 /**
+ * Returns a list of chain symbols.
  * @returns {String[]}
  */
 function getChainNames() {
@@ -42,12 +42,15 @@ function getChainObjFromId(chainId) {
             networkObj = Networks[key];
         }
     })
+    return (buildChainObj(networkObj))
+}
 
+function buildChainObj(sdkNetworkObj) {
     // TODO: Expand fields ?
     return {
-        name: networkObj.name,
-        chainId: networkObj.chainId,
-        chainCurrency: networkObj.chainCurrency
+        name: sdkNetworkObj.name,
+        chainId: sdkNetworkObj.chainId,
+        chainCurrency: sdkNetworkObj.chainCurrency
     };
 }
 
@@ -74,19 +77,45 @@ function getChainIdFromQueryParam(chainParam) {
  * @returns {string[]}
  */
 function getTokenSymbols() {
-    return Object.keys(tokens)
+    let tokenSymbols = [];
+    Object.keys(Tokens).forEach(key => {
+        if (Tokens[key] instanceof BaseToken) {
+            tokenSymbols.push(key);
+        }
+    })
+    return tokenSymbols;
 }
 
 /**
+ * Returns list of token addresses across all chains
  * @returns {string[]}
  */
-function getTokenHashes() {
+function getTokenAddresses() {
+    let tokenAddresses = [];
+    Object.keys(Tokens).forEach(key => {
+        if (Tokens[key] instanceof BaseToken) {
+            const token = Tokens[key];
+            Object.keys(token.addresses).forEach(key => {
+                tokenAddresses.push(token.addresses[key]);
+            })
+        }
+    })
+    return tokenAddresses;
+}
+
+/**
+ * @returns {Object[]}
+ */
+function getAllTokensObj() {
     // TODO: Cache
-    let tokenHashes = []
-    for (const [_, tokenObj] of Object.entries(tokens)) {
-        tokenHashes = tokenHashes.concat(Object.values(tokenObj.addresses))
-    }
-    return tokenHashes;
+    let tokenObjList = [];
+    Object.keys(Tokens).forEach(key => {
+        if (Tokens[key] instanceof BaseToken) {
+            let tokenObj = buildTokenObject(Tokens[key]);
+            tokenObjList.push(tokenObj);
+        }
+    })
+    return tokenObjList;
 }
 
 /**
@@ -95,14 +124,20 @@ function getTokenHashes() {
  */
 function getTokenFromAddress(address) {
     // TODO: Cache
-    for (const [_, tokenObj] of Object.entries(tokens)) {
-        // Check the token address against each chain address
-        const tokenAddresses = new Set(Object.values(tokenObj.addresses))
-        if (tokenAddresses.has(address)) {
-            return tokenObj;
+    let tokenObj = null;
+    Object.keys(Tokens).forEach(key => {
+        if (Tokens[key] instanceof BaseToken) {
+            const token = Tokens[key];
+            let tokenAddresses = [];
+            Object.keys(token.addresses).forEach(key => {
+                tokenAddresses.push(token.addresses[key]);
+            });
+            if (tokenAddresses.includes(address)) {
+                tokenObj = getTokenFromSymbol(token.symbol);
+            }
         }
-    }
-    return null;
+    })
+    return tokenObj;
 }
 
 /**
@@ -110,19 +145,22 @@ function getTokenFromAddress(address) {
  * @returns {Object}
  */
 function getTokenFromSymbol(symbol) {
-    for (const [_, tokenObj] of Object.entries(tokens)) {
-        if (symbol === tokenObj.symbol) {
-            return tokenObj;
+    let tokenObj = null;
+    Object.keys(Tokens).forEach(key => {
+        if (Tokens[key] instanceof BaseToken) {
+            if (Tokens[key].symbol === symbol) {
+                tokenObj = buildTokenObject(Tokens[key]);
+            }
         }
-    }
-    return null;
+    })
+    return tokenObj;
 }
 
 /**
  * @param {String} tokenParam
  * @returns {Object}
  */
-function getTokenSymbolFromParam(tokenParam) {
+function getTokenSymbolFromQueryParam(tokenParam) {
     let token = getTokenFromSymbol(tokenParam);
     if (!token) {
         token = getTokenFromAddress(tokenParam);
@@ -130,15 +168,29 @@ function getTokenSymbolFromParam(tokenParam) {
     return token ? token.symbol : null;
 }
 
+function buildTokenObject(sdkToken) {
+    // TODO: Expand fields ?
+    return {
+        name: sdkToken.name,
+        symbol: sdkToken.symbol,
+        decimals: sdkToken._decimals,
+        addresses: sdkToken.addresses,
+        swapType: sdkToken.swapType,
+        isETH: sdkToken.isETH,
+        wrapperAddresses:sdkToken.wrapperAddresses
+    };
+}
+
 export {
     getChainNames,
     getChainIds,
     getHexChainIds,
     getTokenSymbols,
-    getTokenHashes,
+    getTokenAddresses,
     getTokenFromAddress,
     getTokenFromSymbol,
     getChainIdFromQueryParam,
-    getTokenSymbolFromParam,
+    getTokenSymbolFromQueryParam,
     getChainObjFromId,
+    getAllTokensObj
 }
