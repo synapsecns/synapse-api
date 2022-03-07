@@ -199,7 +199,7 @@ router.get('/generate_unsigned_bridge_txn',
             const unsignedTxn = await generateUnsignedBridgeTxn(fromChain, toChain, fromToken, toToken, amountFrom, address);
             res.status(200).json(unsignedTxn);
         } catch (err) {
-            console.log(e);
+            console.error(err);
             res.status(500).json({"error": "Internal Server Error"});
         }
 

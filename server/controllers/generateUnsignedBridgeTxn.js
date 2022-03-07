@@ -44,8 +44,8 @@ async function generateUnsignedBridgeTxn(fromChain, toChain, fromToken, toToken,
     return {
         unsigned_data: unsignedTxn.data,
         to: unsignedTxn.to,
-        gasPrice: unsignedTxn.gasPrice.toString(),
-        gasLimit: unsignedTxn.gasPrice.toString(),
+        gasPrice: unsignedTxn.gasPrice,
+        gasLimit: unsignedTxn.gasPrice,
     }
 }
 
