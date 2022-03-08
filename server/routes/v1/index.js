@@ -121,7 +121,7 @@ router.get('/get_chains_for_token',
  * @apiQuery {Number|String} toChain Name or decimal/hex id of chain transaction is to
  * @apiQuery {String} fromToken Token user will send to the bridge on the source chain. Can be token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
  * @apiQuery {String} toToken Token user will receive from the bridge on the destination chain. Can be token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
- * @apiQuery {String} input Transaction input amount
+ * @apiQuery {String} amountFrom Transaction input amount
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
@@ -142,7 +142,7 @@ router.get('/estimate_bridge_output',
         try {
             validationResult(req).throw();
         } catch (err) {
-            res.status(400).json({"error": "Valid arguments for fromChainId, toChain, fromToken, toToken and amountFrom must be passed"});
+            res.status(400).json({"error": "Valid arguments for fromChain, toChain, fromToken, toToken and amountFrom must be passed"});
             return;
         }
 
