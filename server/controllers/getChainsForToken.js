@@ -1,5 +1,5 @@
 import {getTokenFromSymbol} from "../core/utils.js"
-import * as ChainUtils from "../utils/ChainUtils.js";
+import * as ChainUtils from "../utils/chainUtils.js";
 
 /**
  * @param {String} tokenSymbol

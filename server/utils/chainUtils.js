@@ -1,19 +1,26 @@
 import {ChainId, Networks, supportedChainIds} from "@synapseprotocol/sdk";
+import * as Cache from "./cache.js"
 
 /**
  * @returns {number[]}
  */
 function getIds() {
-    return supportedChainIds()
+    return supportedChainIds();
 }
 
 /**
  * @returns {String[]}
  */
 function getHexIds() {
+    let cachedRes = Cache.get(getHexIds);
+    if (cachedRes) {
+        return cachedRes;
+    }
+
     let hexIds =[]
     getIds().forEach(id => hexIds.push("0x" + id.toString(16)));
-    return hexIds;
+
+    return Cache.set(getHexIds, hexIds);
 }
 
 /**
@@ -21,13 +28,19 @@ function getHexIds() {
  * @returns {String[]}
  */
 function getNames() {
+    let cachedRes = Cache.get(getNames);
+    if (cachedRes) {
+        return cachedRes;
+    }
+
     let chainSymbols = [];
     Object.keys(Networks).forEach(key => {
         if (Networks[key] instanceof Networks.Network) {
             chainSymbols.push(key);
         }
     })
-    return chainSymbols;
+
+    return Cache.set(getNames, chainSymbols);
 }
 
 /**
@@ -35,13 +48,20 @@ function getNames() {
  * @returns {Object}
  */
 function getObjectFromId(chainId) {
+    let cachedRes = Cache.get(getObjectFromId, [chainId]);
+    if (cachedRes) {
+        return cachedRes;
+    }
+
     let networkObj = null;
     Object.keys(Networks).forEach(key => {
         if (Networks[key] instanceof Networks.Network && Networks[key].chainId.toString() === chainId) {
             networkObj = Networks[key];
         }
     })
-    return (_buildObjectFromSDKObject(networkObj))
+    let resObj = _buildObjectFromSDKObject(networkObj)
+
+    return Cache.set(getObjectFromId, resObj, [chainId]);
 }
 
 /**

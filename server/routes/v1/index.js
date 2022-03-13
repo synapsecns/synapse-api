@@ -9,7 +9,7 @@ import {generateUnsignedBridgeTxn} from "../../controllers/generateUnsignedBridg
 import {generateUnsignedBridgeApprovalTxn} from "../../controllers/generateUnsignedBridgeApprovalTxn.js"
 import {generateBridgeTxnParams} from "../../controllers/generateBridgeTxnParams.js"
 
-import * as ChainUtils from "../../utils/ChainUtils.js";
+import * as ChainUtils from "../../utils/chainUtils.js";
 
 import {
     getTokenAddresses,

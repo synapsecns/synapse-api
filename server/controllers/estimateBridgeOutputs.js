@@ -2,7 +2,7 @@ import {BigNumber} from "ethers";
 import { Bridges } from "../core/cache.js";
 import {getTokenSymbolFromQueryParam} from "../core/utils.js";
 import {Tokens} from "@synapseprotocol/sdk";
-import * as ChainUtils from "../utils/ChainUtils.js";
+import * as ChainUtils from "../utils/chainUtils.js";
 
 /**
  * @param {String} fromChain
