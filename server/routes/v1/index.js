@@ -9,11 +9,9 @@ import {generateUnsignedBridgeTxn} from "../../controllers/generateUnsignedBridg
 import {generateUnsignedBridgeApprovalTxn} from "../../controllers/generateUnsignedBridgeApprovalTxn.js"
 import {generateBridgeTxnParams} from "../../controllers/generateBridgeTxnParams.js"
 
+import * as ChainUtils from "../../utils/ChainUtils.js";
+
 import {
-    getChainIdFromQueryParam,
-    getChainIds,
-    getHexChainIds,
-    getChainNames,
     getTokenAddresses,
     getTokenSymbolFromQueryParam,
     getTokenSymbols
@@ -47,9 +45,9 @@ import {BigNumber} from "ethers";
  */
 router.get('/get_bridgable_tokens',
     oneOf([
-        check('chain').isIn(getChainNames()),
-        check('chain').isIn(getChainIds()),
-        check('chain').isIn(getHexChainIds())]
+        check('chain').isIn(ChainUtils.getNames()),
+        check('chain').isIn(ChainUtils.getIds()),
+        check('chain').isIn(ChainUtils.getHexIds())]
     ),
     async (req, res) => {
         try {
@@ -60,7 +58,7 @@ router.get('/get_bridgable_tokens',
         }
 
         try {
-            const chainId = getChainIdFromQueryParam(req.query.chain)
+            const chainId = ChainUtils.getIdFromRequestQueryParam(req.query.chain)
             const tokenList = await getBridgeableTokensForChain(chainId)
             res.status(200).json(tokenList);
         } catch (err) {
@@ -133,8 +131,8 @@ router.get('/get_chains_for_token',
  * @apiSampleRequest /v1/estimate_bridge_output
  */
 router.get('/estimate_bridge_output',
-    oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds()), check('fromChain').isIn(getHexChainIds())]),
-    oneOf([check('toChain').isIn(getChainNames()), check('toChain').isIn(getChainIds()), check('toChain').isIn(getHexChainIds())]),
+    oneOf([check('fromChain').isIn(ChainUtils.getNames()), check('fromChain').isIn(ChainUtils.getIds()), check('fromChain').isIn(ChainUtils.getHexIds())]),
+    oneOf([check('toChain').isIn(ChainUtils.getNames()), check('toChain').isIn(ChainUtils.getIds()), check('toChain').isIn(ChainUtils.getHexIds())]),
     oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenAddresses())]),
     oneOf([check('toToken').isIn(getTokenSymbols()), check('toToken').isIn(getTokenAddresses())]),
     async (req, res) => {
@@ -180,8 +178,8 @@ router.get('/estimate_bridge_output',
  * @apiSampleRequest /v1/generate_unsigned_bridge_txn
  */
 router.get('/generate_unsigned_bridge_txn',
-    oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds()), check('fromChain').isIn(getHexChainIds())]),
-    oneOf([check('toChain').isIn(getChainNames()), check('toChain').isIn(getChainIds()), check('toChain').isIn(getHexChainIds())]),
+    oneOf([check('fromChain').isIn(ChainUtils.getNames()), check('fromChain').isIn(ChainUtils.getIds()), check('fromChain').isIn(ChainUtils.getHexIds())]),
+    oneOf([check('toChain').isIn(ChainUtils.getNames()), check('toChain').isIn(ChainUtils.getIds()), check('toChain').isIn(ChainUtils.getHexIds())]),
     oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenAddresses())]),
     oneOf([check('toToken').isIn(getTokenSymbols()), check('toToken').isIn(getTokenAddresses())]),
     async (req, res) => {
@@ -227,7 +225,7 @@ router.get('/generate_unsigned_bridge_txn',
  * @apiSampleRequest /v1/generate_unsigned_bridge_approval_txn
  */
 router.get('/generate_unsigned_bridge_approval_txn',
-    oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds()), check('fromChain').isIn(getHexChainIds())]),
+    oneOf([check('fromChain').isIn(ChainUtils.getNames()), check('fromChain').isIn(ChainUtils.getIds()), check('fromChain').isIn(ChainUtils.getHexIds())]),
     oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenAddresses())]),
     async (req, res) => {
 
@@ -306,8 +304,8 @@ router.get('/generate_unsigned_bridge_approval_txn',
  * @apiSampleRequest /v1/generate_bridge_txn_params
  */
 router.get('/generate_bridge_txn_params',
-    oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds()), check('fromChain').isIn(getHexChainIds())]),
-    oneOf([check('toChain').isIn(getChainNames()), check('toChain').isIn(getChainIds()), check('toChain').isIn(getHexChainIds())]),
+    oneOf([check('fromChain').isIn(ChainUtils.getNames()), check('fromChain').isIn(ChainUtils.getIds()), check('fromChain').isIn(ChainUtils.getHexIds())]),
+    oneOf([check('toChain').isIn(ChainUtils.getNames()), check('toChain').isIn(ChainUtils.getIds()), check('toChain').isIn(ChainUtils.getHexIds())]),
     oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenAddresses())]),
     oneOf([check('toToken').isIn(getTokenSymbols()), check('toToken').isIn(getTokenAddresses())]),
     query('amountFrom').isNumeric(),
