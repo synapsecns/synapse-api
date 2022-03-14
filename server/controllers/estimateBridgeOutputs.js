@@ -1,8 +1,8 @@
 import {BigNumber} from "ethers";
 import { Bridges } from "../core/cache.js";
-import {getTokenSymbolFromQueryParam} from "../core/utils.js";
 import {Tokens} from "@synapseprotocol/sdk";
 import * as ChainUtils from "../utils/chainUtils.js";
+import * as TokenUtils from "../utils/tokenUtils.js";
 
 /**
  * @param {String} fromChain
@@ -16,10 +16,10 @@ async function estimateBridgeOutputs(fromChain, toChain, fromToken, toToken, amo
     const fromChainId = ChainUtils.getIdFromRequestQueryParam(fromChain)
     const toChainId = ChainUtils.getIdFromRequestQueryParam(toChain)
 
-    const fromTokenSymbol = getTokenSymbolFromQueryParam(fromToken)
+    const fromTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
     const fromTokenObj = Tokens[fromTokenSymbol]
 
-    const toTokenSymbol = getTokenSymbolFromQueryParam(fromToken)
+    const toTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
     const toTokenObj = Tokens[toTokenSymbol]
 
     const bigNumAmount = amountFrom ? BigNumber.from(amountFrom) : null;

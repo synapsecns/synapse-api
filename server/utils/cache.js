@@ -1,3 +1,8 @@
+/**
+ * @fileOverview This file implements an in-memory Write Once Read Many (WORA)
+ * cache which specifically caches responses from function signatures
+ */
+
 let _CACHE = {}
 
 /**
@@ -8,7 +13,7 @@ let _CACHE = {}
  * @returns {String}
  */
 function _buildKey(fn, attrs) {
-    return (fn.name).concat(attrs.toString());
+    return (fn.toString()).concat(attrs.toString());
 }
 
 /**
@@ -16,8 +21,8 @@ function _buildKey(fn, attrs) {
  * and caches the output for that function signature (name + params)
  *
  * @param {function} fn
- * @param {Array} attrs
  * @param {any} res
+ * @param {Array} attrs
  * @returns {any}
  */
 export function set(fn, res, attrs=[]) {

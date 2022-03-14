@@ -44,6 +44,19 @@ function getNames() {
 }
 
 /**
+ * Builds a JSON object from the SDK Network Class's Object
+ * @param {Object} sdkNetworkObj
+ * @returns {Object}
+ */
+function _buildObjectFromSDKObject(sdkNetworkObj) {
+    return {
+        name: sdkNetworkObj.name,
+        chainId: sdkNetworkObj.chainId,
+        chainCurrency: sdkNetworkObj.chainCurrency
+    };
+}
+
+/**
  * @param {string} chainId
  * @returns {Object}
  */
@@ -62,19 +75,6 @@ function getObjectFromId(chainId) {
     let resObj = _buildObjectFromSDKObject(networkObj)
 
     return Cache.set(getObjectFromId, resObj, [chainId]);
-}
-
-/**
- * Builds a JSON object from the SDK Network Class's Object
- * @param {Object} sdkNetworkObj
- * @returns {Object}
- */
-function _buildObjectFromSDKObject(sdkNetworkObj) {
-    return {
-        name: sdkNetworkObj.name,
-        chainId: sdkNetworkObj.chainId,
-        chainCurrency: sdkNetworkObj.chainCurrency
-    };
 }
 
 /**
