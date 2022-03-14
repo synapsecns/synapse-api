@@ -1,7 +1,6 @@
-import {BigNumber} from "ethers";
 import { Bridges } from "../core/cache.js";
-import {getChainIdFromQueryParam, getTokenSymbolFromQueryParam} from "../core/utils.js";
-import {Tokens} from "@synapseprotocol/sdk";
+import * as ChainUtils from "../utils/chainUtils.js";
+import * as TokenUtils from "../utils/tokenUtils.js";
 
 /**
  * @param {String} fromChain
@@ -9,8 +8,8 @@ import {Tokens} from "@synapseprotocol/sdk";
  * @returns {Object[]}
  */
 async function generateUnsignedBridgeApprovalTxn(fromChain, fromToken) {
-    const fromChainId = getChainIdFromQueryParam(fromChain)
-    const fromTokenSymbol = getTokenSymbolFromQueryParam(fromToken)
+    const fromChainId = ChainUtils.getIdFromRequestQueryParam(fromChain)
+    const fromTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
 
     const bridge = Bridges[fromChainId];
 

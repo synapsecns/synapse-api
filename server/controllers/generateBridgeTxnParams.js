@@ -1,7 +1,8 @@
 import {BigNumber} from "ethers";
 import { Bridges } from "../core/cache.js";
-import {getChainIdFromQueryParam, getTokenSymbolFromQueryParam} from "../core/utils.js";
 import {Tokens} from "@synapseprotocol/sdk";
+import * as ChainUtils from "../utils/chainUtils.js";
+import * as TokenUtils from "../utils/tokenUtils.js";
 
 /**
  * @param {String} fromChain
@@ -14,13 +15,13 @@ import {Tokens} from "@synapseprotocol/sdk";
  * @returns {Object[]}
  */
 async function generateBridgeTxnParams(fromChain, toChain, fromToken, toToken, amountFrom, amountTo, addressTo) {
-    const fromChainId = getChainIdFromQueryParam(fromChain)
-    const toChainId = getChainIdFromQueryParam(toChain)
+    const fromChainId = ChainUtils.getIdFromRequestQueryParam(fromChain)
+    const toChainId = ChainUtils.getIdFromRequestQueryParam(toChain)
 
-    const fromTokenSymbol = getTokenSymbolFromQueryParam(fromToken)
+    const fromTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
     const fromTokenObj = Tokens[fromTokenSymbol]
 
-    const toTokenSymbol = getTokenSymbolFromQueryParam(fromToken)
+    const toTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
     const toTokenObj = Tokens[toTokenSymbol]
 
     const bigNumAmountFrom = BigNumber.from(amountFrom);

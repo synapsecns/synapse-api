@@ -9,15 +9,9 @@ import {generateUnsignedBridgeTxn} from "../../controllers/generateUnsignedBridg
 import {generateUnsignedBridgeApprovalTxn} from "../../controllers/generateUnsignedBridgeApprovalTxn.js"
 import {generateBridgeTxnParams} from "../../controllers/generateBridgeTxnParams.js"
 
-import {
-    getChainIdFromQueryParam,
-    getChainIds,
-    getHexChainIds,
-    getChainNames,
-    getTokenAddresses,
-    getTokenSymbolFromQueryParam,
-    getTokenSymbols
-} from "../../core/utils.js"
+import * as ChainUtils from "../../utils/chainUtils.js";
+import * as TokenUtils from "../../utils/tokenUtils.js";
+
 import {BigNumber} from "ethers";
 
 
@@ -47,9 +41,9 @@ import {BigNumber} from "ethers";
  */
 router.get('/get_bridgable_tokens',
     oneOf([
-        check('chain').isIn(getChainNames()),
-        check('chain').isIn(getChainIds()),
-        check('chain').isIn(getHexChainIds())]
+        check('chain').isIn(ChainUtils.getNames()),
+        check('chain').isIn(ChainUtils.getIds()),
+        check('chain').isIn(ChainUtils.getHexIds())]
     ),
     async (req, res) => {
         try {
@@ -60,7 +54,7 @@ router.get('/get_bridgable_tokens',
         }
 
         try {
-            const chainId = getChainIdFromQueryParam(req.query.chain)
+            const chainId = ChainUtils.getIdFromRequestQueryParam(req.query.chain)
             const tokenList = await getBridgeableTokensForChain(chainId)
             res.status(200).json(tokenList);
         } catch (err) {
@@ -91,7 +85,7 @@ router.get('/get_bridgable_tokens',
  * @apiSampleRequest /v1/get_chains_for_token
  */
 router.get('/get_chains_for_token',
-    oneOf([check('token').isIn(getTokenSymbols()), check('token').isIn(getTokenAddresses())]),
+    oneOf([check('token').isIn(TokenUtils.getSymbols()), check('token').isIn(TokenUtils.getAddresses())]),
     async (req, res) => {
 
         try {
@@ -102,7 +96,7 @@ router.get('/get_chains_for_token',
         }
 
         try {
-            const tokenSymbol = getTokenSymbolFromQueryParam(req.query.token)
+            const tokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(req.query.token)
             const tokenList = await getChainsForToken(tokenSymbol)
             res.status(200).json(tokenList);
         }  catch (err) {
@@ -121,7 +115,7 @@ router.get('/get_chains_for_token',
  * @apiQuery {Number|String} toChain Name or decimal/hex id of chain transaction is to
  * @apiQuery {String} fromToken Token user will send to the bridge on the source chain. Can be token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
  * @apiQuery {String} toToken Token user will receive from the bridge on the destination chain. Can be token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
- * @apiQuery {String} input Transaction input amount
+ * @apiQuery {String} amountFrom Transaction input amount
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
@@ -133,16 +127,16 @@ router.get('/get_chains_for_token',
  * @apiSampleRequest /v1/estimate_bridge_output
  */
 router.get('/estimate_bridge_output',
-    oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds()), check('fromChain').isIn(getHexChainIds())]),
-    oneOf([check('toChain').isIn(getChainNames()), check('toChain').isIn(getChainIds()), check('toChain').isIn(getHexChainIds())]),
-    oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenAddresses())]),
-    oneOf([check('toToken').isIn(getTokenSymbols()), check('toToken').isIn(getTokenAddresses())]),
+    oneOf([check('fromChain').isIn(ChainUtils.getNames()), check('fromChain').isIn(ChainUtils.getIds()), check('fromChain').isIn(ChainUtils.getHexIds())]),
+    oneOf([check('toChain').isIn(ChainUtils.getNames()), check('toChain').isIn(ChainUtils.getIds()), check('toChain').isIn(ChainUtils.getHexIds())]),
+    oneOf([check('fromToken').isIn(TokenUtils.getSymbols()), check('fromToken').isIn(TokenUtils.getAddresses())]),
+    oneOf([check('toToken').isIn(TokenUtils.getSymbols()), check('toToken').isIn(TokenUtils.getAddresses())]),
     async (req, res) => {
 
         try {
             validationResult(req).throw();
         } catch (err) {
-            res.status(400).json({"error": "Valid arguments for fromChainId, toChain, fromToken, toToken and amountFrom must be passed"});
+            res.status(400).json({"error": "Valid arguments for fromChain, toChain, fromToken, toToken and amountFrom must be passed"});
             return;
         }
 
@@ -180,10 +174,10 @@ router.get('/estimate_bridge_output',
  * @apiSampleRequest /v1/generate_unsigned_bridge_txn
  */
 router.get('/generate_unsigned_bridge_txn',
-    oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds()), check('fromChain').isIn(getHexChainIds())]),
-    oneOf([check('toChain').isIn(getChainNames()), check('toChain').isIn(getChainIds()), check('toChain').isIn(getHexChainIds())]),
-    oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenAddresses())]),
-    oneOf([check('toToken').isIn(getTokenSymbols()), check('toToken').isIn(getTokenAddresses())]),
+    oneOf([check('fromChain').isIn(ChainUtils.getNames()), check('fromChain').isIn(ChainUtils.getIds()), check('fromChain').isIn(ChainUtils.getHexIds())]),
+    oneOf([check('toChain').isIn(ChainUtils.getNames()), check('toChain').isIn(ChainUtils.getIds()), check('toChain').isIn(ChainUtils.getHexIds())]),
+    oneOf([check('fromToken').isIn(TokenUtils.getSymbols()), check('fromToken').isIn(TokenUtils.getAddresses())]),
+    oneOf([check('toToken').isIn(TokenUtils.getSymbols()), check('toToken').isIn(TokenUtils.getAddresses())]),
     async (req, res) => {
 
         try {
@@ -227,8 +221,8 @@ router.get('/generate_unsigned_bridge_txn',
  * @apiSampleRequest /v1/generate_unsigned_bridge_approval_txn
  */
 router.get('/generate_unsigned_bridge_approval_txn',
-    oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds()), check('fromChain').isIn(getHexChainIds())]),
-    oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenAddresses())]),
+    oneOf([check('fromChain').isIn(ChainUtils.getNames()), check('fromChain').isIn(ChainUtils.getIds()), check('fromChain').isIn(ChainUtils.getHexIds())]),
+    oneOf([check('fromToken').isIn(TokenUtils.getSymbols()), check('fromToken').isIn(TokenUtils.getAddresses())]),
     async (req, res) => {
 
         try {
@@ -306,10 +300,10 @@ router.get('/generate_unsigned_bridge_approval_txn',
  * @apiSampleRequest /v1/generate_bridge_txn_params
  */
 router.get('/generate_bridge_txn_params',
-    oneOf([check('fromChain').isIn(getChainNames()), check('fromChain').isIn(getChainIds()), check('fromChain').isIn(getHexChainIds())]),
-    oneOf([check('toChain').isIn(getChainNames()), check('toChain').isIn(getChainIds()), check('toChain').isIn(getHexChainIds())]),
-    oneOf([check('fromToken').isIn(getTokenSymbols()), check('fromToken').isIn(getTokenAddresses())]),
-    oneOf([check('toToken').isIn(getTokenSymbols()), check('toToken').isIn(getTokenAddresses())]),
+    oneOf([check('fromChain').isIn(ChainUtils.getNames()), check('fromChain').isIn(ChainUtils.getIds()), check('fromChain').isIn(ChainUtils.getHexIds())]),
+    oneOf([check('toChain').isIn(ChainUtils.getNames()), check('toChain').isIn(ChainUtils.getIds()), check('toChain').isIn(ChainUtils.getHexIds())]),
+    oneOf([check('fromToken').isIn(TokenUtils.getSymbols()), check('fromToken').isIn(TokenUtils.getAddresses())]),
+    oneOf([check('toToken').isIn(TokenUtils.getSymbols()), check('toToken').isIn(TokenUtils.getAddresses())]),
     query('amountFrom').isNumeric(),
     query('amountTo').isNumeric(),
     async (req, res) => {
