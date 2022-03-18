@@ -5,7 +5,7 @@ import app from "../server/index.js"
 const should = chai.should();
 
 chai.use(chaiHttp);
-describe('Synapse API Integration Tests', () => {
+describe('Integration Tests', () => {
 
     it('list out bridgable tokens', (done) => {
         chai.request(app)
