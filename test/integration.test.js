@@ -47,7 +47,7 @@ describe('Integration Tests', () => {
 
                 done();
             });
-    });
+    }).timeout(5000);
 
     it('get all chains token is tradeable on', (done) => {
         chai.request(app)
@@ -82,7 +82,7 @@ describe('Integration Tests', () => {
 
                 done();
             });
-    });
+    }).timeout(5000);
 
     it('generate bridge transaction parameters', (done) => {
         chai.request(app)
