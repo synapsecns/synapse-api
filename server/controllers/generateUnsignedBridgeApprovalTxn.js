@@ -1,4 +1,4 @@
-import { Bridges } from "../core/cache.js";
+import { Bridges } from "../utils/bridges.js";
 import * as ChainUtils from "../utils/chainUtils.js";
 import * as TokenUtils from "../utils/tokenUtils.js";
 
