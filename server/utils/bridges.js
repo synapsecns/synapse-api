@@ -1,16 +1,14 @@
-// Preload a few things that will be heavily used across the app.
-
 import {
     Bridge,
     supportedChainIds,
-    allNetworksSwapTokensMap,
 } from "@synapseprotocol/sdk";
+
+// TODO: Cache as function
 
 /**
  * @type {Record<number,Bridge.SynapseBridge>}
  */
 const Bridges = {};
-const allTokens = allNetworksSwapTokensMap();
 
 supportedChainIds().forEach((chainId) => {
     Bridges[chainId] = new Bridge.SynapseBridge({
@@ -18,4 +16,4 @@ supportedChainIds().forEach((chainId) => {
     });
 });
 
-export { Bridges, allTokens };
+export { Bridges };
