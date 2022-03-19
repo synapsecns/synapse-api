@@ -128,4 +128,58 @@ describe('Integration Tests', () => {
             });
     });
 
+    it('get swappable tokens', (done) => {
+        chai.request(app)
+            .get('/v1/get_swappable_tokens')
+            .query({
+                chain: 1,
+            })
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.an('object');
+                res.body.should.have.property('nUSD');
+                res.body.nUSD.should.have.property('poolTokens')
+
+                done();
+            });
+    });
+
+    it('estimate swap output', (done) => {
+        chai.request(app)
+            .get('/v1/estimate_swap_output')
+            .query({
+                chain: "1",
+                fromToken: "USDC",
+                toToken: "DAI",
+                amountIn: 1,
+            })
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.an('object');
+                res.body.should.have.property('minAmountOut');
+
+                done();
+            });
+    });
+
+    it('generate swap transaction', (done) => {
+        chai.request(app)
+            .get('/v1/generate_swap_transaction')
+            .query({
+                chain: "1",
+                fromToken: "USDC",
+                toToken: "DAI",
+                amountIn: 1,
+            })
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.an('object');
+                res.body.should.have.property('allowanceTarget');
+                res.body.should.have.property('minAmountOut');
+                res.body.should.have.property('data');
+                res.body.should.have.property('to');
+
+                done();
+            });
+    });
 });
