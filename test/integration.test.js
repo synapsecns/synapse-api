@@ -5,7 +5,7 @@ import app from "../server/index.js"
 const should = chai.should();
 
 chai.use(chaiHttp);
-describe('Synapse API Integration Tests', () => {
+describe('Integration Tests', () => {
 
     it('list out bridgable tokens', (done) => {
         chai.request(app)
@@ -47,7 +47,7 @@ describe('Synapse API Integration Tests', () => {
 
                 done();
             });
-    });
+    }).timeout(5000);
 
     it('get all chains token is tradeable on', (done) => {
         chai.request(app)
@@ -82,7 +82,7 @@ describe('Synapse API Integration Tests', () => {
 
                 done();
             });
-    });
+    }).timeout(5000);
 
     it('generate bridge transaction parameters', (done) => {
         chai.request(app)
@@ -128,4 +128,58 @@ describe('Synapse API Integration Tests', () => {
             });
     });
 
+    it('get swappable tokens', (done) => {
+        chai.request(app)
+            .get('/v1/get_swappable_tokens')
+            .query({
+                chain: 1,
+            })
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.an('object');
+                res.body.should.have.property('nUSD');
+                res.body.nUSD.should.have.property('poolTokens')
+
+                done();
+            });
+    });
+
+    it('estimate swap output', (done) => {
+        chai.request(app)
+            .get('/v1/estimate_swap_output')
+            .query({
+                chain: "1",
+                fromToken: "USDC",
+                toToken: "DAI",
+                amountIn: "1",
+            })
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.an('object');
+                res.body.should.have.property('minAmountOut');
+
+                done();
+            });
+    });
+
+    it('generate swap transaction', (done) => {
+        chai.request(app)
+            .get('/v1/generate_swap_transaction')
+            .query({
+                chain: "1",
+                fromToken: "USDC",
+                toToken: "DAI",
+                amountIn: 1,
+            })
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.an('object');
+                res.body.should.have.property('allowanceTarget');
+                res.body.should.have.property('minAmountOut');
+                res.body.should.have.property('data');
+                res.body.should.have.property('to');
+
+                done();
+            });
+    });
 });

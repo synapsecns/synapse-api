@@ -1,4 +1,4 @@
-import {Tokens, BaseToken} from "@synapseprotocol/sdk"
+import {BaseToken, Tokens} from "@synapseprotocol/sdk"
 import * as Cache from "./cache.js"
 
 /**
@@ -52,7 +52,7 @@ function _buildObjectFromSDKObject(sdkToken) {
         addresses: sdkToken.addresses,
         swapType: sdkToken.swapType,
         isETH: sdkToken.isETH,
-        wrapperAddresses:sdkToken.wrapperAddresses
+        wrapperAddresses: sdkToken.wrapperAddresses
     };
 }
 

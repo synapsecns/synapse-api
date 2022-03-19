@@ -9,6 +9,10 @@ import {generateUnsignedBridgeTxn} from "../../controllers/generateUnsignedBridg
 import {generateUnsignedBridgeApprovalTxn} from "../../controllers/generateUnsignedBridgeApprovalTxn.js"
 import {generateBridgeTxnParams} from "../../controllers/generateBridgeTxnParams.js"
 
+import {getSwappableTokens} from "../../controllers/getSwappableTokens.js"
+import {estimateSwapOutput} from "../../controllers/estimateSwapOutput.js"
+import {generateSwapTransaction} from "../../controllers/generateSwapTransaction.js"
+
 import * as ChainUtils from "../../utils/chainUtils.js";
 import * as TokenUtils from "../../utils/tokenUtils.js";
 
@@ -325,5 +329,111 @@ router.get('/generate_bridge_txn_params',
 
 });
 
+/**
+ * @api {get} /v1/get_swappable_tokens Get Swappable Tokens
+ * @apiName get_swappable_tokens
+ * @apiGroup API
+ *
+ * @apiQuery {Number|String} chain Chain id passed as a decimal or hex number (56, 0x38 etc.) or name (ETH, BSC, etc.)
+ *
+ * @apiSampleRequest /v1/get_swappable_tokens
+ */
+router.get('/get_swappable_tokens',
+    oneOf([
+        check('chain').isIn(ChainUtils.getNames()),
+        check('chain').isIn(ChainUtils.getIds()),
+        check('chain').isIn(ChainUtils.getHexIds())]
+    ),
+    async (req, res) => {
+        try {
+            validationResult(req).throw();
+        } catch (err) {
+            res.status(400).json({"error": "A valid value for chain must be passed"});
+            return;
+        }
+
+        try {
+            const chainId = ChainUtils.getIdFromRequestQueryParam(req.query.chain);
+            const swappableTokens = await getSwappableTokens(chainId);
+            res.status(200).json(swappableTokens);
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({"error": "Internal Server Error"});
+        }
+    });
+
+/**
+ * @api {get} /v1/estimate_swap_output Estimate Swap Output
+ * @apiName estimate_swap_output
+ * @apiGroup API
+
+ * @apiQuery {Number|String} chain Chain id passed as a decimal or hex number (56, 0x38 etc.) or name (ETH, BSC, etc.)
+ * @apiQuery {String} fromToken Token user will send to the bridge on the source chain. Can be token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
+ * @apiQuery {String} toToken Token user will receive from the bridge on the destination chain. Can be token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
+ * @apiQuery {String|Number} amountIn Input amount to swap
+ *
+ * @apiSampleRequest /v1/estimate_swap_output
+ */
+router.get('/estimate_swap_output',
+    oneOf([check('chain').isIn(ChainUtils.getNames()), check('chain').isIn(ChainUtils.getIds()), check('chain').isIn(ChainUtils.getHexIds())]),
+    oneOf([check('fromToken').isIn(TokenUtils.getSymbols()), check('fromToken').isIn(TokenUtils.getAddresses())]),
+    oneOf([check('toToken').isIn(TokenUtils.getSymbols()), check('toToken').isIn(TokenUtils.getAddresses())]),
+    query('amountIn').isNumeric(),
+    async (req, res) => {
+        try {
+            validationResult(req).throw();
+            BigNumber.from(req.query.amountIn);
+
+        } catch (err) {
+            res.status(400).json({"error": "A valid value for chain, fromToken, toToken, amountIn must be passed"});
+            return;
+        }
+
+        try {
+            const {chain, fromToken, toToken, amountIn} = req.query
+            const estSwapOutput = await estimateSwapOutput(chain, fromToken, toToken, amountIn);
+            res.status(200).json(estSwapOutput);
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({"error": "Internal Server Error"});
+        }
+    });
+
+/**
+ * @api {get} /v1/generate_swap_transaction Generate Swap Transaction
+ * @apiName generate_swap_transaction
+ * @apiGroup API
+
+ * @apiQuery {Number|String} chain Chain id passed as a decimal or hex number (56, 0x38 etc.) or name (ETH, BSC, etc.)
+ * @apiQuery {String} fromToken Token user will send to the bridge on the source chain. Can be token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
+ * @apiQuery {String} toToken Token user will receive from the bridge on the destination chain. Can be token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
+ * @apiQuery {String|Number} amountIn Input amount to swap
+ *
+ * @apiSampleRequest /v1/generate_swap_transaction
+ */
+router.get('/generate_swap_transaction',
+    oneOf([check('chain').isIn(ChainUtils.getNames()), check('chain').isIn(ChainUtils.getIds()), check('chain').isIn(ChainUtils.getHexIds())]),
+    oneOf([check('fromToken').isIn(TokenUtils.getSymbols()), check('fromToken').isIn(TokenUtils.getAddresses())]),
+    oneOf([check('toToken').isIn(TokenUtils.getSymbols()), check('toToken').isIn(TokenUtils.getAddresses())]),
+    query('amountIn').isNumeric(),
+    async (req, res) => {
+        try {
+            validationResult(req).throw();
+            BigNumber.from(req.query.amountIn);
+
+        } catch (err) {
+            res.status(400).json({"error": "A valid value for chain, fromToken, toToken, amountIn must be passed"});
+            return;
+        }
+
+        try {
+            const {chain, fromToken, toToken, amountIn} = req.query
+            const swapTxn = await generateSwapTransaction(chain, fromToken, toToken, amountIn);
+            res.status(200).json(swapTxn);
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({"error": "Internal Server Error"});
+        }
+    });
 
 export default router;
