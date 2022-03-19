@@ -151,7 +151,7 @@ describe('Integration Tests', () => {
                 chain: "1",
                 fromToken: "USDC",
                 toToken: "DAI",
-                amountIn: 1,
+                amountIn: "1",
             })
             .end((err, res) => {
                 res.should.have.status(200);

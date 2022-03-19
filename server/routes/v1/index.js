@@ -330,7 +330,7 @@ router.get('/generate_bridge_txn_params',
 });
 
 /**
- * @api {get} /v1/get_swappable_tokens Get List of Swappable tokens on Chain
+ * @api {get} /v1/get_swappable_tokens Get Swappable Tokens
  * @apiName get_swappable_tokens
  * @apiGroup API
  *
@@ -363,7 +363,7 @@ router.get('/get_swappable_tokens',
     });
 
 /**
- * @api {get} /v1/estimate_swap_output
+ * @api {get} /v1/estimate_swap_output Estimate Swap Output
  * @apiName estimate_swap_output
  * @apiGroup API
 
@@ -400,7 +400,7 @@ router.get('/estimate_swap_output',
     });
 
 /**
- * @api {get} /v1/generate_swap_transaction
+ * @api {get} /v1/generate_swap_transaction Generate Swap Transaction
  * @apiName generate_swap_transaction
  * @apiGroup API
 
