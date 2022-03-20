@@ -8,10 +8,11 @@
 :root {
   --primary: rgb(145,52,234);
   --white: #fff;
-  --black: rgb(15 23 42);
-  --light-gray: #ccc;
-  --main-gray: rgb(15 23 42);
-  --dark-gray: rgb(31,41,55);
+  --black: #000;
+  --white-ish: rgb(232,232,232);
+  --dark-gray: rgb(156,159,167);
+  --dark-slate: rgb(15 23 42);
+  --light-slate: rgb(31,41,55);
   --hover-gray: rgb(15 23 42);
   --meth-get: green;
   --meth-put: #e5c500;
@@ -20,14 +21,20 @@
   --red: #dc3545;
 }
 
+/*
+All headers
+ */
 h1, h2, h3, h4 {
-  color: white !important;
+  color: var(--white-ish);
 }
 
 /*
-Input boxes inside query params, Success Response tab
+Input boxes inside query params,
+Success Response tab,
+Top version,
+API versions
 */
-input, .input-group-addon, article > ul > li > a, #version {
+input, .input-group-addon, article > ul > li > a, #version, .version {
   background-color:  rgb(31,41,55) !important;
   color: white !important;
 }
@@ -43,7 +50,7 @@ Sample request section
 Query params labels
  */
 .well label {
-  color: white;
+  color: var(--white-ish);
 }
 
 .color-primary {
@@ -82,7 +89,7 @@ input[type="date"] {
 
 body {
   font-family: "Source Sans Pro", sans-serif;
-  background-color: rgb(15 23 42);
+  background-color: var(--dark-slate);
 }
 
 a:focus {
@@ -97,7 +104,7 @@ a:focus {
 
 p {
   font-size: 130%;
-  color: var(--white);
+  color: var(--white-ish);
 }
 
 section {
@@ -105,7 +112,7 @@ section {
 }
 
 article {
-  border-top: 1px solid var(--light-gray);
+  border-top: 1px solid var(--white-ish);
   padding: 14px 0 30px 0;
 }
 
@@ -118,16 +125,19 @@ table {
 }
 
 th {
-  background-color: var(--main-gray);
-  color: var(--white);
+  background-color: var(--dark-slate);
+  color: var(--white-ish);
   text-align: left;
   padding: 5px 8px;
-  border: 1px solid var(--main-gray);
+  border: 1px solid var(--light-slate);
 }
 
+/*
+Table cell borders
+ */
 td {
   padding: 5px;
-  border: 1px solid var(--black);
+  border: 1px solid var(--light-slate);
 }
 
 /*
@@ -136,7 +146,7 @@ Field, Type for query params
 td.code {
   font-family: "Source Code Pro", monospace;
   font-weight: 600;
-  color: white;
+  color: var(--white-ish);
 }
 
 .label {
@@ -181,7 +191,7 @@ td.code {
   width: 40px;
   height: 34px;
   background: var(--white);
-  border: 1px solid var(--light-gray);
+  border: 1px solid var(--white-ish);
 }
 
 .sample-request-input-Boolean-container > div {
@@ -204,7 +214,7 @@ td.code {
   padding: 4px 5px;
   border-radius: 6px;
   text-transform: uppercase;
-  background-color: var(--main-gray);
+  background-color: var(--dark-slate);
   color: var(--white);
 }
 
@@ -236,7 +246,7 @@ td.code {
   bottom: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  background-color: var(--dark-gray);
+  background-color: var(--light-slate);
 }
 
 .sidenav > li > a {
@@ -259,22 +269,22 @@ td.code {
   padding: 5px 15px;
   font-weight: 700;
   font-size: 16px;
-  background-color: var(--main-gray);
+  background-color: var(--dark-slate);
 }
 
 
 .sidenav > li.active > a {
   position: relative;
   background-color: var(--primary);
-  color: var(--white);
+  color: var(--white-ish);
 }
 
 /*
 Cross in search
  */
 #scrollingNav > div > span {
-  background: var(--dark-gray);
-  color: white;
+  background: var(--light-slate);
+  color: var(--white-ish);
 }
 /**
  * TODO: commented out for the moment
@@ -299,7 +309,7 @@ Cross in search
   left: 0px;
   position: fixed;
   padding: 16px 20px 10px 20px;
-  background-color: var(--dark-gray);
+  background-color: var(--light-slate);
 }
 
 .sidenav-search .search {
