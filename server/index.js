@@ -14,7 +14,7 @@ app.get("/", (req, res) => {
 })
 
 app.set('json spaces', 4);
-app.use('/apidoc', express.static('apidoc'));
+app.use('/apidoc', express.static('docs/apidoc'));
 
 app.use((err, req, res, next) => {
     res.status(500).json({error: err.message});
