@@ -6,18 +6,35 @@
  * Define colors
  */
 :root {
-  --primary: #000;
+  --primary: #995ed2;
   --white: #fff;
   --black: #000;
   --light-gray: #ccc;
-  --main-gray: #777;
-  --dark-gray: #2d2d2d;
-  --hover-gray: #666;
+  --main-gray: #000;
+  --dark-gray: #000;
+  --hover-gray: #000;
   --meth-get: green;
   --meth-put: #e5c500;
   --meth-post: #4070ec;
   --meth-delete: #ed0039;
   --red: #dc3545;
+}
+
+h1, h2, h3, h4 {
+  color: white !important;
+}
+
+input, .input-group-addon, button, article > ul > li > a {
+  background-color: black!important;
+  color: white !important;
+}
+
+.well {
+  background: black;
+}
+
+.well label {
+  color: white;
 }
 
 .color-primary {
@@ -46,16 +63,17 @@ input[type="date"] {
  * Content
  * ------------------------------------------------------------------------------------------ */
 @font-face {
-  font-family: 'Open Sans';
+  font-family: 'Glyphicons Halflings';
   src: url('./glyphicons-halflings-regular.eot');
   src: url('./glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'),
-    url('./glyphicons-halflings-regular.woff') format('woff'),
-    url('./glyphicons-halflings-regular.ttf') format('truetype'),
-    url('./glyphicons-halflings-regular.svg#glyphicons-halflingsregular') format('svg');
+  url('./glyphicons-halflings-regular.woff') format('woff'),
+  url('./glyphicons-halflings-regular.ttf') format('truetype'),
+  url('./glyphicons-halflings-regular.svg#glyphicons-halflingsregular') format('svg');
 }
 
 body {
   font-family: "Source Sans Pro", sans-serif;
+  background-color: black;
 }
 
 a:focus {
@@ -70,7 +88,7 @@ a:focus {
 
 p {
   font-size: 130%;
-  color: var(--main-gray);
+  color: var(--white);
 }
 
 section {
@@ -83,7 +101,9 @@ article {
 }
 
 table {
-  border-collapse: collapse;
+  border: 1px solid #e3e3e3;
+  border-radius: 2px;
+  border-collapse: inherit;
   width: 100%;
   margin: 0 0 20px 0;
 }
@@ -98,12 +118,13 @@ th {
 
 td {
   padding: 5px;
-  border: 1px solid var(--main-gray);
+  border: 1px solid var(--black);
 }
 
 td.code {
   font-family: "Source Code Pro", monospace;
   font-weight: 600;
+  color: white;
 }
 
 .label {
@@ -113,7 +134,7 @@ td.code {
 }
 
 .label.optional {
-  background-color: grey;
+  background-color: white;
 }
 
 .label.required {
@@ -236,6 +257,10 @@ td.code {
   color: var(--white);
 }
 
+#scrollingNav > div > span {
+  background: black;
+  color: white;
+}
 /**
  * TODO: commented out for the moment
 .sidenav > li.has-modifications a {
@@ -452,9 +477,9 @@ tr.del td {
     transform: scale(0.0);
     -webkit-transform: scale(0.0);
   } 40% {
-    transform: scale(1.0);
-    -webkit-transform: scale(1.0);
-  }
+      transform: scale(1.0);
+      -webkit-transform: scale(1.0);
+    }
 }
 
 /* ------------------------------------------------------------------------------------------
