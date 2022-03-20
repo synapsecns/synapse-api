@@ -99,7 +99,7 @@
 
 <script id="template-sections" type="text/x-handlebars-template">
   <section id="api-{{group}}" class="show-api-group show-api-{{group}}-group {{#if aloneDisplay}} hide{{/if}}">
-    <h1 class="color-primary font-weight-bold">{{underscoreToSpace title}}</h1>
+<!--    <h1 class="color-primary font-weight-bold">{{underscoreToSpace title}}</h1>-->
     {{#if description}}
       <p>{{{nl2br description}}}</p>
     {{/if}}
@@ -114,7 +114,9 @@
 <script id="template-article" type="text/x-handlebars-template">
   <article id="api-{{article.group}}-{{article.name}}-{{article.version}}" {{#if hidden}}class="hide"{{/if}} data-group="{{article.group}}" data-name="{{article.name}}" data-version="{{article.version}}">
     <div class="pull-left">
-      <h1><span class="color-primary">{{underscoreToSpace article.groupTitle}}</span>{{#if article.title}} <span class="text-muted">|</span> {{article.title}}{{/if}}</h1>
+<!--      <h1><span class="color-primary">{{underscoreToSpace article.groupTitle}}</span>{{#if article.title}} <span class="text-muted">|</span> {{article.title}}{{/if}}</h1>-->
+      <h1><span class="color-white">{{#if article.title}} {{article.title}}{{/if}}</h1>
+
     </div>
     {{#if template.withCompare}}
     <div class="pull-right">
