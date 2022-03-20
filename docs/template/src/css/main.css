@@ -6,12 +6,12 @@
  * Define colors
  */
 :root {
-  --primary: #995ed2;
+  --primary: rgb(145,52,234);
   --white: #fff;
   --black: rgb(15 23 42);
   --light-gray: #ccc;
   --main-gray: rgb(15 23 42);
-  --dark-gray: rgb(15 23 42);
+  --dark-gray: rgb(31,41,55);
   --hover-gray: rgb(15 23 42);
   --meth-get: green;
   --meth-put: #e5c500;
@@ -27,8 +27,8 @@ h1, h2, h3, h4 {
 /*
 Input boxes inside query params, Success Response tab
 */
-input, .input-group-addon, article > ul > li > a {
-  background-color: rgb(15 23 42) !important;
+input, .input-group-addon, article > ul > li > a, #version {
+  background-color:  rgb(31,41,55) !important;
   color: white !important;
 }
 
@@ -130,6 +130,9 @@ td {
   border: 1px solid var(--black);
 }
 
+/*
+Field, Type for query params
+ */
 td.code {
   font-family: "Source Code Pro", monospace;
   font-weight: 600;
@@ -266,8 +269,11 @@ td.code {
   color: var(--white);
 }
 
+/*
+Cross in search
+ */
 #scrollingNav > div > span {
-  background: black;
+  background: var(--dark-gray);
   color: white;
 }
 /**
