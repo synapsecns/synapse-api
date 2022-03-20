@@ -8,11 +8,11 @@
 :root {
   --primary: #995ed2;
   --white: #fff;
-  --black: #000;
+  --black: rgb(15 23 42);
   --light-gray: #ccc;
-  --main-gray: #000;
-  --dark-gray: #000;
-  --hover-gray: #000;
+  --main-gray: rgb(15 23 42);
+  --dark-gray: rgb(15 23 42);
+  --hover-gray: rgb(15 23 42);
   --meth-get: green;
   --meth-put: #e5c500;
   --meth-post: #4070ec;
@@ -24,15 +24,24 @@ h1, h2, h3, h4 {
   color: white !important;
 }
 
-input, .input-group-addon, button, article > ul > li > a {
-  background-color: black!important;
+/*
+Input boxes inside query params, Success Response tab
+*/
+input, .input-group-addon, article > ul > li > a {
+  background-color: rgb(15 23 42) !important;
   color: white !important;
 }
 
+/*
+Sample request section
+ */
 .well {
-  background: black;
+  background: rgb(15 23 42);;
 }
 
+/*
+Query params labels
+ */
 .well label {
   color: white;
 }
@@ -73,7 +82,7 @@ input[type="date"] {
 
 body {
   font-family: "Source Sans Pro", sans-serif;
-  background-color: black;
+  background-color: rgb(15 23 42);
 }
 
 a:focus {
