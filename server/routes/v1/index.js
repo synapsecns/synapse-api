@@ -24,7 +24,7 @@ import {BigNumber} from "ethers";
  * @apiName get_bridgeable_tokens
  * @apiGroup API
  *
- * @apiQuery {Number|String} chain Chain id passed as a decimal or hex number (56, 0x38 etc.) or name (ETH, BSC, etc.)
+ * @apiQuery {Number|String} chain Chain id passed as a decimal or hex number
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -73,7 +73,7 @@ router.get('/get_bridgeable_tokens',
  * @apiName get_chains_for_token
  * @apiGroup API
  *
- * @apiQuery {String} token Token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
+ * @apiQuery {String} token Token address on chain
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -117,8 +117,8 @@ router.get('/get_chains_for_token',
  *
  * @apiQuery {Number|String} fromChain Name or decimal/hex id of chain the transaction is from
  * @apiQuery {Number|String} toChain Name or decimal/hex id of chain transaction is to
- * @apiQuery {String} fromToken Token user will send to the bridge on the source chain. Can be token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
- * @apiQuery {String} toToken Token user will receive from the bridge on the destination chain. Can be token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
+ * @apiQuery {String} fromToken Token user will send to the bridge on the source chain.
+ * @apiQuery {String} toToken Token user will receive from the bridge on the destination chain.
  * @apiQuery {String} amountFrom Transaction input amount
  *
  * @apiSuccessExample Success-Response:
@@ -163,9 +163,9 @@ router.get('/estimate_bridge_output',
  *
  * @apiQuery {Number|String} fromChain Name or decimal/hex id of chain transaction is from
  * @apiQuery {Number|String} toChain Name or decimal/hex id of chain transaction is to
- * @apiQuery {String} fromToken Token user will send to the bridge on the source chain. Can be token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
- * @apiQuery {String} toToken Token user will receive from the bridge on the destination chain. Can be token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
- * @apiQuery {Number} amountFrom Amount of tokenFrom (denoted in wei) that the user will send to the bridge on the source chain
+ * @apiQuery {String} fromToken Token user will send to the bridge on the source chain
+ * @apiQuery {String} toToken Token user will receive from the bridge on the destination chain
+ * @apiQuery {Number} amountFrom Amount that the user will send to the bridge on the source chain
  * @apiQuery {String} address Optional, user can provide an address other than the one retrieved from signer to receive tokens
  *
  * @apiSuccessExample Success-Response:
@@ -212,7 +212,7 @@ router.get('/generate_unsigned_bridge_txn',
  * @apiGroup API
  *
  * @apiQuery {Number|String} fromChain Name or decimal/hex id of chain
- * @apiQuery {String} fromToken Token instance or valid on-chain address of the token the user will be sending to the bridge on the source chain. Can be token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
+ * @apiQuery {String} fromToken Token instance or valid on-chain address of the token the user will be sending to the bridge on the source chain.
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
@@ -339,7 +339,7 @@ router.get('/generate_bridge_txn_params',
  * @apiName get_stableswap_pools
  * @apiGroup API
  *
- * @apiQuery {Number|String} chain Chain id passed as a decimal or hex number (56, 0x38 etc.) or name (ETH, BSC, etc.)
+ * @apiQuery {Number|String} chain Name or decimal/hex id of chain
  *
  * @apiSampleRequest /v1/get_stableswap_pools
  */
@@ -372,9 +372,9 @@ router.get('/get_stableswap_pools',
  * @apiName estimate_swap_output
  * @apiGroup API
 
- * @apiQuery {Number|String} chain Chain id passed as a decimal or hex number (56, 0x38 etc.) or name (ETH, BSC, etc.)
- * @apiQuery {String} fromToken Token user will send to the bridge on the source chain. Can be token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
- * @apiQuery {String} toToken Token user will receive from the bridge on the destination chain. Can be token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
+ * @apiQuery {Number|String} chain Name or decimal/hex id of chain
+ * @apiQuery {String} fromToken Token user will send to the bridge on the source chain
+ * @apiQuery {String} toToken Token user will receive from the bridge on the destination chain
  * @apiQuery {String|Number} amountIn Input amount to swap
  *
  * @apiSampleRequest /v1/estimate_swap_output
@@ -409,9 +409,9 @@ router.get('/estimate_swap_output',
  * @apiName generate_swap_transaction
  * @apiGroup API
 
- * @apiQuery {Number|String} chain Chain id passed as a decimal or hex number (56, 0x38 etc.) or name (ETH, BSC, etc.)
- * @apiQuery {String} fromToken Token user will send to the bridge on the source chain. Can be token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
- * @apiQuery {String} toToken Token user will receive from the bridge on the destination chain. Can be token address on chain (eg. 0xe9e7cea3dedca5984780bafc599bd69add087d56) or Token Symbol (eg. DAI)
+ * @apiQuery {Number|String} chain Name or decimal/hex id of chain
+ * @apiQuery {String} fromToken Token user will send to the bridge on the source chain
+ * @apiQuery {String} toToken Token user will receive from the bridge on the destination chain
  * @apiQuery {String|Number} amountIn Input amount to swap
  *
  * @apiSampleRequest /v1/generate_swap_transaction

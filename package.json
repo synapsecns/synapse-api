@@ -29,8 +29,11 @@
     "json": "^11.0.0"
   },
   "apidoc": {
-    "name": "Synapse",
-    "description": "REST API",
-    "theme-color": "#fcba03"
+    "name": "Synapse REST API",
+    "description": "",
+    "theme-color": "#fcba03",
+    "header": {
+      "filename": "docs/header.md"
+    }
   }
 }

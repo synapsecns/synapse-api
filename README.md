@@ -6,10 +6,17 @@ Synapse REST API
 
 * Production: https://syn-api-x.herokuapp.com/apidoc/
 
-Documentation hosted at `/apidoc`
-
-### Setup
+### Local Setup
 * `npm i`
 * `npm start`
-* Generate documentation locally: `npm run gendoc`
-  * Note: This script first removes `"type": module` from `package.json` as apidoc.js is not compatible with ES6 syntax, then generates documentation without the template for the `main.bundle.js` file to show up, then uses the template to generate stylized documentation, and finally replaces the `"type"` in package.json
+
+### Run with Docker
+
+* `docker build . -t syn-api`
+* `docker run -d -p 8080:8080 syn-api`
+
+### Documentation
+
+* Documentation is hosted at the `/apidoc` endpoint for all hosted API instances.
+* Generating documentation locally: `npm run gendoc`
+  * Note: The `gendoc` script first temporarily sets the `type` attribute for `package.json`to `commonjs` as apidoc.js is incompatible with ES6 syntax. It then generates documentation without the template (to generate the `main.bundle.js` file, which is not generated with when using the template flag), then finally uses the template to generate stylized documentation inside of `docs/apidoc` and reverts the `type` attribute.

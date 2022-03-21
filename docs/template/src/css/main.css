@@ -53,6 +53,28 @@ Query params labels
   color: var(--white-ish);
 }
 
+/*
+Header code segments
+ */
+#header code {
+  background: var(--light-slate);
+  color: var(--primary);
+}
+
+/*
+Header text
+ */
+#header ul {
+  color: var(--white-ish);
+}
+
+/*
+Header text
+ */
+#header em {
+  color: var(--dark-gray);
+}
+
 .color-primary {
   color: var(--primary);
 }
