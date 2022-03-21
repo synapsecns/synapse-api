@@ -117,8 +117,8 @@ router.get('/get_chains_for_token',
  *
  * @apiQuery {Number|String} fromChain Name or decimal/hex id of chain the transaction is from
  * @apiQuery {Number|String} toChain Name or decimal/hex id of chain transaction is to
- * @apiQuery {String} fromToken Token user will send to the bridge on the source chain.
- * @apiQuery {String} toToken Token user will receive from the bridge on the destination chain.
+ * @apiQuery {String} fromToken Token user will send to the bridge on the source chain
+ * @apiQuery {String} toToken Token user will receive from the bridge on the destination chain
  * @apiQuery {String} amountFrom Transaction input amount
  *
  * @apiSuccessExample Success-Response:
@@ -212,7 +212,7 @@ router.get('/generate_unsigned_bridge_txn',
  * @apiGroup API
  *
  * @apiQuery {Number|String} fromChain Name or decimal/hex id of chain
- * @apiQuery {String} fromToken Token instance or valid on-chain address of the token the user will be sending to the bridge on the source chain.
+ * @apiQuery {String} fromToken Token instance or valid on-chain address of the token the user will be sending to the bridge on the source chain
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
