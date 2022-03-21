@@ -136,6 +136,8 @@ section {
 article {
   border-top: 1px solid var(--white-ish);
   padding: 14px 0 30px 0;
+  border-color: var(--primary);
+
 }
 
 table {
@@ -428,7 +430,6 @@ tr.del td {
   width: 14px;
   height: 14px;
   background-color: #0088cc;
-
   border-radius: 100%;
   position: absolute;
   -webkit-animation: bouncedelay 1.2s infinite ease-in-out;
