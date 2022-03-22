@@ -2,14 +2,16 @@ import * as ChainUtils from "../utils/chainUtils.js";
 import * as TokenUtils from "../utils/tokenUtils.js";
 
 /**
- * @param {String} tokenSymbol
+ * @param {String} token
  * @returns {Object[]}
  */
-async function getChainsForToken(tokenSymbol) {
+async function getChainsForToken(token) {
+    const tokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(token)
+
     let chainObjects = []
 
-    let token = TokenUtils.getObjectFromSymbol(tokenSymbol);
-    for (const [chainId, _] of Object.entries(token.addresses)) {
+    let tokenObj = TokenUtils.getObjectFromSymbol(tokenSymbol);
+    for (const [chainId, _] of Object.entries(tokenObj.addresses)) {
         const chainObj = ChainUtils.getObjectFromId(chainId)
         chainObjects.push(chainObj);
     }
