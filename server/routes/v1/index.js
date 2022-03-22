@@ -58,8 +58,8 @@ router.get('/get_bridgable_tokens',
         }
 
         try {
-            const chainId = ChainUtils.getIdFromRequestQueryParam(req.query.chain)
-            const tokenList = await getBridgeableTokensForChain(chainId)
+            const {chain} = req.query;
+            const tokenList = await getBridgeableTokensForChain(chain)
             res.status(200).json(tokenList);
         } catch (err) {
             console.log(err);
@@ -100,8 +100,8 @@ router.get('/get_chains_for_token',
         }
 
         try {
-            const tokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(req.query.token)
-            const tokenList = await getChainsForToken(tokenSymbol)
+            const {token} = req.query;
+            const tokenList = await getChainsForToken(token);
             res.status(200).json(tokenList);
         }  catch (err) {
             console.log(err);
