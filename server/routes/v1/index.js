@@ -9,7 +9,7 @@ import {generateUnsignedBridgeTxn} from "../../controllers/generateUnsignedBridg
 import {generateUnsignedBridgeApprovalTxn} from "../../controllers/generateUnsignedBridgeApprovalTxn.js"
 import {generateBridgeTxnParams} from "../../controllers/generateBridgeTxnParams.js"
 
-import {getSwappableTokens} from "../../controllers/getSwappableTokens.js"
+import {getStableSwapPools} from "../../controllers/getStableSwapPools.js"
 import {estimateSwapOutput} from "../../controllers/estimateSwapOutput.js"
 import {generateSwapTransaction} from "../../controllers/generateSwapTransaction.js"
 
@@ -20,8 +20,8 @@ import {BigNumber} from "ethers";
 
 
 /**
- * @api {get} /v1/get_bridgable_tokens Get Bridgeable Tokens
- * @apiName get_bridgable_tokens
+ * @api {get} /v1/get_bridgeable_tokens Get Bridgeable Tokens
+ * @apiName get_bridgeable_tokens
  * @apiGroup API
  *
  * @apiQuery {Number|String} chain Chain id passed as a decimal or hex number (56, 0x38 etc.) or name (ETH, BSC, etc.)
@@ -41,9 +41,9 @@ import {BigNumber} from "ethers";
  *     ...
  * ]
  *
- * @apiSampleRequest /v1/get_bridgable_tokens
+ * @apiSampleRequest /v1/get_bridgeable_tokens
  */
-router.get('/get_bridgable_tokens',
+router.get('/get_bridgeable_tokens',
     oneOf([
         check('chain').isIn(ChainUtils.getNames()),
         check('chain').isIn(ChainUtils.getIds()),
@@ -135,10 +135,12 @@ router.get('/estimate_bridge_output',
     oneOf([check('toChain').isIn(ChainUtils.getNames()), check('toChain').isIn(ChainUtils.getIds()), check('toChain').isIn(ChainUtils.getHexIds())]),
     oneOf([check('fromToken').isIn(TokenUtils.getSymbols()), check('fromToken').isIn(TokenUtils.getAddresses())]),
     oneOf([check('toToken').isIn(TokenUtils.getSymbols()), check('toToken').isIn(TokenUtils.getAddresses())]),
+    check('amountFrom').exists(),
     async (req, res) => {
 
         try {
             validationResult(req).throw();
+            BigNumber.from(req.query.amountFrom);
         } catch (err) {
             res.status(400).json({"error": "Valid arguments for fromChain, toChain, fromToken, toToken and amountFrom must be passed"});
             return;
@@ -182,6 +184,7 @@ router.get('/generate_unsigned_bridge_txn',
     oneOf([check('toChain').isIn(ChainUtils.getNames()), check('toChain').isIn(ChainUtils.getIds()), check('toChain').isIn(ChainUtils.getHexIds())]),
     oneOf([check('fromToken').isIn(TokenUtils.getSymbols()), check('fromToken').isIn(TokenUtils.getAddresses())]),
     oneOf([check('toToken').isIn(TokenUtils.getSymbols()), check('toToken').isIn(TokenUtils.getAddresses())]),
+    check('amountFrom').exists(),
     async (req, res) => {
 
         try {
@@ -308,12 +311,14 @@ router.get('/generate_bridge_txn_params',
     oneOf([check('toChain').isIn(ChainUtils.getNames()), check('toChain').isIn(ChainUtils.getIds()), check('toChain').isIn(ChainUtils.getHexIds())]),
     oneOf([check('fromToken').isIn(TokenUtils.getSymbols()), check('fromToken').isIn(TokenUtils.getAddresses())]),
     oneOf([check('toToken').isIn(TokenUtils.getSymbols()), check('toToken').isIn(TokenUtils.getAddresses())]),
-    query('amountFrom').isNumeric(),
-    query('amountTo').isNumeric(),
+    query('amountFrom').exists(),
+    query('amountTo').exists(),
     async (req, res) => {
 
         try {
             validationResult(req).throw();
+            BigNumber.from(req.query.amountFrom);
+            BigNumber.from(req.query.amountTo);
         } catch (err) {
             res.status(400).json({"error": "Valid arguments for fromChain, toChain, fromToken, toToken, amountFrom and amountTo must be passed"});
             return;
@@ -330,15 +335,15 @@ router.get('/generate_bridge_txn_params',
 });
 
 /**
- * @api {get} /v1/get_swappable_tokens Get Swappable Tokens
- * @apiName get_swappable_tokens
+ * @api {get} /v1/get_stableswap_pools Get StableSwap Pools
+ * @apiName get_stableswap_pools
  * @apiGroup API
  *
  * @apiQuery {Number|String} chain Chain id passed as a decimal or hex number (56, 0x38 etc.) or name (ETH, BSC, etc.)
  *
- * @apiSampleRequest /v1/get_swappable_tokens
+ * @apiSampleRequest /v1/get_stableswap_pools
  */
-router.get('/get_swappable_tokens',
+router.get('/get_stableswap_pools',
     oneOf([
         check('chain').isIn(ChainUtils.getNames()),
         check('chain').isIn(ChainUtils.getIds()),
@@ -353,8 +358,8 @@ router.get('/get_swappable_tokens',
         }
 
         try {
-            const chainId = ChainUtils.getIdFromRequestQueryParam(req.query.chain);
-            const swappableTokens = await getSwappableTokens(chainId);
+            const {chain} = req.query
+            const swappableTokens = await getStableSwapPools(chain);
             res.status(200).json(swappableTokens);
         } catch (err) {
             console.log(err);
@@ -415,7 +420,7 @@ router.get('/generate_swap_transaction',
     oneOf([check('chain').isIn(ChainUtils.getNames()), check('chain').isIn(ChainUtils.getIds()), check('chain').isIn(ChainUtils.getHexIds())]),
     oneOf([check('fromToken').isIn(TokenUtils.getSymbols()), check('fromToken').isIn(TokenUtils.getAddresses())]),
     oneOf([check('toToken').isIn(TokenUtils.getSymbols()), check('toToken').isIn(TokenUtils.getAddresses())]),
-    query('amountIn').isNumeric(),
+    query('amountIn').exists(),
     async (req, res) => {
         try {
             validationResult(req).throw();

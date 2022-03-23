@@ -1,3 +1,5 @@
+import { SwapPools } from "@synapseprotocol/sdk";
+
 import * as TokenUtils from "../utils/tokenUtils.js"
 import * as ChainUtils from "../utils/chainUtils.js";
 
@@ -8,13 +10,14 @@ import * as ChainUtils from "../utils/chainUtils.js";
 async function getBridgeableTokensForChain(chain) {
     let chainId = ChainUtils.getIdFromRequestQueryParam(chain)
 
-    let tokenList = [];
-    TokenUtils.getObjects().forEach(tokenObj => {
-        if (chainId in tokenObj.addresses) {
-            tokenList.push(tokenObj)
-        }
+    let tokenList = SwapPools.getAllSwappableTokensForNetwork(chainId);
+    let resList = [];
+    tokenList.forEach(tokenObj => {
+        resList.push(TokenUtils.getObjectFromSymbol(tokenObj.symbol))
     })
-    return tokenList;
+
+    return resList;
+
 }
 
 export { getBridgeableTokensForChain };
