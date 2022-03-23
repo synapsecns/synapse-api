@@ -1,14 +1,17 @@
 import { SwapPools } from "@synapseprotocol/sdk";
+import * as ChainUtils from "../utils/chainUtils.js";
 
 /**
- * @param {number} chainId
+ * @param {String} chain
  * @returns {number[]}
  */
-async function getSwappableTokens(chainId) {
+async function getStableSwapPools(chain) {
+    const chainId = ChainUtils.getIdFromRequestQueryParam(chain);
+
     return {
         nUSD: SwapPools.stableswapPoolForNetwork(chainId),
         nETH: SwapPools.ethSwapPoolForNetwork(chainId),
     };
 }
 
-export { getSwappableTokens };
+export { getStableSwapPools };

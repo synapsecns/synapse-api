@@ -7,11 +7,11 @@ const should = chai.should();
 chai.use(chaiHttp);
 describe('Integration Tests', () => {
 
-    it('list out bridgable tokens', (done) => {
+    it('list out bridgeable tokens', (done) => {
         chai.request(app)
-            .get('/v1/get_bridgable_tokens')
+            .get('/v1/get_bridgeable_tokens')
             .query({
-                chain: 1,
+                chain: 56,
             })
             .end((err, res) => {
                 res.should.have.status(200);
@@ -20,6 +20,14 @@ describe('Integration Tests', () => {
                 res.body[0].should.have.property('symbol');
                 res.body[0].should.have.property('decimals');
                 res.body[0].should.have.property('addresses');
+
+                let tokenSymbols = [];
+                res.body.forEach(tokenObj => tokenSymbols.push(tokenObj.symbol))
+
+                tokenSymbols.should.contain('USDT');
+
+                // Not swappable for BSC
+                tokenSymbols.should.not.contain('DAI');
 
                 done();
             });
@@ -128,9 +136,9 @@ describe('Integration Tests', () => {
             });
     });
 
-    it('get swappable tokens', (done) => {
+    it('get stableswap pools', (done) => {
         chai.request(app)
-            .get('/v1/get_swappable_tokens')
+            .get('/v1/get_stableswap_pools')
             .query({
                 chain: 1,
             })

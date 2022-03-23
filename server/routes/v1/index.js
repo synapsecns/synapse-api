@@ -9,7 +9,7 @@ import {generateUnsignedBridgeTxn} from "../../controllers/generateUnsignedBridg
 import {generateUnsignedBridgeApprovalTxn} from "../../controllers/generateUnsignedBridgeApprovalTxn.js"
 import {generateBridgeTxnParams} from "../../controllers/generateBridgeTxnParams.js"
 
-import {getSwappableTokens} from "../../controllers/getSwappableTokens.js"
+import {getStableSwapPools} from "../../controllers/getStableSwapPools.js"
 import {estimateSwapOutput} from "../../controllers/estimateSwapOutput.js"
 import {generateSwapTransaction} from "../../controllers/generateSwapTransaction.js"
 
@@ -20,8 +20,8 @@ import {BigNumber} from "ethers";
 
 
 /**
- * @api {get} /v1/get_bridgable_tokens Get Bridgeable Tokens
- * @apiName get_bridgable_tokens
+ * @api {get} /v1/get_bridgeable_tokens Get Bridgeable Tokens
+ * @apiName get_bridgeable_tokens
  * @apiGroup API
  *
  * @apiQuery {Number|String} chain Chain id passed as a decimal or hex number (56, 0x38 etc.) or name (ETH, BSC, etc.)
@@ -41,9 +41,9 @@ import {BigNumber} from "ethers";
  *     ...
  * ]
  *
- * @apiSampleRequest /v1/get_bridgable_tokens
+ * @apiSampleRequest /v1/get_bridgeable_tokens
  */
-router.get('/get_bridgable_tokens',
+router.get('/get_bridgeable_tokens',
     oneOf([
         check('chain').isIn(ChainUtils.getNames()),
         check('chain').isIn(ChainUtils.getIds()),
@@ -330,15 +330,15 @@ router.get('/generate_bridge_txn_params',
 });
 
 /**
- * @api {get} /v1/get_swappable_tokens Get Swappable Tokens
- * @apiName get_swappable_tokens
+ * @api {get} /v1/get_stableswap_pools Get StableSwap Pools
+ * @apiName get_stableswap_pools
  * @apiGroup API
  *
  * @apiQuery {Number|String} chain Chain id passed as a decimal or hex number (56, 0x38 etc.) or name (ETH, BSC, etc.)
  *
- * @apiSampleRequest /v1/get_swappable_tokens
+ * @apiSampleRequest /v1/get_stableswap_pools
  */
-router.get('/get_swappable_tokens',
+router.get('/get_stableswap_pools',
     oneOf([
         check('chain').isIn(ChainUtils.getNames()),
         check('chain').isIn(ChainUtils.getIds()),
@@ -353,8 +353,8 @@ router.get('/get_swappable_tokens',
         }
 
         try {
-            const chainId = ChainUtils.getIdFromRequestQueryParam(req.query.chain);
-            const swappableTokens = await getSwappableTokens(chainId);
+            const {chain} = req.query
+            const swappableTokens = await getStableSwapPools(chain);
             res.status(200).json(swappableTokens);
         } catch (err) {
             console.log(err);
