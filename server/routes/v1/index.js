@@ -135,10 +135,12 @@ router.get('/estimate_bridge_output',
     oneOf([check('toChain').isIn(ChainUtils.getNames()), check('toChain').isIn(ChainUtils.getIds()), check('toChain').isIn(ChainUtils.getHexIds())]),
     oneOf([check('fromToken').isIn(TokenUtils.getSymbols()), check('fromToken').isIn(TokenUtils.getAddresses())]),
     oneOf([check('toToken').isIn(TokenUtils.getSymbols()), check('toToken').isIn(TokenUtils.getAddresses())]),
+    check('amountFrom').exists(),
     async (req, res) => {
 
         try {
             validationResult(req).throw();
+            BigNumber.from(req.query.amountFrom);
         } catch (err) {
             res.status(400).json({"error": "Valid arguments for fromChain, toChain, fromToken, toToken and amountFrom must be passed"});
             return;
@@ -182,6 +184,7 @@ router.get('/generate_unsigned_bridge_txn',
     oneOf([check('toChain').isIn(ChainUtils.getNames()), check('toChain').isIn(ChainUtils.getIds()), check('toChain').isIn(ChainUtils.getHexIds())]),
     oneOf([check('fromToken').isIn(TokenUtils.getSymbols()), check('fromToken').isIn(TokenUtils.getAddresses())]),
     oneOf([check('toToken').isIn(TokenUtils.getSymbols()), check('toToken').isIn(TokenUtils.getAddresses())]),
+    check('amountFrom').exists(),
     async (req, res) => {
 
         try {
@@ -308,12 +311,14 @@ router.get('/generate_bridge_txn_params',
     oneOf([check('toChain').isIn(ChainUtils.getNames()), check('toChain').isIn(ChainUtils.getIds()), check('toChain').isIn(ChainUtils.getHexIds())]),
     oneOf([check('fromToken').isIn(TokenUtils.getSymbols()), check('fromToken').isIn(TokenUtils.getAddresses())]),
     oneOf([check('toToken').isIn(TokenUtils.getSymbols()), check('toToken').isIn(TokenUtils.getAddresses())]),
-    query('amountFrom').isNumeric(),
-    query('amountTo').isNumeric(),
+    query('amountFrom').exists(),
+    query('amountTo').exists(),
     async (req, res) => {
 
         try {
             validationResult(req).throw();
+            BigNumber.from(req.query.amountFrom);
+            BigNumber.from(req.query.amountTo);
         } catch (err) {
             res.status(400).json({"error": "Valid arguments for fromChain, toChain, fromToken, toToken, amountFrom and amountTo must be passed"});
             return;
@@ -415,7 +420,7 @@ router.get('/generate_swap_transaction',
     oneOf([check('chain').isIn(ChainUtils.getNames()), check('chain').isIn(ChainUtils.getIds()), check('chain').isIn(ChainUtils.getHexIds())]),
     oneOf([check('fromToken').isIn(TokenUtils.getSymbols()), check('fromToken').isIn(TokenUtils.getAddresses())]),
     oneOf([check('toToken').isIn(TokenUtils.getSymbols()), check('toToken').isIn(TokenUtils.getAddresses())]),
-    query('amountIn').isNumeric(),
+    query('amountIn').exists(),
     async (req, res) => {
         try {
             validationResult(req).throw();
