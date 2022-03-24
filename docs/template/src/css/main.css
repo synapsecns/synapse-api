@@ -644,7 +644,7 @@ pre[class*="language-"] {
 
 :not(pre) > code[class*="language-"],
 pre[class*="language-"] {
-  background: var(--dark-slate q);
+  background: #111b27;
 }
 
 /* Inline code */
@@ -678,8 +678,7 @@ pre[class*="language-"] {
 .token.number,
 .token.constant,
 .token.selector .token.attribute {
-  /*Color for HTTP/1.1 200 OK */
-  /*color: #e6d37a;*/
+  color: #e6d37a;
 }
 
 .token.class-name,
@@ -697,8 +696,7 @@ pre[class*="language-"] {
 .token.selector .token.value,
 .token.string,
 .token.string .token.url-link {
-  /* Colour for response attributes */
-  color: var(--white-ish);
+  color: #91d076;
 }
 
 .token.builtin,
