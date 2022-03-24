@@ -75,6 +75,15 @@ Header text
   color: var(--dark-gray);
 }
 
+/* Success response and Error tabs*/
+.nav-tabs {
+  border-bottom: white !important;
+}
+
+.nav-tabs>li.active>a {
+  border-bottom-color: inherit !important;
+}
+
 .color-primary {
   color: var(--primary);
 }
@@ -184,7 +193,9 @@ td.code {
 }
 
 .label.required {
-  background-color: var(--red);
+  background-color: var(--light-slate);
+  font-weight:normal;
+  padding: 3px;
 }
 
 .default-value,

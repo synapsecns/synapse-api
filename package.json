@@ -31,7 +31,11 @@
     "name": "Synapse REST API",
     "description": "",
     "header": {
-      "filename": "docs/header.md"
+      "filename": "docs/header.md",
+      "title": "Overview"
+    },
+    "template": {
+      "showRequiredLabels": true
     }
   }
 }

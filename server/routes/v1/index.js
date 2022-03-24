@@ -399,6 +399,10 @@ router.get('/generate_bridge_txn_params',
  *
  * @apiQuery {Number|String} chain Name or decimal/hex id of chain
  *
+ * @apiExample {curl} Example usage:
+ *      curl --request GET 'https://syn-api-x.herokuapp.com/v1/generate_bridge_txn_params?fromChain=1&toChain=BSC&fromToken=USDC&toToken=USDC&amountFrom=1&amountTo=1'
+ *
+ * @apiSuccessExample Success-Response:
  *     {
  *         "nUSD": {
  *             "baseToken": {
