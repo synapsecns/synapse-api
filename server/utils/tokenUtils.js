@@ -125,6 +125,22 @@ function getObjectFromAddress(address) {
     return Cache.set(getObjectFromAddress, tokenObj, [address]);
 }
 
+/**
+ * @param {String} symbol
+ * @param {String} chainId
+ * @returns {String|null}
+ */
+function getChainAddressFromSymbol(symbol, chainId) {
+    let cachedRes = Cache.get(getChainAddressFromSymbol, [symbol, chainId]);
+    if (cachedRes) {
+        return cachedRes;
+    }
+
+    let address =  Tokens[symbol].addresses[chainId];
+    address = address ? address : null;
+
+    return Cache.set(getObjectFromAddress, address, [symbol, chainId]);
+}
 
 /**
  * @param {String} tokenParam
@@ -145,5 +161,6 @@ export {
     getObjects,
     getObjectFromAddress,
     getObjectFromSymbol,
+    getChainAddressFromSymbol,
     getSymbolFromRequestQueryParam,
 }

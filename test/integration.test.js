@@ -79,7 +79,7 @@ describe('Integration Tests', () => {
             .get('/v1/generate_unsigned_bridge_approval_txn')
             .query({
                 fromChain: "ETH",
-                fromToken: "ETH",
+                fromToken: "DAI",
             })
             .end((err, res) => {
                 res.should.have.status(200);

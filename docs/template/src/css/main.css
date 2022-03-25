@@ -37,6 +37,7 @@ API versions
 input, .input-group-addon, article > ul > li > a, #version, .version {
   background-color:  rgb(31,41,55) !important;
   color: white !important;
+  border-radius: 2px !important;
 }
 
 /*
@@ -189,7 +190,8 @@ td.code {
 }
 
 .label.optional {
-  background-color: white;
+  /*background-color: white;*/
+  display: none;
 }
 
 .label.required {
@@ -304,7 +306,6 @@ td.code {
   padding: 5px 15px;
   font-weight: 700;
   font-size: 16px;
-  background-color: var(--dark-slate);
 }
 
 

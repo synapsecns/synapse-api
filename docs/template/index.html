@@ -9,9 +9,9 @@
 <!--  <link href="assets/prism.css" rel="stylesheet" />-->
   <link href="assets/main.css" rel="stylesheet" media="screen, print">
   <link href="assets/favicon.ico" rel="icon" type="image/x-icon">
-  <link href="assets/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180">
-  <link href="assets/favicon-32x32.png" rel="icon" type="image/png" sizes="32x32">
-  <link href="assets/favicon-16x16.png"rel="icon" type="image/png" sizes="16x16">
+<!--  <link href="assets/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180">-->
+<!--  <link href="assets/favicon-32x32.png" rel="icon" type="image/png" sizes="32x32">-->
+<!--  <link href="assets/favicon-16x16.png"rel="icon" type="image/png" sizes="16x16">-->
 </head>
 
 <body class="container-fluid">
@@ -182,7 +182,8 @@
       </div>
     {{/ifCond}}
 
-    {{subTemplate "article-param-block" params=article.header _hasType=_hasTypeInHeaderFields section="header"}}
+    {{subTemplate "article-param-block" params=article.header _hasType=_hasTypeInHeaderFields section="
+    "}}
     {{subTemplate "article-param-block" params=article.parameter _hasType=_hasTypeInParameterFields section="parameter"}}
     {{subTemplate "article-query-block" params=article.query _hasType=_hasTypeInParameterFields section="query"}}
     {{subTemplate "article-body-block" params=article.body _hasType=_hasTypeInParameterFields section="body"}}
