@@ -9,7 +9,9 @@ import * as TokenUtils from "../utils/tokenUtils.js";
  */
 async function generateUnsignedBridgeApprovalTxn(fromChain, fromToken) {
     const fromChainId = ChainUtils.getIdFromRequestQueryParam(fromChain)
+
     const fromTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
+    const fromTokenObj = TokenUtils.getObjectFromSymbol(fromTokenSymbol);
 
     const bridge = Bridges[fromChainId];
 
