@@ -11,13 +11,13 @@ async function generateUnsignedBridgeApprovalTxn(fromChain, fromToken) {
     const fromChainId = ChainUtils.getIdFromRequestQueryParam(fromChain)
 
     const fromTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
-    const fromTokenObj = TokenUtils.getObjectFromSymbol(fromTokenSymbol);
+    const fromTokenAddress = TokenUtils.getChainAddressFromSymbol(fromTokenSymbol, fromChainId);
 
     const bridge = Bridges[fromChainId];
 
     try {
         const txn = await bridge.buildApproveTransaction({
-            token: fromTokenSymbol,
+            token: fromTokenAddress,
         });
         return {
             unsigned_data: txn.data,
