@@ -307,7 +307,7 @@ router.get('/generate_unsigned_bridge_approval_txn',
  * @apiQuery {String} fromToken Token user will send to the bridge on the source chain
  * @apiQuery {String} toToken Token user will receive from the bridge on the destination chain
  * @apiQuery {Number} amountFrom Amount of tokenFrom (denoted in wei) that the user will send to the bridge on the source chain
- * @apiQuery {String} address Optional, user can provide an address other than the one retrieved from signer to receive tokens
+ * @apiQuery {String} [address] Optional, user can provide an address other than the one retrieved from signer to receive tokens
  *
  * @apiExample {curl} Example usage:
  *      curl --request GET 'https://syn-api-x.herokuapp.com/v1/generate_bridge_txn_params?fromChain=1&toChain=BSC&fromToken=USDC&toToken=USDC&amountFrom=1&amountTo=1'
