@@ -30,6 +30,7 @@
   "apidoc": {
     "name": "Synapse REST API",
     "description": "",
+    "title": "Synapse API Docs",
     "header": {
       "filename": "docs/header.md",
       "title": "Overview"

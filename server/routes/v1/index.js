@@ -22,7 +22,7 @@ import {BigNumber} from "ethers";
 /**
  * @api {get} /v1/get_bridgeable_tokens Get Bridgeable Tokens
  * @apiName get_bridgeable_tokens
- * @apiGroup API
+ * @apiGroup API Endpoints
  *
  * @apiQuery {Number|String} chain Chain id passed as a decimal or hex number
  *
@@ -80,7 +80,7 @@ router.get('/get_bridgeable_tokens',
 /**
  * @api {get} /v1/get_chains_for_token Get Chains for Token
  * @apiName get_chains_for_token
- * @apiGroup API
+ * @apiGroup API Endpoints
  *
  * @apiQuery {String} token Token symbol or chain address
  *
@@ -131,7 +131,7 @@ router.get('/get_chains_for_token',
 /**
  * @api {get} /v1/estimate_bridge_output Estimate Bridge Output
  * @apiName estimate_bridge_output
- * @apiGroup API
+ * @apiGroup API Endpoints
  *
  * @apiQuery {Number|String} fromChain Name or decimal/hex id of chain the transaction is from
  * @apiQuery {Number|String} toChain Name or decimal/hex id of chain transaction is to
@@ -190,14 +190,14 @@ router.get('/estimate_bridge_output',
 /**
  * @api {get} /v1/generate_unsigned_bridge_txn Generate Unsigned Bridge Transaction
  * @apiName generate_unsigned_bridge_txn
- * @apiGroup API
+ * @apiGroup API Endpoints
  *
  * @apiQuery {Number|String} fromChain Name or decimal/hex id of chain transaction is from
  * @apiQuery {Number|String} toChain Name or decimal/hex id of chain transaction is to
  * @apiQuery {String} fromToken Token user will send to the bridge on the source chain
  * @apiQuery {String} toToken Token user will receive from the bridge on the destination chain
  * @apiQuery {Number} amountFrom Amount that the user will send to the bridge on the source chain
- * @apiQuery {String} address Optional, user can provide an address other than the one retrieved from signer to receive tokens
+ * @apiQuery {String} [address] Optional, user can provide an address other than the one retrieved from signer to receive tokens
  *
  * @apiExample {curl} Example usage:
  *      curl --request GET 'https://syn-api-x.herokuapp.com/v1/generate_unsigned_bridge_txn?fromChain=AVALANCHE&toChain=BSC&fromToken=USDC&toToken=USDC&amountFrom=10&address=0x2D2c027E0d1A899a1965910Dd272bcaE1cD03c22'
@@ -249,7 +249,7 @@ router.get('/generate_unsigned_bridge_txn',
 /**
  * @api {get} /v1/generate_unsigned_bridge_approval_txn Generate Unsigned Bridge Approval Transaction
  * @apiName generate_unsigned_bridge_approval_txn
- * @apiGroup API
+ * @apiGroup API Endpoints
  *
  * @apiQuery {Number|String} fromChain Name or decimal/hex id of chain
  * @apiQuery {String} fromToken Token instance or valid on-chain address of the token the user will be sending to the bridge on the source chain
@@ -300,7 +300,7 @@ router.get('/generate_unsigned_bridge_approval_txn',
 /**
  * @api {get} /v1/generate_bridge_txn_params Generate Bridge Transaction Parameters
  * @apiName generate_bridge_txn_params
- * @apiGroup API
+ * @apiGroup API Endpoints
  *
  * @apiQuery {Number|String} fromChain Name or decimal/hex id of chain transaction is from
  * @apiQuery {Number|String} toChain Name or decimal/hex id of chain transaction is to
@@ -395,7 +395,7 @@ router.get('/generate_bridge_txn_params',
 /**
  * @api {get} /v1/get_stableswap_pools Get StableSwap Pools
  * @apiName get_stableswap_pools
- * @apiGroup API
+ * @apiGroup API Endpoints
  *
  * @apiQuery {Number|String} chain Name or decimal/hex id of chain
  *
@@ -474,7 +474,7 @@ router.get('/get_stableswap_pools',
 /**
  * @api {get} /v1/estimate_swap_output Estimate Swap Output
  * @apiName estimate_swap_output
- * @apiGroup API
+ * @apiGroup API Endpoints
 
  * @apiQuery {Number|String} chain Name or decimal/hex id of chain
  * @apiQuery {String} fromToken Token user will send to the bridge on the source chain
@@ -511,7 +511,7 @@ router.get('/estimate_swap_output',
 /**
  * @api {get} /v1/generate_swap_transaction Generate Swap Transaction
  * @apiName generate_swap_transaction
- * @apiGroup API
+ * @apiGroup API Endpoints
 
  * @apiQuery {Number|String} chain Name or decimal/hex id of chain
  * @apiQuery {String} fromToken Token user will send to the bridge on the source chain

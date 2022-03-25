@@ -2,4 +2,4 @@
 
 * `chain`/`chainFrom`/`chainTo`: Accepts a chain symbol (eg. *ETHEREUM*, *BSC*, *ARBITRUM*, etc.), a decimal (*1*, *56*, *42161*) or lower-case hexadecimal (*0x1*, *0x32*, *0xa4b1*) representation of Chain ID. Chain Symbols and Chain IDs can be found in the SDK. See [chainid.ts](https://github.com/synapsecns/sdk/blob/master/src/common/chainid.ts#L1).
 * `tokenFrom`/`tokenTo`: Accepts a token symbol (eg. *DAI*, *USDC*, *ETH*, etc.) or token address on chain (eg. *0x6b175474e89094c44da98b954eedeac495271d0f*). Token symbols and addresses can be found in the SDK. See [tokens.ts](https://github.com/synapsecns/sdk/blob/master/src/tokens.ts).
-* `amount`/`amountFrom`: Denoted in *wei*, accepts a decimal (eg. *100000000000*) or lower case hexadecimal number (*0x174876e800*). Parsed as a [BigNumber](https://docs.ethers.io/v5/api/utils/bignumber/#BigNumber).
+* `amount`/`amountFrom`: Denoted in *wei*, accepts a decimal (eg. *100000000000*) or lower case hexadecimal number (eg. *0x174876e800*). Parsed as a [BigNumber](https://docs.ethers.io/v5/api/utils/bignumber/#BigNumber).
