@@ -82,6 +82,17 @@ describe('TokenUtils unit tests', () => {
         res.should.equal(cachedRes);
     });
 
+    it('getChainAddressFromSymbol() should return an address when a chain id and token symbol are passed as params', function () {
+        let tokenSymbol = "DAI";
+        let chainId = "137";
+        let res = TokenUtils.getChainAddressFromSymbol(tokenSymbol, chainId);
+        res.should.be.an('string');
+        res.should.equal('0x8f3cf7ad23cd3cadbd9735aff958023239c6a063');
+
+        let cachedRes = TokenUtils.getChainAddressFromSymbol(tokenSymbol, chainId);
+        res.should.equal(cachedRes);
+    });
+
     it('getSymbolFromRequestQueryParam() should return symbol on passing a symbol', function () {
         let res = TokenUtils.getSymbolFromRequestQueryParam("USDC");
         res.should.equal("USDC")
