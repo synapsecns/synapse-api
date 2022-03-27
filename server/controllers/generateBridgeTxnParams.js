@@ -15,27 +15,32 @@ import * as TokenUtils from "../utils/tokenUtils.js";
  * @returns {Object[]}
  */
 async function generateBridgeTxnParams(fromChain, toChain, fromToken, toToken, amountFrom, amountTo, addressTo) {
-    const fromChainId = ChainUtils.getIdFromRequestQueryParam(fromChain)
-    const toChainId = ChainUtils.getIdFromRequestQueryParam(toChain)
+    try {
+        const fromChainId = ChainUtils.getIdFromRequestQueryParam(fromChain)
+        const toChainId = ChainUtils.getIdFromRequestQueryParam(toChain)
 
-    const fromTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
-    const fromTokenObj = Tokens[fromTokenSymbol]
+        const fromTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
+        const fromTokenObj = Tokens[fromTokenSymbol]
 
-    const toTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
-    const toTokenObj = Tokens[toTokenSymbol]
+        const toTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
+        const toTokenObj = Tokens[toTokenSymbol]
 
-    const bigNumAmountFrom = BigNumber.from(amountFrom);
-    const bigNumAmountTo = BigNumber.from(amountTo);
+        const bigNumAmountFrom = BigNumber.from(amountFrom);
+        const bigNumAmountTo = BigNumber.from(amountTo);
 
-    const bridge = Bridges[fromChainId];
+        const bridge = Bridges[fromChainId];
 
-    return {
-        tokenFrom: fromTokenObj,
-        tokenTo: toTokenObj,
-        chainIdTo: toChainId,
-        amountFrom: bigNumAmountFrom,
-        amountTo: bigNumAmountTo,
-        addressTo: addressTo
+        return {
+            tokenFrom: fromTokenObj,
+            tokenTo: toTokenObj,
+            chainIdTo: toChainId,
+            amountFrom: bigNumAmountFrom,
+            amountTo: bigNumAmountTo,
+            addressTo: addressTo
+        }
+    } catch (err) {
+        console.error(err);
+        throw err;
     }
 }
 

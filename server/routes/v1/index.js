@@ -71,7 +71,6 @@ router.get('/get_bridgeable_tokens',
             const tokenList = await getBridgeableTokensForChain(chain)
             res.status(200).json(tokenList);
         } catch (err) {
-            console.log(err);
             res.status(500).json({"error": "Internal Server Error"});
         }
     });
@@ -122,7 +121,6 @@ router.get('/get_chains_for_token',
             const tokenList = await getChainsForToken(token);
             res.status(200).json(tokenList);
         }  catch (err) {
-            console.log(err);
             res.status(500).json({"error": "Internal Server Error"});
         }
 
@@ -240,7 +238,6 @@ router.get('/generate_unsigned_bridge_txn',
             const unsignedTxn = await generateUnsignedBridgeTxn(fromChain, toChain, fromToken, toToken, amountFrom, address);
             res.status(200).json(unsignedTxn);
         } catch (err) {
-            console.error(err);
             res.status(500).json({"error": "Internal Server Error"});
         }
 
@@ -466,7 +463,6 @@ router.get('/get_stableswap_pools',
             const swappableTokens = await getStableSwapPools(chain);
             res.status(200).json(swappableTokens);
         } catch (err) {
-            console.log(err);
             res.status(500).json({"error": "Internal Server Error"});
         }
     });
@@ -503,7 +499,6 @@ router.get('/estimate_swap_output',
             const estSwapOutput = await estimateSwapOutput(chain, fromToken, toToken, amountIn);
             res.status(200).json(estSwapOutput);
         } catch (err) {
-            console.log(err);
             res.status(500).json({"error": "Internal Server Error"});
         }
     });
@@ -540,7 +535,6 @@ router.get('/generate_swap_transaction',
             const swapTxn = await generateSwapTransaction(chain, fromToken, toToken, amountIn);
             res.status(200).json(swapTxn);
         } catch (err) {
-            console.log(err);
             res.status(500).json({"error": "Internal Server Error"});
         }
     });

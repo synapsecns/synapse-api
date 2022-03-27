@@ -25,6 +25,7 @@ async function generateUnsignedBridgeApprovalTxn(fromChain, fromToken) {
             maxPriorityFeePerGas: txn.maxPriorityFeePerGas
         }
     } catch (err) {
+        console.log(err);
         throw err
     }
 }

@@ -13,26 +13,29 @@ import {BigNumber} from "ethers";
  * @returns {number[]}
  */
 async function estimateSwapOutput(chain, fromToken, toToken, amountIn) {
+    try {
+        const chainId = ChainUtils.getIdFromRequestQueryParam(chain)
 
-    const chainId = ChainUtils.getIdFromRequestQueryParam(chain)
+        const fromTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
+        const fromTokenObj = Tokens[fromTokenSymbol]
 
-    const fromTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
-    const fromTokenObj = Tokens[fromTokenSymbol]
+        const toTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(toToken)
+        const toTokenObj = Tokens[toTokenSymbol]
 
-    const toTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(toToken)
-    const toTokenObj = Tokens[toTokenSymbol]
+        const bigNumAmountIn = BigNumber.from(amountIn);
 
-    const bigNumAmountIn = BigNumber.from(amountIn);
-
-    let swapRate = await TokenSwap.calculateSwapRate({
-        chainId: chainId,
-        tokenFrom: fromTokenObj,
-        tokenTo: toTokenObj,
-        amountIn: bigNumAmountIn,
-    });
-
-    return {
-        minAmountOut: swapRate.amountOut.toString()
+        let swapRate = await TokenSwap.calculateSwapRate({
+            chainId: chainId,
+            tokenFrom: fromTokenObj,
+            tokenTo: toTokenObj,
+            amountIn: bigNumAmountIn,
+        });
+        return {
+            minAmountOut: swapRate.amountOut.toString()
+        }
+    } catch (err) {
+        console.error(err);
+        throw err;
     }
 }
 

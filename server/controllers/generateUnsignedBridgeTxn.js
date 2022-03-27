@@ -14,41 +14,46 @@ import * as TokenUtils from "../utils/tokenUtils.js";
  * @returns {Object[]}
  */
 async function generateUnsignedBridgeTxn(fromChain, toChain, fromToken, toToken, amountFrom, address) {
-    const fromChainId = ChainUtils.getIdFromRequestQueryParam(fromChain)
-    const toChainId = ChainUtils.getIdFromRequestQueryParam(toChain)
+    try {
+        const fromChainId = ChainUtils.getIdFromRequestQueryParam(fromChain)
+        const toChainId = ChainUtils.getIdFromRequestQueryParam(toChain)
 
-    const fromTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
-    const fromTokenObj = Tokens[fromTokenSymbol]
+        const fromTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
+        const fromTokenObj = Tokens[fromTokenSymbol]
 
-    const toTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(toToken)
-    const toTokenObj = Tokens[toTokenSymbol]
+        const toTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(toToken)
+        const toTokenObj = Tokens[toTokenSymbol]
 
-    const bigNumAmount = BigNumber.from(amountFrom);
+        const bigNumAmount = BigNumber.from(amountFrom);
 
-    const bridge = Bridges[fromChainId];
+        const bridge = Bridges[fromChainId];
 
-    const estimate = await bridge.estimateBridgeTokenOutput({
-        tokenFrom: fromTokenObj,
-        tokenTo: toTokenObj,
-        chainIdTo: toChainId,
-        amountFrom: bigNumAmount
-    });
-    const unsignedTxn = await bridge.buildBridgeTokenTransaction({
-        tokenFrom: fromTokenObj,
-        chainIdTo: toChainId,
-        tokenTo: toTokenObj,
-        amountFrom: bigNumAmount,
-        amountTo: estimate.amountToReceive,
-        addressTo: address
-    })
+        const estimate = await bridge.estimateBridgeTokenOutput({
+            tokenFrom: fromTokenObj,
+            tokenTo: toTokenObj,
+            chainIdTo: toChainId,
+            amountFrom: bigNumAmount
+        });
+        const unsignedTxn = await bridge.buildBridgeTokenTransaction({
+            tokenFrom: fromTokenObj,
+            chainIdTo: toChainId,
+            tokenTo: toTokenObj,
+            amountFrom: bigNumAmount,
+            amountTo: estimate.amountToReceive,
+            addressTo: address
+        })
 
-    return {
-        unsigned_data: unsignedTxn.data,
-        to: unsignedTxn.to,
-        // Convert BigNumbers to String
-        maxFeePerGas: unsignedTxn.maxFeePerGas.toString(),
-        maxPriorityFeePerGas: unsignedTxn.maxPriorityFeePerGas.toString(),
-        gasLimit: unsignedTxn.gasLimit.toString(),
+        return {
+            unsigned_data: unsignedTxn.data,
+            to: unsignedTxn.to,
+            // Convert BigNumbers to String
+            maxFeePerGas: unsignedTxn.maxFeePerGas.toString(),
+            maxPriorityFeePerGas: unsignedTxn.maxPriorityFeePerGas.toString(),
+            gasLimit: unsignedTxn.gasLimit.toString(),
+        }
+    } catch(err) {
+        console.log(err);
+        throw err;
     }
 }
 

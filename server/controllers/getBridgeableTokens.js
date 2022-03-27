@@ -8,16 +8,19 @@ import * as ChainUtils from "../utils/chainUtils.js";
  * @returns {number[]}
  */
 async function getBridgeableTokensForChain(chain) {
-    let chainId = ChainUtils.getIdFromRequestQueryParam(chain)
+    try {
+        let chainId = ChainUtils.getIdFromRequestQueryParam(chain)
 
-    let tokenList = SwapPools.getAllSwappableTokensForNetwork(chainId);
-    let resList = [];
-    tokenList.forEach(tokenObj => {
-        resList.push(TokenUtils.getObjectFromSymbol(tokenObj.symbol))
-    })
-
-    return resList;
-
+        let tokenList = SwapPools.getAllSwappableTokensForNetwork(chainId);
+        let resList = [];
+        tokenList.forEach(tokenObj => {
+            resList.push(TokenUtils.getObjectFromSymbol(tokenObj.symbol))
+        })
+        return resList;
+    } catch (err) {
+        console.error(err);
+        throw (err);
+    }
 }
 
 export { getBridgeableTokensForChain };
