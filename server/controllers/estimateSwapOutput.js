@@ -34,7 +34,6 @@ async function estimateSwapOutput(chain, fromToken, toToken, amountIn) {
             minAmountOut: swapRate.amountOut.toString()
         }
     } catch (err) {
-        console.error(err);
         throw err;
     }
 }

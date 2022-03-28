@@ -71,7 +71,7 @@ router.get('/get_bridgeable_tokens',
             const tokenList = await getBridgeableTokensForChain(chain)
             res.status(200).json(tokenList);
         } catch (err) {
-            res.status(500).json({"error": "Internal Server Error"});
+            res.status(400).json({"error": err.toString()});
         }
     });
 
@@ -121,7 +121,7 @@ router.get('/get_chains_for_token',
             const tokenList = await getChainsForToken(token);
             res.status(200).json(tokenList);
         }  catch (err) {
-            res.status(500).json({"error": "Internal Server Error"});
+            res.status(400).json({"error": err.toString()});
         }
 
     });
@@ -176,12 +176,7 @@ router.get('/estimate_bridge_output',
             const estimate = await estimateBridgeOutputs(fromChain, toChain, fromToken, toToken, amountFrom);
             res.status(200).json(estimate);
         } catch (err) {
-
-            if (err.message.includes("not supported on")) {
-                res.status(400).json({"error": `${err.message}`});
-            } else {
-                res.status(500).json({"error": "Internal Server Error"});
-            }
+            res.status(400).json({"error": err.toString()});
         }
     });
 
@@ -205,8 +200,8 @@ router.get('/estimate_bridge_output',
  *      {
  *          "unsigned_data": "0x9f33072700000000000000...",
  *          "to": "0xE85429C97589AD793Ca11A8BC3477C03d27ED140",
- *          "gasPrice": "150000000000",
- *          "gasLimit": "150000000000"
+ *          "gasPrice": "140000000000",
+ *          "gasLimit": "140000000000"
  *      }
  *
  * @apiErrorExample {json} Error - Invalid Arguments:
@@ -238,7 +233,7 @@ router.get('/generate_unsigned_bridge_txn',
             const unsignedTxn = await generateUnsignedBridgeTxn(fromChain, toChain, fromToken, toToken, amountFrom, address);
             res.status(200).json(unsignedTxn);
         } catch (err) {
-            res.status(500).json({"error": "Internal Server Error"});
+            res.status(400).json({"error": err.toString()});
         }
 
     });
@@ -290,7 +285,7 @@ router.get('/generate_unsigned_bridge_approval_txn',
             const unsignedTxn = await generateUnsignedBridgeApprovalTxn(fromChain, fromToken);
             res.status(200).json(unsignedTxn);
         } catch (err) {
-            res.status(500).json({"error": err.message});
+            res.status(400).json({"error": err.toString()});
         }
 });
 
@@ -384,7 +379,7 @@ router.get('/generate_bridge_txn_params',
             const params = await generateBridgeTxnParams(fromChain, toChain, fromToken, toToken, amountFrom, amountTo, addressTo)
             res.status(200).json(params);
         }  catch (err) {
-            res.status(500).json({"error": err.message});
+            res.status(400).json({"error": err.toString()});
         }
 
 });
@@ -463,7 +458,7 @@ router.get('/get_stableswap_pools',
             const swappableTokens = await getStableSwapPools(chain);
             res.status(200).json(swappableTokens);
         } catch (err) {
-            res.status(500).json({"error": "Internal Server Error"});
+            res.status(400).json({"error": err.toString()});
         }
     });
 
@@ -499,7 +494,7 @@ router.get('/estimate_swap_output',
             const estSwapOutput = await estimateSwapOutput(chain, fromToken, toToken, amountIn);
             res.status(200).json(estSwapOutput);
         } catch (err) {
-            res.status(500).json({"error": "Internal Server Error"});
+            res.status(400).json({"error": err.toString()});
         }
     });
 
@@ -535,7 +530,7 @@ router.get('/generate_swap_transaction',
             const swapTxn = await generateSwapTransaction(chain, fromToken, toToken, amountIn);
             res.status(200).json(swapTxn);
         } catch (err) {
-            res.status(500).json({"error": "Internal Server Error"});
+            res.status(400).json({"error": err.toString()});
         }
     });
 
