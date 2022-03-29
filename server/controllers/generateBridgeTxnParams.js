@@ -34,8 +34,8 @@ async function generateBridgeTxnParams(fromChain, toChain, fromToken, toToken, a
             tokenFrom: fromTokenObj,
             tokenTo: toTokenObj,
             chainIdTo: toChainId,
-            amountFrom: bigNumAmountFrom,
-            amountTo: bigNumAmountTo,
+            amountFrom: bigNumAmountFrom.toString(),
+            amountTo: bigNumAmountTo.toString(),
             addressTo: addressTo
         }
     } catch (err) {

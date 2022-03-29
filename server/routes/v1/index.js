@@ -266,10 +266,7 @@ router.get('/generate_unsigned_bridge_txn',
  *      {
  *          "unsigned_data": "0x095ea7b3000000000000000000000000...",
  *          "to": "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85",
- *          "maxPriorityFeePerGas": {
- *              "type": "BigNumber",
- *              "hex": "0x59682f00"
- *          }
+ *          "maxPriorityFeePerGas": "1500000000"
  *      }
  *
  * @apiErrorExample {json} Error - Invalid Arguments:
@@ -350,15 +347,9 @@ router.get('/generate_unsigned_bridge_approval_txn',
  *              }
  *          },
  *          "chainIdTo": 56,
- *          "amountFrom": {
- *              "type": "BigNumber",
- *              "hex": "0x01"
- *          },
- *          "amountTo": {
- *              "type": "BigNumber",
- *              "hex": "0x01"
- *          }
- * }
+ *          "amountFrom": "1",
+ *          "amountTo": "1"
+ *      }
  *
  * @apiErrorExample {json} Error - Invalid Arguments:
  *     HTTP/1.1 400 Bad Request
