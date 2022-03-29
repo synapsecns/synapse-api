@@ -153,6 +153,12 @@ router.get('/get_chains_for_token',
  *       "error": "Valid arguments for fromChain, toChain, fromToken, toToken and amountFrom must be passed"
  *     }
  *
+ * @apiErrorExample {json} Error - Token Not Supported:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Error: Token BUSD not supported on 'from' network Avalanche C-Chain"
+ *     }
+ *
  * @apiSampleRequest /v1/estimate_bridge_output
  */
 router.get('/estimate_bridge_output',
@@ -208,6 +214,12 @@ router.get('/estimate_bridge_output',
  *     HTTP/1.1 400 Bad Request
  *     {
  *       "error": "Valid arguments for fromChain, toChain, fromToken, toToken, amountFrom and address must be passed"
+ *     }
+ *
+ * @apiErrorExample {json} Error - Token Not Supported:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Error: Token BUSD not supported on 'from' network Avalanche C-Chain"
  *     }
  *
  * @apiSampleRequest /v1/generate_unsigned_bridge_txn
@@ -466,11 +478,32 @@ router.get('/get_stableswap_pools',
  * @api {get} /v1/estimate_swap_output Estimate Swap Output
  * @apiName estimate_swap_output
  * @apiGroup API Endpoints
-
+ *
  * @apiQuery {Number|String} chain Name or decimal/hex id of chain
  * @apiQuery {String} fromToken Token user will send to the bridge on the source chain
  * @apiQuery {String} toToken Token user will receive from the bridge on the destination chain
  * @apiQuery {String|Number} amountIn Input amount to swap
+ *
+ * @apiExample {curl} Example usage:
+ *      curl --request GET 'https://syn-api-x.herokuapp.com/v1/estimate_swap_output?chain=1&fromToken=USDC&toToken=DAI&amountIn=1'
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "minAmountOut": "999971156015"
+ *      }
+ *
+ * @apiErrorExample {json} Error - Invalid Arguments:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "A valid value for chain, fromToken, toToken, amountIn must be passed"
+ *     }
+ *
+ * @apiErrorExample {json} Error - Nonmatching Swap Types:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "UnsupportedSwapError: Token swap types don't match"
+ *     }
  *
  * @apiSampleRequest /v1/estimate_swap_output
  */
@@ -502,13 +535,37 @@ router.get('/estimate_swap_output',
  * @api {get} /v1/generate_swap_transaction Generate Swap Transaction
  * @apiName generate_swap_transaction
  * @apiGroup API Endpoints
-
+ *
  * @apiQuery {Number|String} chain Name or decimal/hex id of chain
  * @apiQuery {String} fromToken Token user will send to the bridge on the source chain
  * @apiQuery {String} toToken Token user will receive from the bridge on the destination chain
  * @apiQuery {String|Number} amountIn Input amount to swap
  *
- * @apiSampleRequest /v1/generate_swap_transaction
+ * @apiExample {curl} Example usage:
+ *      curl --request GET 'https://syn-api-x.herokuapp.com/v1/generate_swap_transaction?chain=0x38&fromToken=BUSD&toToken=USDC&amountIn=1'
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "allowanceTarget": "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+ *          "minAmountOut": "0",
+ *          "data": "0x9169558600000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000062426173",
+ *          "to": "0x28ec0B36F0819ecB5005cAB836F4ED5a2eCa4D13"
+ *      }
+ *
+ * @apiErrorExample {json} Error - Invalid Arguments:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "A valid value for chain, fromToken, toToken, amountIn must be passed"
+ *     }
+ *
+ * @apiErrorExample {json} Error - Unsupported Swap:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "UnsupportedSwapError: Token DAI not supported on network Binance Smart Chain"
+ *     }
+ *
+ * @apiSampleRequest /v1/estimate_swap_output
  */
 router.get('/generate_swap_transaction',
     oneOf([check('chain').isIn(ChainUtils.getNames()), check('chain').isIn(ChainUtils.getIds()), check('chain').isIn(ChainUtils.getHexIds())]),

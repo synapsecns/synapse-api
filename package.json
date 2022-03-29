@@ -8,6 +8,7 @@
   "scripts": {
     "start": "nodemon ./server/index.js",
     "test": "mocha --timeout 10000 --exit",
+    "test:coverage": "c8 --reporter=lcov mocha --timeout 10000 --exit",
     "gendoc": "json -I -f package.json -e 'this.type=\"commonjs\"' && apidoc -v -f server/routes/v1/index.js -i ./ -o ./docs/apidoc && apidoc -v -t docs/template -f server/routes/v1/index.js -i ./ -o ./docs/apidoc && json -I -f package.json -e 'this.type=\"module\"'"
   },
   "dependencies": {
@@ -20,12 +21,13 @@
     "express-validator": "^6.14.0"
   },
   "devDependencies": {
+    "c8": "^7.11.0",
     "chai": "^4.3.6",
     "chai-http": "^4.3.0",
     "chai-subset": "^1.6.0",
+    "json": "^11.0.0",
     "mocha": "^9.2.1",
-    "nodemon": "^2.0.15",
-    "json": "^11.0.0"
+    "nodemon": "^2.0.15"
   },
   "apidoc": {
     "name": "Synapse REST API",
