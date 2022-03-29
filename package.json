@@ -11,7 +11,7 @@
     "gendoc": "json -I -f package.json -e 'this.type=\"commonjs\"' && apidoc -v -f server/routes/v1/index.js -i ./ -o ./docs/apidoc && apidoc -v -t docs/template -f server/routes/v1/index.js -i ./ -o ./docs/apidoc && json -I -f package.json -e 'this.type=\"module\"'"
   },
   "dependencies": {
-    "@synapseprotocol/sdk": "0.90.3",
+    "@synapseprotocol/sdk": "0.95.0-alpha.2",
     "apidoc": "^0.50.5",
     "dotenv": "^16.0.0",
     "ethers": "^5.5.4",
