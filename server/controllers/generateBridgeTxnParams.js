@@ -20,10 +20,10 @@ async function generateBridgeTxnParams(fromChain, toChain, fromToken, toToken, a
         const toChainId = ChainUtils.getIdFromRequestQueryParam(toChain)
 
         const fromTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
-        const fromTokenObj = Tokens[fromTokenSymbol]
+        const fromTokenObj = TokenUtils.getObjectFromSymbol(fromTokenSymbol)
 
         const toTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
-        const toTokenObj = Tokens[toTokenSymbol]
+        const toTokenObj = TokenUtils.getObjectFromSymbol(toTokenSymbol)
 
         const bigNumAmountFrom = BigNumber.from(amountFrom);
         const bigNumAmountTo = BigNumber.from(amountTo);

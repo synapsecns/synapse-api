@@ -329,7 +329,7 @@ router.get('/generate_unsigned_bridge_approval_txn',
  *              "swapType": "USD",
  *              "isETH": false,
  *              "wrapperAddresses": {},
- *              "_decimals": {
+ *              "decimals": {
  *                  "1": 6,
  *                  ...
  *              }
@@ -344,7 +344,7 @@ router.get('/generate_unsigned_bridge_approval_txn',
  *              "swapType": "USD",
  *              "isETH": false,
  *              "wrapperAddresses": {},
- *              "_decimals": {
+ *              "decimals": {
  *                  "1": 6,
  *                  ...
  *              }
@@ -418,7 +418,7 @@ router.get('/generate_bridge_txn_params',
  *                 "swapType": "USD",
  *                 "isETH": false,
  *                 "wrapperAddresses": {},
- *                 "_decimals": {
+ *                 "decimals": {
  *                     "1": 18
  *                 }
  *             },
