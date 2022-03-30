@@ -71,8 +71,7 @@ router.get('/get_bridgeable_tokens',
             const tokenList = await getBridgeableTokensForChain(chain)
             res.status(200).json(tokenList);
         } catch (err) {
-            console.log(err);
-            res.status(500).json({"error": "Internal Server Error"});
+            res.status(400).json({"error": err.toString()});
         }
     });
 
@@ -122,8 +121,7 @@ router.get('/get_chains_for_token',
             const tokenList = await getChainsForToken(token);
             res.status(200).json(tokenList);
         }  catch (err) {
-            console.log(err);
-            res.status(500).json({"error": "Internal Server Error"});
+            res.status(400).json({"error": err.toString()});
         }
 
     });
@@ -155,6 +153,12 @@ router.get('/get_chains_for_token',
  *       "error": "Valid arguments for fromChain, toChain, fromToken, toToken and amountFrom must be passed"
  *     }
  *
+ * @apiErrorExample {json} Error - Token Not Supported:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Error: Token BUSD not supported on 'from' network Avalanche C-Chain"
+ *     }
+ *
  * @apiSampleRequest /v1/estimate_bridge_output
  */
 router.get('/estimate_bridge_output',
@@ -178,12 +182,7 @@ router.get('/estimate_bridge_output',
             const estimate = await estimateBridgeOutputs(fromChain, toChain, fromToken, toToken, amountFrom);
             res.status(200).json(estimate);
         } catch (err) {
-
-            if (err.message.includes("not supported on")) {
-                res.status(400).json({"error": `${err.message}`});
-            } else {
-                res.status(500).json({"error": "Internal Server Error"});
-            }
+            res.status(400).json({"error": err.toString()});
         }
     });
 
@@ -207,14 +206,20 @@ router.get('/estimate_bridge_output',
  *      {
  *          "unsigned_data": "0x9f33072700000000000000...",
  *          "to": "0xE85429C97589AD793Ca11A8BC3477C03d27ED140",
- *          "gasPrice": "150000000000",
- *          "gasLimit": "150000000000"
+ *          "gasPrice": "140000000000",
+ *          "gasLimit": "140000000000"
  *      }
  *
  * @apiErrorExample {json} Error - Invalid Arguments:
  *     HTTP/1.1 400 Bad Request
  *     {
  *       "error": "Valid arguments for fromChain, toChain, fromToken, toToken, amountFrom and address must be passed"
+ *     }
+ *
+ * @apiErrorExample {json} Error - Token Not Supported:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Error: Token BUSD not supported on 'from' network Avalanche C-Chain"
  *     }
  *
  * @apiSampleRequest /v1/generate_unsigned_bridge_txn
@@ -240,8 +245,7 @@ router.get('/generate_unsigned_bridge_txn',
             const unsignedTxn = await generateUnsignedBridgeTxn(fromChain, toChain, fromToken, toToken, amountFrom, address);
             res.status(200).json(unsignedTxn);
         } catch (err) {
-            console.error(err);
-            res.status(500).json({"error": "Internal Server Error"});
+            res.status(400).json({"error": err.toString()});
         }
 
     });
@@ -262,10 +266,7 @@ router.get('/generate_unsigned_bridge_txn',
  *      {
  *          "unsigned_data": "0x095ea7b3000000000000000000000000...",
  *          "to": "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85",
- *          "maxPriorityFeePerGas": {
- *              "type": "BigNumber",
- *              "hex": "0x59682f00"
- *          }
+ *          "maxPriorityFeePerGas": "1500000000"
  *      }
  *
  * @apiErrorExample {json} Error - Invalid Arguments:
@@ -293,7 +294,7 @@ router.get('/generate_unsigned_bridge_approval_txn',
             const unsignedTxn = await generateUnsignedBridgeApprovalTxn(fromChain, fromToken);
             res.status(200).json(unsignedTxn);
         } catch (err) {
-            res.status(500).json({"error": err.message});
+            res.status(400).json({"error": err.toString()});
         }
 });
 
@@ -325,7 +326,7 @@ router.get('/generate_unsigned_bridge_approval_txn',
  *              "swapType": "USD",
  *              "isETH": false,
  *              "wrapperAddresses": {},
- *              "_decimals": {
+ *              "decimals": {
  *                  "1": 6,
  *                  ...
  *              }
@@ -340,21 +341,15 @@ router.get('/generate_unsigned_bridge_approval_txn',
  *              "swapType": "USD",
  *              "isETH": false,
  *              "wrapperAddresses": {},
- *              "_decimals": {
+ *              "decimals": {
  *                  "1": 6,
  *                  ...
  *              }
  *          },
  *          "chainIdTo": 56,
- *          "amountFrom": {
- *              "type": "BigNumber",
- *              "hex": "0x01"
- *          },
- *          "amountTo": {
- *              "type": "BigNumber",
- *              "hex": "0x01"
- *          }
- * }
+ *          "amountFrom": "1",
+ *          "amountTo": "1"
+ *      }
  *
  * @apiErrorExample {json} Error - Invalid Arguments:
  *     HTTP/1.1 400 Bad Request
@@ -387,7 +382,7 @@ router.get('/generate_bridge_txn_params',
             const params = await generateBridgeTxnParams(fromChain, toChain, fromToken, toToken, amountFrom, amountTo, addressTo)
             res.status(200).json(params);
         }  catch (err) {
-            res.status(500).json({"error": err.message});
+            res.status(400).json({"error": err.toString()});
         }
 
 });
@@ -414,7 +409,7 @@ router.get('/generate_bridge_txn_params',
  *                 "swapType": "USD",
  *                 "isETH": false,
  *                 "wrapperAddresses": {},
- *                 "_decimals": {
+ *                 "decimals": {
  *                     "1": 18
  *                 }
  *             },
@@ -466,8 +461,7 @@ router.get('/get_stableswap_pools',
             const swappableTokens = await getStableSwapPools(chain);
             res.status(200).json(swappableTokens);
         } catch (err) {
-            console.log(err);
-            res.status(500).json({"error": "Internal Server Error"});
+            res.status(400).json({"error": err.toString()});
         }
     });
 
@@ -475,11 +469,32 @@ router.get('/get_stableswap_pools',
  * @api {get} /v1/estimate_swap_output Estimate Swap Output
  * @apiName estimate_swap_output
  * @apiGroup API Endpoints
-
+ *
  * @apiQuery {Number|String} chain Name or decimal/hex id of chain
  * @apiQuery {String} fromToken Token user will send to the bridge on the source chain
  * @apiQuery {String} toToken Token user will receive from the bridge on the destination chain
  * @apiQuery {String|Number} amountIn Input amount to swap
+ *
+ * @apiExample {curl} Example usage:
+ *      curl --request GET 'https://syn-api-x.herokuapp.com/v1/estimate_swap_output?chain=1&fromToken=USDC&toToken=DAI&amountIn=1'
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "minAmountOut": "999971156015"
+ *      }
+ *
+ * @apiErrorExample {json} Error - Invalid Arguments:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "A valid value for chain, fromToken, toToken, amountIn must be passed"
+ *     }
+ *
+ * @apiErrorExample {json} Error - Nonmatching Swap Types:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "UnsupportedSwapError: Token swap types don't match"
+ *     }
  *
  * @apiSampleRequest /v1/estimate_swap_output
  */
@@ -503,8 +518,7 @@ router.get('/estimate_swap_output',
             const estSwapOutput = await estimateSwapOutput(chain, fromToken, toToken, amountIn);
             res.status(200).json(estSwapOutput);
         } catch (err) {
-            console.log(err);
-            res.status(500).json({"error": "Internal Server Error"});
+            res.status(400).json({"error": err.toString()});
         }
     });
 
@@ -512,13 +526,37 @@ router.get('/estimate_swap_output',
  * @api {get} /v1/generate_swap_transaction Generate Swap Transaction
  * @apiName generate_swap_transaction
  * @apiGroup API Endpoints
-
+ *
  * @apiQuery {Number|String} chain Name or decimal/hex id of chain
  * @apiQuery {String} fromToken Token user will send to the bridge on the source chain
  * @apiQuery {String} toToken Token user will receive from the bridge on the destination chain
  * @apiQuery {String|Number} amountIn Input amount to swap
  *
- * @apiSampleRequest /v1/generate_swap_transaction
+ * @apiExample {curl} Example usage:
+ *      curl --request GET 'https://syn-api-x.herokuapp.com/v1/generate_swap_transaction?chain=0x38&fromToken=BUSD&toToken=USDC&amountIn=1'
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "allowanceTarget": "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+ *          "minAmountOut": "0",
+ *          "data": "0x9169558600000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000062426173",
+ *          "to": "0x28ec0B36F0819ecB5005cAB836F4ED5a2eCa4D13"
+ *      }
+ *
+ * @apiErrorExample {json} Error - Invalid Arguments:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "A valid value for chain, fromToken, toToken, amountIn must be passed"
+ *     }
+ *
+ * @apiErrorExample {json} Error - Unsupported Swap:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "UnsupportedSwapError: Token DAI not supported on network Binance Smart Chain"
+ *     }
+ *
+ * @apiSampleRequest /v1/estimate_swap_output
  */
 router.get('/generate_swap_transaction',
     oneOf([check('chain').isIn(ChainUtils.getNames()), check('chain').isIn(ChainUtils.getIds()), check('chain').isIn(ChainUtils.getHexIds())]),
@@ -540,8 +578,7 @@ router.get('/generate_swap_transaction',
             const swapTxn = await generateSwapTransaction(chain, fromToken, toToken, amountIn);
             res.status(200).json(swapTxn);
         } catch (err) {
-            console.log(err);
-            res.status(500).json({"error": "Internal Server Error"});
+            res.status(400).json({"error": err.toString()});
         }
     });
 

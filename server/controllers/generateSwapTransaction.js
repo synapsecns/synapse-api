@@ -13,37 +13,40 @@ import {BigNumber} from "ethers";
  * @returns {number[]}
  */
 async function generateSwapTransaction(chain, fromToken, toToken, amountIn) {
+    try {
+        const chainId = ChainUtils.getIdFromRequestQueryParam(chain)
 
-    const chainId = ChainUtils.getIdFromRequestQueryParam(chain)
+        const fromTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
+        const fromTokenObj = Tokens[fromTokenSymbol]
 
-    const fromTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
-    const fromTokenObj = Tokens[fromTokenSymbol]
+        const toTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(toToken)
+        const toTokenObj = Tokens[toTokenSymbol]
 
-    const toTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(toToken)
-    const toTokenObj = Tokens[toTokenSymbol]
+        const bigNumAmountIn = BigNumber.from(amountIn);
 
-    const bigNumAmountIn = BigNumber.from(amountIn);
+        let args = {
+            chainId: chainId,
+            tokenFrom: fromTokenObj,
+            tokenTo: toTokenObj,
+            amountIn: bigNumAmountIn,
+        }
 
-    let args = {
-        chainId: chainId,
-        tokenFrom: fromTokenObj,
-        tokenTo: toTokenObj,
-        amountIn: bigNumAmountIn,
+        let swapRate = await TokenSwap.calculateSwapRate(args);
+
+        let swapTransaction = await TokenSwap.buildSwapTokensTransaction({
+            minAmountOut: swapRate.amountOut,
+            ...args,
+        })
+
+        return {
+            allowanceTarget: fromTokenObj.addresses[chainId],
+            minAmountOut: swapRate.amountOut.toString(),
+            ...swapTransaction,
+        };
+    } catch (err) {
+        console.error(err);
+        throw err;
     }
-
-    let swapRate = await TokenSwap.calculateSwapRate(args);
-
-    let swapTransaction = await TokenSwap.buildSwapTokensTransaction({
-        minAmountOut: swapRate.amountOut,
-        ...args,
-    })
-
-    return {
-        allowanceTarget: fromTokenObj.addresses[chainId],
-        minAmountOut: swapRate.amountOut.toString(),
-        ...swapTransaction,
-    };
-
 }
 
 export { generateSwapTransaction };

@@ -13,29 +13,34 @@ import * as TokenUtils from "../utils/tokenUtils.js";
  * @returns {Object[]}
  */
 async function estimateBridgeOutputs(fromChain, toChain, fromToken, toToken, amountFrom) {
-    const fromChainId = ChainUtils.getIdFromRequestQueryParam(fromChain)
-    const toChainId = ChainUtils.getIdFromRequestQueryParam(toChain)
+    try {
+        const fromChainId = ChainUtils.getIdFromRequestQueryParam(fromChain)
+        const toChainId = ChainUtils.getIdFromRequestQueryParam(toChain)
 
-    const fromTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
-    const fromTokenObj = Tokens[fromTokenSymbol]
+        const fromTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
+        const fromTokenObj = Tokens[fromTokenSymbol]
 
-    const toTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
-    const toTokenObj = Tokens[toTokenSymbol]
+        const toTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
+        const toTokenObj = Tokens[toTokenSymbol]
 
-    const bigNumAmount = amountFrom ? BigNumber.from(amountFrom) : null;
+        const bigNumAmount = amountFrom ? BigNumber.from(amountFrom) : null;
 
-    const bridge = Bridges[fromChainId];
+        const bridge = Bridges[fromChainId];
 
-    const estimate = await bridge.estimateBridgeTokenOutput({
-        tokenFrom: fromTokenObj,
-        tokenTo: toTokenObj,
-        chainIdTo: toChainId,
-        amountFrom: bigNumAmount
-    });
+        const estimate = await bridge.estimateBridgeTokenOutput({
+            tokenFrom: fromTokenObj,
+            tokenTo: toTokenObj,
+            chainIdTo: toChainId,
+            amountFrom: bigNumAmount
+        });
 
-    return {
-        amountToReceive: estimate.amountToReceive.toString(),
-        bridgeFee: estimate.bridgeFee.toString(),
+        return {
+            amountToReceive: estimate.amountToReceive.toString(),
+            bridgeFee: estimate.bridgeFee.toString(),
+        }
+    } catch (err) {
+        console.error(err);
+        throw err;
     }
 }
 

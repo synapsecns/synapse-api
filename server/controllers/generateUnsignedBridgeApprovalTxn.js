@@ -22,9 +22,10 @@ async function generateUnsignedBridgeApprovalTxn(fromChain, fromToken) {
         return {
             unsigned_data: txn.data,
             to: txn.to,
-            maxPriorityFeePerGas: txn.maxPriorityFeePerGas
+            maxPriorityFeePerGas: txn.maxPriorityFeePerGas.toString()
         }
     } catch (err) {
+        console.log(err);
         throw err
     }
 }
