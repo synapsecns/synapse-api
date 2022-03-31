@@ -2,10 +2,21 @@ import {ChainId, Networks, supportedChainIds} from "@synapseprotocol/sdk";
 import * as Cache from "./cache.js"
 
 /**
- * @returns {number[]}
+ * @returns {String[]}
  */
 function getIds() {
-    return supportedChainIds();
+    let cachedRes = Cache.get(getIds);
+    if (cachedRes) {
+        return cachedRes;
+    }
+
+    let numIds = supportedChainIds();
+    let strIds = [];
+    numIds.forEach(numId => {
+        strIds.push(numId.toString());
+    });
+
+    return Cache.set(getIds, strIds);
 }
 
 /**
@@ -18,7 +29,7 @@ function getHexIds() {
     }
 
     let hexIds =[]
-    getIds().forEach(id => hexIds.push("0x" + id.toString(16)));
+    supportedChainIds().forEach(id => hexIds.push("0x" + id.toString(16)));
 
     return Cache.set(getHexIds, hexIds);
 }

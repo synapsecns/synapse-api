@@ -3,6 +3,7 @@ import { Bridges } from "../utils/bridges.js";
 import {Tokens} from "@synapseprotocol/sdk";
 import * as ChainUtils from "../utils/chainUtils.js";
 import * as TokenUtils from "../utils/tokenUtils.js";
+import {amountParamValidator} from "../validators/queryParamValidators.js";
 
 /**
  * @param {String} fromChain
@@ -23,7 +24,12 @@ async function estimateBridgeOutputs(fromChain, toChain, fromToken, toToken, amo
         const toTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
         const toTokenObj = Tokens[toTokenSymbol]
 
-        const bigNumAmount = amountFrom ? BigNumber.from(amountFrom) : null;
+        // Optional argument
+        let bigNumAmount = null;
+        if (amountFrom) {
+            await amountParamValidator(amountFrom);
+            bigNumAmount = BigNumber.from(amountFrom);
+        }
 
         const bridge = Bridges[fromChainId];
 

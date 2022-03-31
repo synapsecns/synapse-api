@@ -55,7 +55,7 @@ describe('Integration Tests', () => {
 
                 done();
             });
-    }).timeout(5000);
+    }).timeout(10000);
 
     it('get all chains token is tradeable on', (done) => {
         chai.request(app)
@@ -189,5 +189,5 @@ describe('Integration Tests', () => {
 
                 done();
             });
-    });
+    }).timeout(10000);
 });

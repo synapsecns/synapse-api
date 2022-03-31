@@ -13,10 +13,7 @@ import {getStableSwapPools} from "../../controllers/getStableSwapPools.js"
 import {estimateSwapOutput} from "../../controllers/estimateSwapOutput.js"
 import {generateSwapTransaction} from "../../controllers/generateSwapTransaction.js"
 
-import * as ChainUtils from "../../utils/chainUtils.js";
-import * as TokenUtils from "../../utils/tokenUtils.js";
-
-import {BigNumber} from "ethers";
+import {chainParamValidator, tokenParamValidator, amountParamValidator} from "../../validators/queryParamValidators.js";
 
 
 /**
@@ -53,11 +50,7 @@ import {BigNumber} from "ethers";
  * @apiSampleRequest /v1/get_bridgeable_tokens
  */
 router.get('/get_bridgeable_tokens',
-    oneOf([
-        check('chain').isIn(ChainUtils.getNames()),
-        check('chain').isIn(ChainUtils.getIds()),
-        check('chain').isIn(ChainUtils.getHexIds())]
-    ),
+    query("chain").custom(chainParamValidator),
     async (req, res) => {
         try {
             validationResult(req).throw();
@@ -106,7 +99,7 @@ router.get('/get_bridgeable_tokens',
  * @apiSampleRequest /v1/get_chains_for_token
  */
 router.get('/get_chains_for_token',
-    oneOf([check('token').isIn(TokenUtils.getSymbols()), check('token').isIn(TokenUtils.getAddresses())]),
+    query("token").custom(tokenParamValidator),
     async (req, res) => {
 
         try {
@@ -162,16 +155,14 @@ router.get('/get_chains_for_token',
  * @apiSampleRequest /v1/estimate_bridge_output
  */
 router.get('/estimate_bridge_output',
-    oneOf([check('fromChain').isIn(ChainUtils.getNames()), check('fromChain').isIn(ChainUtils.getIds()), check('fromChain').isIn(ChainUtils.getHexIds())]),
-    oneOf([check('toChain').isIn(ChainUtils.getNames()), check('toChain').isIn(ChainUtils.getIds()), check('toChain').isIn(ChainUtils.getHexIds())]),
-    oneOf([check('fromToken').isIn(TokenUtils.getSymbols()), check('fromToken').isIn(TokenUtils.getAddresses())]),
-    oneOf([check('toToken').isIn(TokenUtils.getSymbols()), check('toToken').isIn(TokenUtils.getAddresses())]),
-    check('amountFrom').isNumeric(),
+    query("fromChain").custom(chainParamValidator),
+    query("toChain").custom(chainParamValidator),
+    query("fromToken").custom(tokenParamValidator),
+    query("toToken").custom(tokenParamValidator),
     async (req, res) => {
 
         try {
             validationResult(req).throw();
-            BigNumber.from(req.query.amountFrom);
         } catch (err) {
             res.status(400).json({"error": "Valid arguments for fromChain, toChain, fromToken, toToken and amountFrom must be passed"});
             return;
@@ -225,16 +216,15 @@ router.get('/estimate_bridge_output',
  * @apiSampleRequest /v1/generate_unsigned_bridge_txn
  */
 router.get('/generate_unsigned_bridge_txn',
-    oneOf([check('fromChain').isIn(ChainUtils.getNames()), check('fromChain').isIn(ChainUtils.getIds()), check('fromChain').isIn(ChainUtils.getHexIds())]),
-    oneOf([check('toChain').isIn(ChainUtils.getNames()), check('toChain').isIn(ChainUtils.getIds()), check('toChain').isIn(ChainUtils.getHexIds())]),
-    oneOf([check('fromToken').isIn(TokenUtils.getSymbols()), check('fromToken').isIn(TokenUtils.getAddresses())]),
-    oneOf([check('toToken').isIn(TokenUtils.getSymbols()), check('toToken').isIn(TokenUtils.getAddresses())]),
-    check('amountFrom').exists(),
+    query("fromChain").custom(chainParamValidator),
+    query("toChain").custom(chainParamValidator),
+    query("fromToken").custom(tokenParamValidator),
+    query("toToken").custom(tokenParamValidator),
+    query("amountFrom").custom(amountParamValidator),
     async (req, res) => {
 
         try {
             validationResult(req).throw();
-            BigNumber.from(req.query.amountFrom);
         } catch (err) {
             res.status(400).json({"error": "Valid arguments for fromChain, toChain, fromToken, toToken, amountFrom and address must be passed"});
             return;
@@ -278,8 +268,8 @@ router.get('/generate_unsigned_bridge_txn',
  * @apiSampleRequest /v1/generate_unsigned_bridge_approval_txn
  */
 router.get('/generate_unsigned_bridge_approval_txn',
-    oneOf([check('fromChain').isIn(ChainUtils.getNames()), check('fromChain').isIn(ChainUtils.getIds()), check('fromChain').isIn(ChainUtils.getHexIds())]),
-    oneOf([check('fromToken').isIn(TokenUtils.getSymbols()), check('fromToken').isIn(TokenUtils.getAddresses())]),
+    query("fromChain").custom(chainParamValidator),
+    query("fromToken").custom(tokenParamValidator),
     async (req, res) => {
 
         try {
@@ -360,18 +350,16 @@ router.get('/generate_unsigned_bridge_approval_txn',
  * @apiSampleRequest /v1/generate_bridge_txn_params
  */
 router.get('/generate_bridge_txn_params',
-    oneOf([check('fromChain').isIn(ChainUtils.getNames()), check('fromChain').isIn(ChainUtils.getIds()), check('fromChain').isIn(ChainUtils.getHexIds())]),
-    oneOf([check('toChain').isIn(ChainUtils.getNames()), check('toChain').isIn(ChainUtils.getIds()), check('toChain').isIn(ChainUtils.getHexIds())]),
-    oneOf([check('fromToken').isIn(TokenUtils.getSymbols()), check('fromToken').isIn(TokenUtils.getAddresses())]),
-    oneOf([check('toToken').isIn(TokenUtils.getSymbols()), check('toToken').isIn(TokenUtils.getAddresses())]),
-    query('amountFrom').exists(),
-    query('amountTo').exists(),
+    query("fromChain").custom(chainParamValidator),
+    query("toChain").custom(chainParamValidator),
+    query("fromToken").custom(tokenParamValidator),
+    query("toToken").custom(tokenParamValidator),
+    query("amountFrom").custom(amountParamValidator),
+    query("amountTo").custom(amountParamValidator),
     async (req, res) => {
 
         try {
             validationResult(req).throw();
-            BigNumber.from(req.query.amountFrom);
-            BigNumber.from(req.query.amountTo);
         } catch (err) {
             res.status(400).json({"error": "Valid arguments for fromChain, toChain, fromToken, toToken, amountFrom and amountTo must be passed"});
             return;
@@ -443,11 +431,7 @@ router.get('/generate_bridge_txn_params',
  * @apiSampleRequest /v1/get_stableswap_pools
  */
 router.get('/get_stableswap_pools',
-    oneOf([
-        check('chain').isIn(ChainUtils.getNames()),
-        check('chain').isIn(ChainUtils.getIds()),
-        check('chain').isIn(ChainUtils.getHexIds())]
-    ),
+    query("chain").custom(chainParamValidator),
     async (req, res) => {
         try {
             validationResult(req).throw();
@@ -499,15 +483,13 @@ router.get('/get_stableswap_pools',
  * @apiSampleRequest /v1/estimate_swap_output
  */
 router.get('/estimate_swap_output',
-    oneOf([check('chain').isIn(ChainUtils.getNames()), check('chain').isIn(ChainUtils.getIds()), check('chain').isIn(ChainUtils.getHexIds())]),
-    oneOf([check('fromToken').isIn(TokenUtils.getSymbols()), check('fromToken').isIn(TokenUtils.getAddresses())]),
-    oneOf([check('toToken').isIn(TokenUtils.getSymbols()), check('toToken').isIn(TokenUtils.getAddresses())]),
-    query('amountIn').isNumeric(),
+    query("chain").custom(chainParamValidator),
+    query("fromToken").custom(tokenParamValidator),
+    query("toToken").custom(tokenParamValidator),
+    query("amountIn").custom(amountParamValidator),
     async (req, res) => {
         try {
             validationResult(req).throw();
-            BigNumber.from(req.query.amountIn);
-
         } catch (err) {
             res.status(400).json({"error": "A valid value for chain, fromToken, toToken, amountIn must be passed"});
             return;
@@ -559,15 +541,13 @@ router.get('/estimate_swap_output',
  * @apiSampleRequest /v1/estimate_swap_output
  */
 router.get('/generate_swap_transaction',
-    oneOf([check('chain').isIn(ChainUtils.getNames()), check('chain').isIn(ChainUtils.getIds()), check('chain').isIn(ChainUtils.getHexIds())]),
-    oneOf([check('fromToken').isIn(TokenUtils.getSymbols()), check('fromToken').isIn(TokenUtils.getAddresses())]),
-    oneOf([check('toToken').isIn(TokenUtils.getSymbols()), check('toToken').isIn(TokenUtils.getAddresses())]),
-    query('amountIn').exists(),
+    query("chain").custom(chainParamValidator),
+    query("fromToken").custom(tokenParamValidator),
+    query("toToken").custom(tokenParamValidator),
+    query("amountIn").custom(amountParamValidator),
     async (req, res) => {
         try {
             validationResult(req).throw();
-            BigNumber.from(req.query.amountIn);
-
         } catch (err) {
             res.status(400).json({"error": "A valid value for chain, fromToken, toToken, amountIn must be passed"});
             return;
