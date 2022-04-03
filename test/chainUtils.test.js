@@ -12,7 +12,7 @@ describe('ChainUtils unit tests', () => {
     it('getIds() should return list of supported chain IDs', function () {
         let res = ChainUtils.getIds();
         res.should.be.an('array');
-        expect(res).containSubset([1, 10, 288]);
+        expect(res).containSubset(["1", "10", "288"]);
     });
 
     it('getHexIds() should return list of chain IDs ins hexadecimals', function () {
