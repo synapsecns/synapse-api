@@ -190,4 +190,19 @@ describe('Integration Tests', () => {
                 done();
             });
     }).timeout(10000);
+
+    it('check bridge transaction status', (done) => {
+        chai.request(app)
+            .get('/v1/check_bridge_transaction_status')
+            .query({
+                toChain: 43114,
+                fromChainTxnHash: "0x97a0132993a148ed7b2c3a8e8d651f28e41cf7245c6fd728158b1262a376cb1b",
+            })
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.have.property('isComplete');
+                res.body.isComplete.should.equal(true);
+                done();
+            });
+    }).timeout(10000);
 });

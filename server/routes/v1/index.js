@@ -8,6 +8,7 @@ import {estimateBridgeOutputs} from "../../controllers/estimateBridgeOutputs.js"
 import {generateUnsignedBridgeTxn} from "../../controllers/generateUnsignedBridgeTxn.js"
 import {generateUnsignedBridgeApprovalTxn} from "../../controllers/generateUnsignedBridgeApprovalTxn.js"
 import {generateBridgeTxnParams} from "../../controllers/generateBridgeTxnParams.js"
+import {checkBridgeTransactionStatus} from "../../controllers/checkBridgeTransactionStatus.js"
 
 import {getStableSwapPools} from "../../controllers/getStableSwapPools.js"
 import {estimateSwapOutput} from "../../controllers/estimateSwapOutput.js"
@@ -538,7 +539,7 @@ router.get('/estimate_swap_output',
  *       "error": "UnsupportedSwapError: Token DAI not supported on network Binance Smart Chain"
  *     }
  *
- * @apiSampleRequest /v1/estimate_swap_output
+ * @apiSampleRequest /v1/generate_swap_transaction
  */
 router.get('/generate_swap_transaction',
     query("chain").custom(chainParamValidator),
@@ -557,6 +558,51 @@ router.get('/generate_swap_transaction',
             const {chain, fromToken, toToken, amountIn} = req.query
             const swapTxn = await generateSwapTransaction(chain, fromToken, toToken, amountIn);
             res.status(200).json(swapTxn);
+        } catch (err) {
+            res.status(400).json({"error": err.toString()});
+        }
+    });
+
+/**
+ * @api {get} /v1/check_bridge_transaction_status Check Bridge Transaction Status
+ * @apiName check_bridge_transaction_status
+ * @apiGroup API Endpoints
+ *
+ * @apiQuery {String} toChain Destination chain for the transaction
+ * @apiQuery {String} fromChainTxnHash Token Transaction hash from the source chain
+ *
+ * @apiExample {curl} Example usage:
+ *      curl --request GET 'https://syn-api-x.herokuapp.com/v1/check_bridge_transaction_status?toChain=43114&fromChainTxnHash=0x97a0132993a148ed7b2c3a8e8d651f28e41cf7245c6fd728158b1262a376cb1b'
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "exists": true,
+ *      }
+ *
+ * @apiErrorExample {json} Error - Invalid Arguments:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "A valid value for toChain and fromChainTxnHash must be passed"
+ *     }
+ *
+ * @apiSampleRequest /v1/check_bridge_transaction_status
+ */
+router.get('/check_bridge_transaction_status',
+    query("toChain").custom(chainParamValidator),
+    query("fromChainTxnHash").isString(),
+    async (req, res) => {
+        try {
+            validationResult(req).throw();
+        } catch (err) {
+            res.status(400).json({"error": "A valid value for toChain and fromChainTxnHash must be passed"});
+            return;
+        }
+
+        try {
+            const {toChain, fromChainTxnHash} = req.query
+            const status = await checkBridgeTransactionStatus(toChain, fromChainTxnHash);
+            res.status(200).json(status);
         } catch (err) {
             res.status(400).json({"error": err.toString()});
         }
