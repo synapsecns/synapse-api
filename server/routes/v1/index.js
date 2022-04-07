@@ -577,7 +577,7 @@ router.get('/generate_swap_transaction',
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
  *      {
- *          "exists": true,
+ *          "isComplete": true,
  *      }
  *
  * @apiErrorExample {json} Error - Invalid Arguments:
