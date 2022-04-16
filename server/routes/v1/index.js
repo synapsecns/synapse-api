@@ -25,7 +25,7 @@ import {chainParamValidator, tokenParamValidator, amountParamValidator} from "..
  * @apiQuery {Number|String} chain Chain id passed as a decimal or hex number
  *
  * @apiExample {curl} Example usage:
- * curl --request GET 'https://syn-api-x.herokuapp.com/v1/get_bridgable_tokens?chain=ARBITRUM'
+ * curl --request GET 'https://syn-api-x.herokuapp.com/v1/get_bridgeable_tokens?chain=ARBITRUM'
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
