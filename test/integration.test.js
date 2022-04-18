@@ -28,8 +28,6 @@ describe('Integration Tests', () => {
 
                 // Not swappable for BSC
                 tokenSymbols.should.not.contain('DAI');
-
-                done();
             });
         
         chai.request(app)
@@ -42,6 +40,8 @@ describe('Integration Tests', () => {
                 res.body[0].should.have.property('symbol');
                 res.body[0].should.have.property('decimals');
                 res.body[0].should.have.property('addresses');
+            
+                done();
             });
     });
 
