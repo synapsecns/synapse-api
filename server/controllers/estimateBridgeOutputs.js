@@ -21,7 +21,7 @@ async function estimateBridgeOutputs(fromChain, toChain, fromToken, toToken, amo
         const fromTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
         const fromTokenObj = Tokens[fromTokenSymbol]
 
-        const toTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
+        const toTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(toToken)
         const toTokenObj = Tokens[toTokenSymbol]
 
         // Optional argument
