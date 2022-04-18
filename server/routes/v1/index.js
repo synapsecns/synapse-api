@@ -56,7 +56,8 @@ router.get('/get_bridgeable_tokens',
         try {
             validationResult(req).throw();
         } catch (err) {
-            res.status(400).json({"error": "A valid value for chain must be passed"});
+            const tokenList = await getBridgeableTokensForChain(null)
+            res.status(200).json(tokenList);
             return;
         }
 

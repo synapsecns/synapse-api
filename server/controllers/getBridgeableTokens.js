@@ -9,6 +9,10 @@ import * as ChainUtils from "../utils/chainUtils.js";
  */
 async function getBridgeableTokensForChain(chain) {
     try {
+        if (!chain) {
+            return TokenUtils.getObjects()
+        }
+
         let chainId = ChainUtils.getIdFromRequestQueryParam(chain)
 
         let tokenList = SwapPools.getAllSwappableTokensForNetwork(chainId);
