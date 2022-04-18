@@ -31,6 +31,18 @@ describe('Integration Tests', () => {
 
                 done();
             });
+        
+        chai.request(app)
+            .get('/v1/get_bridgeable_tokens')
+            .query()
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.an('array');
+                res.body[0].should.have.property('name');
+                res.body[0].should.have.property('symbol');
+                res.body[0].should.have.property('decimals');
+                res.body[0].should.have.property('addresses');
+            });
     });
 
     it('generate unsigned bridge transaction', (done) => {
