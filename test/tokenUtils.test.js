@@ -104,4 +104,12 @@ describe('TokenUtils unit tests', () => {
         res.should.equal("USDT")
     });
 
+
+    it('getAllBridgeableTokens() should return all tokens', function () {
+        let res = TokenUtils.getAllBridgeableTokens();
+        res.should.be.an('array');
+        res[0].should.be.an('object')
+        res.length.should.be.greaterThan(15) // Loose check to ensure the results are across chains
+    });
+
 });
