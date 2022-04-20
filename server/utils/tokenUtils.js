@@ -1,5 +1,6 @@
-import {BaseToken, Tokens} from "@synapseprotocol/sdk"
+import {BaseToken, SwapPools, Tokens} from "@synapseprotocol/sdk"
 import * as Cache from "./cache.js"
+import {getIds} from "./chainUtils.js";
 
 /**
  * Returns list of token symbols
@@ -154,6 +155,26 @@ function getSymbolFromRequestQueryParam(tokenParam) {
     return token ? token.symbol : null;
 }
 
+/**
+ * @returns {Object[]}
+ */
+function getAllBridgeableTokens() {
+    let cachedRes = Cache.get(getAllBridgeableTokens);
+    if (cachedRes) {
+        return cachedRes;
+    }
+
+    let chainIds = getIds();
+    let resTokenSet = new Set();
+    chainIds.forEach((chainId) => {
+        let tokenList = SwapPools.getAllSwappableTokensForNetwork(parseInt(chainId));
+        tokenList.forEach(tokenObj => {
+            resTokenSet.add(getObjectFromSymbol(tokenObj.symbol))
+        })
+    })
+
+    return Cache.set(getAllBridgeableTokens, Array.from(resTokenSet));
+}
 
 export {
     getSymbols,
@@ -163,4 +184,5 @@ export {
     getObjectFromSymbol,
     getChainAddressFromSymbol,
     getSymbolFromRequestQueryParam,
+    getAllBridgeableTokens
 }

@@ -1,8 +1,8 @@
 import express from "express";
 const router = express.Router();
 
-import {check, oneOf,query, validationResult} from "express-validator";
-import {getBridgeableTokensForChain} from "../../controllers/getBridgeableTokens.js"
+import {query, validationResult} from "express-validator";
+import {getBridgeableTokens} from "../../controllers/getBridgeableTokens.js"
 import {getChainsForToken} from "../../controllers/getChainsForToken.js"
 import {estimateBridgeOutputs} from "../../controllers/estimateBridgeOutputs.js"
 import {generateUnsignedBridgeTxn} from "../../controllers/generateUnsignedBridgeTxn.js"
@@ -22,7 +22,8 @@ import {chainParamValidator, tokenParamValidator, amountParamValidator} from "..
  * @apiName get_bridgeable_tokens
  * @apiGroup API Endpoints
  *
- * @apiQuery {Number|String} chain Chain id passed as a decimal or hex number
+ * @apiQuery {Number|String} [chain] Optional chain id passed as a decimal or hex number.
+ * If passed, bridgeable tokens for only this chain are returned else bridgeable tokens across all chains are returned.
  *
  * @apiExample {curl} Example usage:
  * curl --request GET 'https://syn-api-x.herokuapp.com/v1/get_bridgeable_tokens?chain=ARBITRUM'
@@ -54,7 +55,9 @@ router.get('/get_bridgeable_tokens',
     query("chain").custom(chainParamValidator),
     async (req, res) => {
         try {
-            validationResult(req).throw();
+            if (req.query.chain) {
+                validationResult(req).throw();
+            }
         } catch (err) {
             res.status(400).json({"error": "A valid value for chain must be passed"});
             return;
@@ -62,7 +65,7 @@ router.get('/get_bridgeable_tokens',
 
         try {
             const {chain} = req.query;
-            const tokenList = await getBridgeableTokensForChain(chain)
+            const tokenList = await getBridgeableTokens(chain)
             res.status(200).json(tokenList);
         } catch (err) {
             res.status(400).json({"error": err.toString()});
