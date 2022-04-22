@@ -49,9 +49,6 @@ describe('Integration Tests', () => {
                 res.body.should.be.an('object');
                 res.body.should.have.property('unsigned_data');
                 res.body.should.have.property('to');
-                res.body.should.have.property('gasLimit');
-                res.body.should.have.property('maxPriorityFeePerGas');
-                res.body.should.have.property('gasLimit');
 
                 done();
             });
@@ -119,7 +116,6 @@ describe('Integration Tests', () => {
                 res.body.should.be.an('object');
                 res.body.should.have.property('unsigned_data');
                 res.body.should.have.property('to');
-                res.body.should.have.property('maxPriorityFeePerGas');
 
                 done();
             });

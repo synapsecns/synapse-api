@@ -2,7 +2,9 @@
  * @param {Object} obj
  * @returns {Object}
  */
-function removeDecimalUnderscoreFromJSON(obj) {
+import {BigNumber} from "ethers";
+
+function removeDecimalUnderscoreFromObject(obj) {
     if (typeof obj === "object") {
         if (obj["_decimals"]) {
             obj["decimals"] = obj["_decimals"];
@@ -10,9 +12,20 @@ function removeDecimalUnderscoreFromJSON(obj) {
         }
 
         for (let key in obj) {
-            removeDecimalUnderscoreFromJSON(obj[key]);
+            removeDecimalUnderscoreFromObject(obj[key]);
         }
     }
 }
 
-export { removeDecimalUnderscoreFromJSON };
+function convertBigNumbersToStringForObject(obj) {
+    for (let key of Object.keys(obj)) {
+        if (obj[key] instanceof BigNumber) {
+            obj[key] = obj[key].toString();
+        }
+    }
+}
+
+export {
+    removeDecimalUnderscoreFromObject,
+    convertBigNumbersToStringForObject
+};

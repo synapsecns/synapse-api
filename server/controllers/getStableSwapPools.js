@@ -1,18 +1,6 @@
 import { SwapPools } from "@synapseprotocol/sdk";
 import * as ChainUtils from "../utils/chainUtils.js";
-
-function scrubResult(obj) {
-    if (typeof obj === "object") {
-        if (obj["_decimals"]) {
-            obj["decimals"] = obj["_decimals"];
-            delete obj["_decimals"];
-        }
-
-        for (let key in obj) {
-            scrubResult(obj[key]);
-        }
-    }
-}
+import {removeDecimalUnderscoreFromObject} from "../utils/responseUtils.js";
 
 /**
  * @param {String} chain
@@ -27,7 +15,8 @@ async function getStableSwapPools(chain) {
             nETH: SwapPools.ethSwapPoolForNetwork(chainId),
         }
 
-        scrubResult(res);
+        removeDecimalUnderscoreFromObject(res);
+
         return res;
     } catch (err) {
         console.log(err);
