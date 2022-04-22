@@ -3,6 +3,7 @@ import { Bridges } from "../utils/bridges.js";
 import {Tokens} from "@synapseprotocol/sdk";
 import * as ChainUtils from "../utils/chainUtils.js";
 import * as TokenUtils from "../utils/tokenUtils.js";
+import {convertBigNumbersToStringForObject} from "../utils/responseUtils.js"
 
 /**
  * @param {String} fromChain
@@ -43,13 +44,14 @@ async function generateUnsignedBridgeTxn(fromChain, toChain, fromToken, toToken,
             addressTo: address
         })
 
+        convertBigNumbersToStringForObject(unsignedTxn);
+
         return {
             unsigned_data: unsignedTxn.data,
             to: unsignedTxn.to,
-            // Convert BigNumbers to String
-            maxFeePerGas: unsignedTxn.maxFeePerGas.toString(),
-            maxPriorityFeePerGas: unsignedTxn.maxPriorityFeePerGas.toString(),
-            gasLimit: unsignedTxn.gasLimit.toString(),
+            chainId: unsignedTxn.chainId,
+            gasPrice: unsignedTxn.gasPrice,
+            gasLimit: unsignedTxn.gasLimit
         }
     } catch(err) {
         console.log(err);

@@ -1,6 +1,6 @@
 import { networkSwapTokensMap } from "@synapseprotocol/sdk";
 import * as ChainUtils from "../utils/chainUtils.js";
-import {removeDecimalUnderscoreFromJSON} from "../utils/responseUtils.js"
+import {removeDecimalUnderscoreFromObject} from "../utils/responseUtils.js"
 
 /**
  * @param {String} chainA
@@ -13,7 +13,7 @@ async function getSwapTokenMap(chainA, chainB) {
         const chainIdB = ChainUtils.getIdFromRequestQueryParam(chainB);
 
         let res = networkSwapTokensMap(chainIdA, chainIdB);
-        removeDecimalUnderscoreFromJSON(res)
+        removeDecimalUnderscoreFromObject(res)
 
         return res[chainIdB]
     } catch (err) {
