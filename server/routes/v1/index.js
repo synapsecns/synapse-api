@@ -192,10 +192,10 @@ router.get('/estimate_bridge_output',
  * @apiQuery {String} fromToken Token user will send to the bridge on the source chain
  * @apiQuery {String} toToken Token user will receive from the bridge on the destination chain
  * @apiQuery {Number} amountFrom Amount that the user will send to the bridge on the source chain
- * @apiQuery {String} [address] Optional, user can provide an address other than the one retrieved from signer to receive tokens
+ * @apiQuery {String} addressTo Address that will receive the tokens
  *
  * @apiExample {curl} Example usage:
- *      curl --request GET 'https://syn-api-x.herokuapp.com/v1/generate_unsigned_bridge_txn?fromChain=AVALANCHE&toChain=BSC&fromToken=USDC&toToken=USDC&amountFrom=10&address=0x2D2c027E0d1A899a1965910Dd272bcaE1cD03c22'
+ *      curl --request GET 'https://syn-api-x.herokuapp.com/v1/generate_unsigned_bridge_txn?fromChain=AVALANCHE&toChain=BSC&fromToken=USDC&toToken=USDC&amountFrom=10&addressTo=0x2D2c027E0d1A899a1965910Dd272bcaE1cD03c22'
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
@@ -209,7 +209,7 @@ router.get('/estimate_bridge_output',
  * @apiErrorExample {json} Error - Invalid Arguments:
  *     HTTP/1.1 400 Bad Request
  *     {
- *       "error": "Valid arguments for fromChain, toChain, fromToken, toToken, amountFrom and address must be passed"
+ *       "error": "Valid arguments for fromChain, toChain, fromToken, toToken, amountFrom and addressTo must be passed"
  *     }
  *
  * @apiErrorExample {json} Error - Token Not Supported:
