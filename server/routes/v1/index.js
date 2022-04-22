@@ -163,6 +163,7 @@ router.get('/estimate_bridge_output',
     query("toChain").custom(chainParamValidator),
     query("fromToken").custom(tokenParamValidator),
     query("toToken").custom(tokenParamValidator),
+    query("amountFrom").custom(amountParamValidator),
     async (req, res) => {
 
         try {
@@ -225,18 +226,24 @@ router.get('/generate_unsigned_bridge_txn',
     query("fromToken").custom(tokenParamValidator),
     query("toToken").custom(tokenParamValidator),
     query("amountFrom").custom(amountParamValidator),
+    query("addressTo").isEthereumAddress(),
     async (req, res) => {
 
         try {
             validationResult(req).throw();
         } catch (err) {
-            res.status(400).json({"error": "Valid arguments for fromChain, toChain, fromToken, toToken, amountFrom and address must be passed"});
+            // Breaking change
+            if (!req.query.addressTo) {
+                res.status(400).json({"error": "addressTo is now a required argument and must be an ethereum address"});
+                return;
+            }
+            res.status(400).json({"error": "Valid arguments for fromChain, toChain, fromToken, toToken, amountFrom and addressTo must be passed"});
             return;
         }
 
         try {
-            const {fromChain, toChain, fromToken, toToken, amountFrom, address} = req.query
-            const unsignedTxn = await generateUnsignedBridgeTxn(fromChain, toChain, fromToken, toToken, amountFrom, address);
+            const {fromChain, toChain, fromToken, toToken, amountFrom, addressTo} = req.query
+            const unsignedTxn = await generateUnsignedBridgeTxn(fromChain, toChain, fromToken, toToken, amountFrom, addressTo);
             res.status(200).json(unsignedTxn);
         } catch (err) {
             res.status(400).json({"error": err.toString()});

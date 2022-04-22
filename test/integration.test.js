@@ -42,7 +42,7 @@ describe('Integration Tests', () => {
                 fromToken: "USDC",
                 toToken: "USDC",
                 amountFrom: 10,
-                address: "0x2D2c027E0d1A899a1965910Dd272bcaE1cD03c22"
+                addressTo: "0x2D2c027E0d1A899a1965910Dd272bcaE1cD03c22"
             })
             .end((err, res) => {
                 res.should.have.status(200);
@@ -53,6 +53,39 @@ describe('Integration Tests', () => {
                 res.body.should.have.property('maxPriorityFeePerGas');
                 res.body.should.have.property('gasLimit');
 
+                done();
+            });
+    }).timeout(10000);
+
+    it('generate unsigned bridge transaction fails with invalid addressTo', (done) => {
+        chai.request(app)
+            .get('/v1/generate_unsigned_bridge_txn')
+            .query({
+                fromChain: "AVALANCHE",
+                toChain:0x38,
+                fromToken: "USDC",
+                toToken: "USDC",
+                amountFrom: 10,
+                addressTo: "0x2D" // Invalid ethereum address
+            })
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
+    }).timeout(10000);
+
+    it('generate unsigned bridge transaction fails without addressTo', (done) => {
+        chai.request(app)
+            .get('/v1/generate_unsigned_bridge_txn')
+            .query({
+                fromChain: "AVALANCHE",
+                toChain:0x38,
+                fromToken: "USDC",
+                toToken: "USDC",
+                amountFrom: 10,
+            })
+            .end((err, res) => {
+                res.should.have.status(400);
                 done();
             });
     }).timeout(10000);
@@ -135,6 +168,40 @@ describe('Integration Tests', () => {
                 done();
             });
     });
+
+    it('estimate bridge output with different source and destination tokens', (done) => {
+        chai.request(app)
+            .get('/v1/estimate_bridge_output')
+            .query({
+                fromChain: "BSC",
+                toChain:"AVALANCHE",
+                fromToken: "USDT",
+                toToken: "USDC",
+                amountFrom: 100
+            })
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.have.property('amountToReceive');
+                res.body.should.have.property('bridgeFee');
+                done();
+            });
+    });
+
+    it('estimate bridge output fails without amountFrom', (done) => {
+        chai.request(app)
+            .get('/v1/estimate_bridge_output')
+            .query({
+                fromChain: "BSC",
+                toChain:"AVALANCHE",
+                fromToken: "USDT",
+                toToken: "USDC",
+            })
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
+    });
+
 
     it('get stableswap pools', (done) => {
         chai.request(app)
