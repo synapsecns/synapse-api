@@ -24,16 +24,10 @@ async function estimateBridgeOutputs(fromChain, toChain, fromToken, toToken, amo
         const toTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(toToken)
         const toTokenObj = Tokens[toTokenSymbol]
 
-        // Optional argument
-        let bigNumAmount = null;
-        if (amountFrom) {
-            await amountParamValidator(amountFrom);
-            bigNumAmount = BigNumber.from(amountFrom);
-        }
+        let bigNumAmount = BigNumber.from(amountFrom);
 
         const bridge = Bridges[fromChainId];
-
-        const estimate = await bridge.estimateBridgeTokenOutput({
+        const estimate =  await bridge.estimateBridgeTokenOutput({
             tokenFrom: fromTokenObj,
             tokenTo: toTokenObj,
             chainIdTo: toChainId,
