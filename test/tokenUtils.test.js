@@ -66,22 +66,6 @@ describe('TokenUtils unit tests', () => {
         res.should.equal(cachedRes);
     });
 
-    it('getObjectFromAddress() should return a token object when a token symbol is passed as param', function () {
-        let address = "0xc2132d05d31c914a87c6611c10748aeb04b58e8f" // USDT on Polygon
-        let res = TokenUtils.getObjectFromAddress(address);
-        res.should.be.an('object');
-        res.should.have.property('symbol');
-        res.symbol.should.equal("USDT");
-
-        res.should.have.property('name');
-        res.should.have.property('decimals');
-        res.should.have.property('addresses');
-        res.should.have.property('swapType');
-
-        let cachedRes = TokenUtils.getObjectFromAddress(address);
-        res.should.equal(cachedRes);
-    });
-
     it('getChainAddressFromSymbol() should return an address when a chain id and token symbol are passed as params', function () {
         let tokenSymbol = "DAI";
         let chainId = "137";

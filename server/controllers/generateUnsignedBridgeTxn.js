@@ -19,11 +19,11 @@ async function generateUnsignedBridgeTxn(fromChain, toChain, fromToken, toToken,
         const fromChainId = ChainUtils.getIdFromRequestQueryParam(fromChain)
         const toChainId = ChainUtils.getIdFromRequestQueryParam(toChain)
 
-        const fromTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
-        const fromTokenObj = Tokens[fromTokenSymbol]
+        const fromTokenKey = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
+        const fromTokenObj = Tokens[fromTokenKey]
 
-        const toTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(toToken)
-        const toTokenObj = Tokens[toTokenSymbol]
+        const toTokenKey = TokenUtils.getSymbolFromRequestQueryParam(toToken)
+        const toTokenObj = Tokens[toTokenKey]
 
         const bigNumAmount = BigNumber.from(amountFrom);
 

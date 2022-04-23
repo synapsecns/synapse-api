@@ -18,11 +18,11 @@ async function estimateBridgeOutputs(fromChain, toChain, fromToken, toToken, amo
         const fromChainId = ChainUtils.getIdFromRequestQueryParam(fromChain)
         const toChainId = ChainUtils.getIdFromRequestQueryParam(toChain)
 
-        const fromTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
-        const fromTokenObj = Tokens[fromTokenSymbol]
+        const fromTokenKey = TokenUtils.getSymbolFromRequestQueryParam(fromToken)
+        const fromTokenObj = Tokens[fromTokenKey]
 
-        const toTokenSymbol = TokenUtils.getSymbolFromRequestQueryParam(toToken)
-        const toTokenObj = Tokens[toTokenSymbol]
+        const toTokenKey = TokenUtils.getSymbolFromRequestQueryParam(toToken)
+        const toTokenObj = Tokens[toTokenKey]
 
         let bigNumAmount = BigNumber.from(amountFrom);
 
