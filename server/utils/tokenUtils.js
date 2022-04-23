@@ -6,6 +6,8 @@ import {getIds} from "./chainUtils.js";
  * NOTE: Symbols is a bit misleading. We refer to symbol as a key keys of the `Tokens` object
  * This is because, Wrapped ETH has the symbol WETH for multiple chains, but different keys
  * The key to Token object is the unique attribute while identifying a token and NOT BaseToken.symbol
+ *
+ * The _buildObjectFromSDKObject takes care of this by replacing BaseToken.symbol by the unique key instead
  */
 
 /**
@@ -51,10 +53,10 @@ function getAddresses() {
     return Cache.set(getAddresses, tokenAddresses);
 }
 
-function _buildObjectFromSDKObject(sdkToken) {
+function _buildObjectFromSDKObject(sdkToken, uniqueSymbol) {
     return {
         name: sdkToken.name,
-        symbol: sdkToken.symbol,
+        symbol: uniqueSymbol,
         decimals: sdkToken._decimals,
         addresses: sdkToken.addresses,
         swapType: sdkToken.swapType,
@@ -75,7 +77,7 @@ function getObjects() {
     let tokenObjList = [];
     Object.keys(Tokens).forEach(key => {
         if (Tokens[key] instanceof BaseToken) {
-            let tokenObj = _buildObjectFromSDKObject(Tokens[key]);
+            let tokenObj = _buildObjectFromSDKObject(Tokens[key], key);
             tokenObjList.push(tokenObj);
         }
     })
@@ -87,8 +89,6 @@ function getObjects() {
  * @param {String} symbol
  * @returns {Object}
  */
-// TODO: Deprecate ?
-// WETH can lead to collision of objects.
 function getObjectFromSymbol(symbol) {
     let cachedRes = Cache.get(getObjectFromSymbol, [symbol]);
     if (cachedRes) {
@@ -99,7 +99,7 @@ function getObjectFromSymbol(symbol) {
     Object.keys(Tokens).forEach(key => {
         if (Tokens[key] instanceof BaseToken) {
             if (Tokens[key].symbol === symbol) {
-                tokenObj = _buildObjectFromSDKObject(Tokens[key]);
+                tokenObj = _buildObjectFromSDKObject(Tokens[key], key);
             }
         }
     })
