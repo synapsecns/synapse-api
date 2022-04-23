@@ -710,11 +710,17 @@ router.get('/get_network_swappable_tokens',
  * @apiExample {curl} Example usage:
  *      curl --request GET 'https://syn-api-x.herokuapp.com/v1/check_swap_supported?fromChain=1&toChain=BSC&fromToken=USDC&toToken=GOHM'
  *
- * @apiSuccessExample Success-Response:
+ * @apiSuccessExample Success-Response (Unsupported):
  *      HTTP/1.1 200 OK
  *      {
  *          "supported": false,
  *          "reason": "Token swap types don't match"
+ *      }
+ *
+ * @apiSuccessExample Success-Response (Supported):
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "supported": true,
  *      }
  *
  * @apiErrorExample {json} Error - Invalid Arguments:
