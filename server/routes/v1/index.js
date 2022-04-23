@@ -13,6 +13,7 @@ import {getStableSwapPools} from "../../controllers/getStableSwapPools.js"
 import {estimateSwapOutput} from "../../controllers/estimateSwapOutput.js"
 import {generateSwapTransaction} from "../../controllers/generateSwapTransaction.js"
 import {getSwapTokenMap} from "../../controllers/getSwapTokenMap.js"
+import {checkSwapSupported} from "../../controllers/checkSwapSupported.js"
 
 import {chainParamValidator, tokenParamValidator, amountParamValidator} from "../../validators/queryParamValidators.js";
 
@@ -694,6 +695,58 @@ router.get('/get_network_swappable_tokens',
         } catch (err) {
             res.status(400).json({"error": err.toString()});
         }
+    });
+
+/**
+ * @api {get} /v1/check_swap_supported Check Swap Supported
+ * @apiName check_swap_supported
+ * @apiGroup API Endpoints
+ *
+ * @apiQuery {Number|String} fromChain Name or decimal/hex id of chain to swap from
+ * @apiQuery {Number|String} toChain Name or decimal/hex id of chain to swap to
+ * @apiQuery {String} fromToken Token desired to swap from source chain
+ * @apiQuery {String} toToken Token desired to receive on destination chain
+ *
+ * @apiExample {curl} Example usage:
+ *      curl --request GET 'https://syn-api-x.herokuapp.com/v1/check_swap_supported?fromChain=1&toChain=BSC&fromToken=USDC&toToken=GOHM'
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "supported": false,
+ *          "reason": "Token swap types don't match"
+ *      }
+ *
+ * @apiErrorExample {json} Error - Invalid Arguments:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Valid arguments for fromChain, toChain, fromToken and toToken must be passed"
+ *     }
+ *
+ * @apiSampleRequest /v1/check_swap_supported
+ */
+router.get('/check_swap_supported',
+    query("fromChain").custom(chainParamValidator),
+    query("toChain").custom(chainParamValidator),
+    query("fromToken").custom(tokenParamValidator),
+    query("toToken").custom(tokenParamValidator),
+    async (req, res) => {
+
+        try {
+            validationResult(req).throw();
+        } catch (err) {
+            res.status(400).json({"error": "Valid arguments for fromChain, toChain, fromToken, toToken, amountFrom and amountTo must be passed"});
+            return;
+        }
+
+        try {
+            const {fromChain, toChain, fromToken, toToken} = req.query
+            const params = await checkSwapSupported(fromChain, toChain, fromToken, toToken)
+            res.status(200).json(params);
+        }  catch (err) {
+            res.status(400).json({"error": err.toString()});
+        }
+
     });
 
 

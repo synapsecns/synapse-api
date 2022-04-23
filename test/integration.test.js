@@ -328,5 +328,44 @@ describe('Integration Tests', () => {
             });
     }).timeout(10000);
 
+    it('check swap supported success', (done) => {
+        chai.request(app)
+            .get('/v1/check_swap_supported')
+            .query({
+                fromChain: "AVALANCHE",
+                toChain:0x38,
+                fromToken: "USDC",
+                toToken: "USDC",
+            })
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.an('object');
+                res.body.should.have.property('supported');
+                res.body.supported.should.be.true;
+
+                done();
+            });
+    });
+
+    it('check swap unsupported', (done) => {
+        chai.request(app)
+            .get('/v1/check_swap_supported')
+            .query({
+                fromChain: "AVALANCHE",
+                toChain:0x38,
+                fromToken: "USDC",
+                toToken: "GOHM",
+            })
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.an('object');
+                res.body.should.have.property('supported');
+                res.body.supported.should.be.false
+                res.body.should.have.property('reason');
+
+                done();
+            });
+    });
+
 
 });
