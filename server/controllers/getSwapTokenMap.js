@@ -4,18 +4,22 @@ import {removeDecimalUnderscoreFromObject} from "../utils/responseUtils.js"
 
 /**
  * @param {String} chainA
- * @param {String} chainB
+ * @param {String | undefined} chainB
  * @returns {Object[]}
  */
 async function getSwapTokenMap(chainA, chainB) {
     try {
         const chainIdA = ChainUtils.getIdFromRequestQueryParam(chainA);
-        const chainIdB = ChainUtils.getIdFromRequestQueryParam(chainB);
+
+        let chainIdB = undefined;
+        if (chainB) {
+            chainIdB = ChainUtils.getIdFromRequestQueryParam(chainB);
+        }
 
         let res = networkSwapTokensMap(chainIdA, chainIdB);
         removeDecimalUnderscoreFromObject(res)
 
-        return res[chainIdB]
+        return chainIdB ? res[chainIdB] : res;
     } catch (err) {
         console.log(err);
         throw err
