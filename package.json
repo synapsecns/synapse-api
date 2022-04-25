@@ -39,6 +39,9 @@
       "filename": "docs/header.md",
       "title": "Overview"
     },
+    "footer": {
+      "filename": "docs/footer.md"
+    },
     "template": {
       "showRequiredLabels": true
     }
