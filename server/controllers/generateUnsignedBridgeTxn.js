@@ -51,7 +51,11 @@ async function generateUnsignedBridgeTxn(fromChain, toChain, fromToken, toToken,
             to: unsignedTxn.to,
             chainId: unsignedTxn.chainId,
             gasPrice: unsignedTxn.gasPrice,
-            gasLimit: unsignedTxn.gasLimit
+            gasLimit: unsignedTxn.gasLimit,
+
+            // Special case while bridging ETH from Ethereum
+            // The transaction must include value, as Ether isn't an ERC-720 token (Duh)
+            value : unsignedTxn.value ? unsignedTxn.value : undefined
         }
     } catch(err) {
         console.log(err);

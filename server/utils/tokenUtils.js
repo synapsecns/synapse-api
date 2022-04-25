@@ -3,6 +3,14 @@ import * as Cache from "./cache.js"
 import {getIds} from "./chainUtils.js";
 
 /**
+ * NOTE: Symbols is a bit misleading. We refer to symbol as a key keys of the `Tokens` object
+ * This is because, Wrapped ETH has the symbol WETH for multiple chains, but different keys
+ * The key to Token object is the unique attribute while identifying a token and NOT BaseToken.symbol
+ *
+ * The _buildObjectFromSDKObject takes care of this by replacing BaseToken.symbol by the unique key instead
+ */
+
+/**
  * Returns list of token symbols
  * @returns {String[]}
  */
@@ -45,10 +53,10 @@ function getAddresses() {
     return Cache.set(getAddresses, tokenAddresses);
 }
 
-function _buildObjectFromSDKObject(sdkToken) {
+function _buildObjectFromSDKObject(sdkToken, uniqueSymbol) {
     return {
         name: sdkToken.name,
-        symbol: sdkToken.symbol,
+        symbol: uniqueSymbol,
         decimals: sdkToken._decimals,
         addresses: sdkToken.addresses,
         swapType: sdkToken.swapType,
@@ -69,7 +77,7 @@ function getObjects() {
     let tokenObjList = [];
     Object.keys(Tokens).forEach(key => {
         if (Tokens[key] instanceof BaseToken) {
-            let tokenObj = _buildObjectFromSDKObject(Tokens[key]);
+            let tokenObj = _buildObjectFromSDKObject(Tokens[key], key);
             tokenObjList.push(tokenObj);
         }
     })
@@ -91,39 +99,12 @@ function getObjectFromSymbol(symbol) {
     Object.keys(Tokens).forEach(key => {
         if (Tokens[key] instanceof BaseToken) {
             if (Tokens[key].symbol === symbol) {
-                tokenObj = _buildObjectFromSDKObject(Tokens[key]);
+                tokenObj = _buildObjectFromSDKObject(Tokens[key], key);
             }
         }
     })
 
     return Cache.set(getObjectFromSymbol, tokenObj, [symbol]);
-}
-
-/**
- * @param {String} address
- * @returns {Object|null}
- */
-function getObjectFromAddress(address) {
-    let cachedRes = Cache.get(getObjectFromAddress, [address]);
-    if (cachedRes) {
-        return cachedRes;
-    }
-
-    let tokenObj = null;
-    Object.keys(Tokens).forEach(key => {
-        if (Tokens[key] instanceof BaseToken) {
-            const token = Tokens[key];
-            let tokenAddresses = [];
-            Object.keys(token.addresses).forEach(key => {
-                tokenAddresses.push(token.addresses[key]);
-            });
-            if (tokenAddresses.includes(address)) {
-                tokenObj = getObjectFromSymbol(token.symbol);
-            }
-        }
-    })
-
-    return Cache.set(getObjectFromAddress, tokenObj, [address]);
 }
 
 /**
@@ -140,19 +121,31 @@ function getChainAddressFromSymbol(symbol, chainId) {
     let address =  Tokens[symbol].addresses[chainId];
     address = address ? address : null;
 
-    return Cache.set(getObjectFromAddress, address, [symbol, chainId]);
+    return Cache.set(getChainAddressFromSymbol, address, [symbol, chainId]);
 }
 
 /**
+ * Returns a key to the `Tokens` object of the SDK
+ *
  * @param {String} tokenParam
  * @returns {Object}
  */
 function getSymbolFromRequestQueryParam(tokenParam) {
-    let token = getObjectFromSymbol(tokenParam);
-    if (!token) {
-        token = getObjectFromAddress(tokenParam);
+    // getSymbols() effectively returns keys. Check function doc
+    if (getSymbols().includes(tokenParam)) {
+        // tokenParam is already a key. Just return
+        return tokenParam;
     }
-    return token ? token.symbol : null;
+
+    // Has to be in addresses, as verified by validator
+    // TODO: Move to new function, `getTokenKeyFromAddress`
+    for (let key of Object.keys(Tokens)) {
+        if (Tokens[key] instanceof BaseToken) {
+            if (Object.values(Tokens[key].addresses).includes(tokenParam)) {
+                return key;
+            }
+        }
+    }
 }
 
 /**
@@ -180,9 +173,8 @@ export {
     getSymbols,
     getAddresses,
     getObjects,
-    getObjectFromAddress,
     getObjectFromSymbol,
     getChainAddressFromSymbol,
     getSymbolFromRequestQueryParam,
-    getAllBridgeableTokens
+    getAllBridgeableTokens,
 }

@@ -33,7 +33,7 @@ describe('Integration Tests', () => {
             });
     });
 
-    it('generate unsigned bridge transaction', (done) => {
+    it('generate unsigned bridge transaction that bridges token', (done) => {
         chai.request(app)
             .get('/v1/generate_unsigned_bridge_txn')
             .query({
@@ -49,10 +49,55 @@ describe('Integration Tests', () => {
                 res.body.should.be.an('object');
                 res.body.should.have.property('unsigned_data');
                 res.body.should.have.property('to');
+                res.body.should.not.have.property('value');
 
                 done();
             });
     }).timeout(10000);
+
+    it('generate unsigned bridge transaction that bridges Ether', (done) => {
+        chai.request(app)
+            .get('/v1/generate_unsigned_bridge_txn')
+            .query({
+                fromChain: 1,
+                toChain:"AVALANCHE",
+                fromToken: "ETH",
+                toToken: "WETH_E",
+                amountFrom: 10,
+                addressTo: "0x2D2c027E0d1A899a1965910Dd272bcaE1cD03c22"
+            })
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.an('object');
+                res.body.should.have.property('unsigned_data');
+                res.body.should.have.property('to');
+
+                res.body.should.have.property('value');
+                done();
+            });
+    }).timeout(10000);
+
+    it('generate unsigned bridge transaction from ETH to WETH', (done) => {
+        chai.request(app)
+            .get('/v1/generate_unsigned_bridge_txn')
+            .query({
+                fromChain: 1,
+                toChain:"AVALANCHE",
+                fromToken: "ETH",
+                toToken: "WETH_E",
+                amountFrom: 10,
+                addressTo: "0x2D2c027E0d1A899a1965910Dd272bcaE1cD03c22"
+            })
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.an('object');
+                res.body.should.have.property('unsigned_data');
+                res.body.should.have.property('to');
+
+                done();
+            });
+    }).timeout(10000);
+
 
     it('generate unsigned bridge transaction fails with invalid addressTo', (done) => {
         chai.request(app)
@@ -268,4 +313,82 @@ describe('Integration Tests', () => {
                 done();
             });
     }).timeout(10000);
+
+    it('get swappable tokens between a network to all networks', (done) => {
+        chai.request(app)
+            .get('/v1/get_network_swappable_tokens')
+            .query({
+                fromChain: 1,
+            })
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.an('object');
+                res.body.should.have.property('10');
+
+                res.body['10'].should.be.an('array');
+                res.body['10'][0].should.have.property('name');
+                res.body['10'][0].should.have.property('symbol');
+
+                done();
+            });
+    }).timeout(10000);
+
+    it('get swappable tokens between a network to a network', (done) => {
+        chai.request(app)
+            .get('/v1/get_network_swappable_tokens')
+            .query({
+                fromChain: 1,
+                toChain: "AVALANCHE"
+            })
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.an('array');
+
+                res.body[0].should.have.property('name');
+                res.body[0].should.have.property('symbol');
+
+                done();
+            });
+    }).timeout(10000);
+
+    it('check swap supported success', (done) => {
+        chai.request(app)
+            .get('/v1/check_swap_supported')
+            .query({
+                fromChain: "AVALANCHE",
+                toChain:0x38,
+                fromToken: "USDC",
+                toToken: "USDC",
+            })
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.an('object');
+                res.body.should.have.property('supported');
+                res.body.supported.should.be.true;
+
+                done();
+            });
+    });
+
+    it('check swap unsupported', (done) => {
+        chai.request(app)
+            .get('/v1/check_swap_supported')
+            .query({
+                fromChain: "AVALANCHE",
+                toChain:0x38,
+                fromToken: "USDC",
+                toToken: "GOHM",
+            })
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.an('object');
+                res.body.should.have.property('supported');
+                res.body.supported.should.be.false
+                res.body.should.have.property('reason');
+
+                done();
+            });
+    });
+
+
 });

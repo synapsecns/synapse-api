@@ -9,10 +9,11 @@ import {generateUnsignedBridgeTxn} from "../../controllers/generateUnsignedBridg
 import {generateUnsignedBridgeApprovalTxn} from "../../controllers/generateUnsignedBridgeApprovalTxn.js"
 import {generateBridgeTxnParams} from "../../controllers/generateBridgeTxnParams.js"
 import {checkBridgeTransactionStatus} from "../../controllers/checkBridgeTransactionStatus.js"
-
 import {getStableSwapPools} from "../../controllers/getStableSwapPools.js"
 import {estimateSwapOutput} from "../../controllers/estimateSwapOutput.js"
 import {generateSwapTransaction} from "../../controllers/generateSwapTransaction.js"
+import {getSwapTokenMap} from "../../controllers/getSwapTokenMap.js"
+import {checkSwapSupported} from "../../controllers/checkSwapSupported.js"
 
 import {chainParamValidator, tokenParamValidator, amountParamValidator} from "../../validators/queryParamValidators.js";
 
@@ -617,5 +618,142 @@ router.get('/check_bridge_transaction_status',
             res.status(400).json({"error": err.toString()});
         }
     });
+
+/**
+ * @api {get} /v1/get_network_swappable_tokens Get Swappable Tokens for Network
+ * @apiName get_network_swappable_tokens
+ * @apiGroup API Endpoints
+ *
+ * @apiQuery {String} chainFrom To get a map of all swappable tokens for this chain to all chains
+ * @apiQuery {String} [chainTo] Optional, if specified returns swappable tokens only between chainFrom and chainTo
+ *
+ * @apiExample {curl} Example usage:
+ *      curl --request GET 'https://syn-api-x.herokuapp.com/v1/get_network_swappable_tokens?chainFrom=1&chainTo=43114'
+ *
+ * @apiSuccessExample Success-Response:
+ *      HTTP/1.1 200 OK
+ *        {
+ *             "addresses": {
+ *                 "1": "0x0ab87046fBb341D058F17CBC4c1133F25a20a52f",
+ *                 "10": "0x0b5740c6b4a97f90eF2F0220651Cca420B868FfB",
+ *                 ...
+ *             },
+ *             "wrapperAddresses": {},
+ *             "name": "Olympus DAO",
+ *             "symbol": "gOHM",
+ *             "swapType": "OHM",
+ *             "isETH": false,
+ *             "isGasToken": false,
+ *             "decimals": {
+ *                 "1": 18,
+ *                 "10": 18,
+ *                 ...
+ *             }
+ *         },
+ *         {
+ *             "addresses": {
+ *                 "1": "0x1B84765dE8B7566e4cEAF4D0fD3c5aF52D3DdE4F",
+ *                 "25": "0x396c9c192dd323995346632581BEF92a31AC623b",
+ *                 ...
+ *             },
+ *             "wrapperAddresses": {},
+ *             "name": "Synapse nUSD",
+ *             "symbol": "nUSD",
+ *             "swapType": "USD",
+ *             "isETH": false,
+ *             "isGasToken": false,
+ *             "decimals": {
+ *                 "1": 18,
+ *                 "25": 18,
+ *                 ...
+ *             }
+ *         },
+ *
+ * @apiErrorExample {json} Error - Invalid Arguments:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "A valid value for chainFrom and optionally chainTo must be passed"
+ *     }
+ *
+ * @apiSampleRequest /v1/get_network_swappable_tokens
+ */
+router.get('/get_network_swappable_tokens',
+    query("fromChain").custom(chainParamValidator),
+    query("toChain").if(query("toChain").exists()).custom(chainParamValidator),
+    async (req, res) => {
+        try {
+            validationResult(req).throw();
+        } catch (err) {
+            res.status(400).json({"error": "A valid value for fromChain and optionally toChain must be passed"});
+            return;
+        }
+
+        try {
+            const {fromChain, toChain} = req.query
+            const status = await getSwapTokenMap(fromChain, toChain);
+            res.status(200).json(status);
+        } catch (err) {
+            res.status(400).json({"error": err.toString()});
+        }
+    });
+
+/**
+ * @api {get} /v1/check_swap_supported Check Swap Supported
+ * @apiName check_swap_supported
+ * @apiGroup API Endpoints
+ *
+ * @apiQuery {Number|String} fromChain Name or decimal/hex id of chain to swap from
+ * @apiQuery {Number|String} toChain Name or decimal/hex id of chain to swap to
+ * @apiQuery {String} fromToken Token desired to swap from source chain
+ * @apiQuery {String} toToken Token desired to receive on destination chain
+ *
+ * @apiExample {curl} Example usage:
+ *      curl --request GET 'https://syn-api-x.herokuapp.com/v1/check_swap_supported?fromChain=1&toChain=BSC&fromToken=USDC&toToken=GOHM'
+ *
+ * @apiSuccessExample Success-Response (Unsupported):
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "supported": false,
+ *          "reason": "Token swap types don't match"
+ *      }
+ *
+ * @apiSuccessExample Success-Response (Supported):
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "supported": true,
+ *      }
+ *
+ * @apiErrorExample {json} Error - Invalid Arguments:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "error": "Valid arguments for fromChain, toChain, fromToken and toToken must be passed"
+ *     }
+ *
+ * @apiSampleRequest /v1/check_swap_supported
+ */
+router.get('/check_swap_supported',
+    query("fromChain").custom(chainParamValidator),
+    query("toChain").custom(chainParamValidator),
+    query("fromToken").custom(tokenParamValidator),
+    query("toToken").custom(tokenParamValidator),
+    async (req, res) => {
+
+        try {
+            validationResult(req).throw();
+        } catch (err) {
+            res.status(400).json({"error": "Valid arguments for fromChain, toChain, fromToken, toToken, amountFrom and amountTo must be passed"});
+            return;
+        }
+
+        try {
+            const {fromChain, toChain, fromToken, toToken} = req.query
+            const params = await checkSwapSupported(fromChain, toChain, fromToken, toToken)
+            res.status(200).json(params);
+        }  catch (err) {
+            res.status(400).json({"error": err.toString()});
+        }
+
+    });
+
 
 export default router;
