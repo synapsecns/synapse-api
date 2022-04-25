@@ -89,9 +89,6 @@
   {{#if template.withGenerator}}
     {{#if generator}}
       <div>
-        <p class="text-muted">
-          {{__ "Generated with"}} <a href="{{{generator.url}}}">{{{generator.name}}}</a> {{{generator.version}}} - {{{generator.time}}}
-        </p>
       </div>
     {{/if}}
   {{/if}}
@@ -121,9 +118,9 @@
     {{#if template.withCompare}}
     <div class="pull-right">
       <div class="btn-group">
-        <button class="version btn btn-default dropdown-toggle" data-toggle="dropdown">
-          <strong>{{article.version}}</strong>&nbsp;<span class="caret"></span>
-        </button>
+<!--        <button class="version btn btn-default dropdown-toggle" data-toggle="dropdown">-->
+<!--          <strong>{{article.version}}</strong>&nbsp;<span class="caret"></span>-->
+<!--        </button>-->
         <ul class="versions dropdown-menu open-left">
           <li class="disabled"><a href="#">{{__ "compare changes to:"}}</a></li>
         {{#each versions}}
