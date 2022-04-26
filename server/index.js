@@ -2,7 +2,6 @@
 
 import express from "express";
 import "dotenv/config";
-import moesif from 'moesif-nodejs';
 
 import v1Router from "./routes/v1/index.js";
 
@@ -20,14 +19,6 @@ app.use('/apidoc', express.static('docs/apidoc'));
 app.use((err, req, res, next) => {
     res.status(500).json({error: err.message});
 });
-
-// Moesif API analytics
-if (process.env.ENV === "prod" && process.env.MOESIF_APPLICATION_ID) {
-    const moesifMiddleware = moesif({
-        applicationId: process.env.MOESIF_APPLICATION_ID,
-    });
-    app.use(moesifMiddleware);
-}
 
 app.listen(port, () => {
     console.log(`listening at http://localhost:${port}`);
