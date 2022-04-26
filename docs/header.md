@@ -1,9 +1,9 @@
 ### FAQs
 
 * Does this API generate signed transactions ?
-  * No, this API simply generates a raw transaction and returns the result. You must sign this either on the [frontend](https://ethereum.stackexchange.com/a/122932) using a Web3 provider or on the [backend](https://ethereum.stackexchange.com/a/52784) using your private keys.
+  * No, this API simply generates a raw transaction and returns the result. You must sign this either on the [frontend](https://ethereum.stackexchange.com/a/122932) using a Web3 provider or on the [backend](https://ethereum.stackexchange.com/a/52784) using your private keys and then potentially broadcast it.
 * How do I get Ether on a chain other than Ethereum, eg. Avalanche ?
-  * Ether is Ethereum's native currency and hence is not an Ethereum token. Ether is represented as different flavors of *Wrapped* Ether on other chains, which are ERC-721 tokens. Use the `get_bridgeable_tokens` for a Chain, find the corresponding token that represents Ether (`WETH_E` for Avalanche, for eg.) and bridge to that!
+  * Ether is Ethereum's native currency and hence is not an ERC-721 token. Ether is represented as different flavors of *Wrapped* Ether on other chains, which are ERC-721 tokens. Use the `get_bridgeable_tokens` for a Chain, find it's corresponding token that represents Ether (`WETH_E` for Avalanche, for eg.) and bridge to that!
 * Does anything special need to be done when we bridge Ether from Ethereum vs an ERC-721 token ?
   * While bridging Ether from Ethereum only, the `generate_unsigned_bridge_txn` returns a `value` attribute in the returned JSON which must be passed in the transaction. For transferring any other ERC-721 tokens, the value is 0 and does not need to be specified.
 * I am writing my app in Python/Rust/etc. Is there an SDK available for my language ?
