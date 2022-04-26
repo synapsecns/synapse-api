@@ -1,6 +1,7 @@
 import * as TokenUtils from "../server/utils/tokenUtils.js";
 import chai from "chai"
 import chaiSubset from "chai-subset"
+import {Tokens} from "@synapseprotocol/sdk";
 
 chai.use(chaiSubset);
 
@@ -52,17 +53,22 @@ describe('TokenUtils unit tests', () => {
     });
 
     it('getObjectFromSymbol() should return a token object when a token symbol is passed as param', function () {
-        let res = TokenUtils.getObjectFromSymbol("DAI");
+        let res = TokenUtils.getObjectFromSymbol("USDC");
         res.should.be.an('object');
         res.should.have.property('symbol');
-        res.symbol.should.equal("DAI");
+        res.symbol.should.equal("USDC");
 
         res.should.have.property('name');
         res.should.have.property('decimals');
         res.should.have.property('addresses');
         res.should.have.property('swapType');
 
-        let cachedRes = TokenUtils.getObjectFromSymbol("DAI");
+        // Ensure that USDC has been returned, not another flavor like USDC_DFK
+        res.should.have.nested.property("addresses.1");
+        res.should.have.nested.property("addresses.25");
+        res.should.have.nested.property("addresses.56");
+
+        let cachedRes = TokenUtils.getObjectFromSymbol("USDC");
         res.should.equal(cachedRes);
     });
 
@@ -94,6 +100,18 @@ describe('TokenUtils unit tests', () => {
         res.should.be.an('array');
         res[0].should.be.an('object')
         res.length.should.be.greaterThan(15) // Loose check to ensure the results are across chains
+    });
+
+    it('getJSONFromBaseObject() should return a JSON Object with correct attributes', function () {
+        let token1 = TokenUtils.getJSONFromBaseObject(Tokens['USDC']);
+        token1.should.be.an('object');
+        token1.symbol.should.equal("USDC")
+        token1.should.not.have.nested.property("addresses.53935");
+
+        let token2 = TokenUtils.getJSONFromBaseObject(Tokens['DFK_USDC']);
+        token2.should.be.an('object');
+        token2.symbol.should.equal("DFK_USDC")
+        token2.should.have.nested.property("addresses.53935");
     });
 
 });
