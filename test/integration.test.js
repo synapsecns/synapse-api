@@ -166,31 +166,6 @@ describe('Integration Tests', () => {
             });
     }).timeout(5000);
 
-    it('generate bridge transaction parameters', (done) => {
-        chai.request(app)
-            .get('/v1/generate_bridge_txn_params')
-            .query({
-                fromChain: "AVALANCHE",
-                toChain:0x38,
-                fromToken: "USDC",
-                toToken: "USDC",
-                amountFrom: 1,
-                amountTo: 1
-            })
-            .end((err, res) => {
-                res.should.have.status(200);
-                res.body.should.be.an('object');
-                res.body.should.have.property('tokenFrom');
-                res.body.should.have.property('tokenTo');
-                res.body.should.have.property('chainIdTo');
-                res.body.should.have.property('chainIdTo');
-                res.body.should.have.property('amountFrom');
-                res.body.should.have.property('amountTo');
-
-                done();
-            });
-    });
-
     it('estimate bridge output', (done) => {
         chai.request(app)
             .get('/v1/estimate_bridge_output')

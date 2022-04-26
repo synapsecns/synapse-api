@@ -1,6 +1,7 @@
 import {BaseToken, SwapPools, Tokens} from "@synapseprotocol/sdk"
 import * as Cache from "./cache.js"
 import {getIds} from "./chainUtils.js";
+import equal from "deep-equal"
 
 /**
  * NOTE: Symbols is a bit misleading. We refer to symbol as a key keys of the `Tokens` object
@@ -53,6 +54,14 @@ function getAddresses() {
     return Cache.set(getAddresses, tokenAddresses);
 }
 
+/**
+ * Builds an object for display from an instance of the SDKs Token
+ *
+ * @param {BaseToken} sdkToken
+ * @param uniqueSymbol
+ * @returns {{symbol, addresses: *, isETH: *, wrapperAddresses: *, decimals: *, name, swapType: *}}
+ * @private
+ */
 function _buildObjectFromSDKObject(sdkToken, uniqueSymbol) {
     return {
         name: sdkToken.name,
@@ -86,6 +95,8 @@ function getObjects() {
 }
 
 /**
+ * NOTE: Refer to JSDoc about symbols at the top
+ *
  * @param {String} symbol
  * @returns {Object}
  */
@@ -98,13 +109,36 @@ function getObjectFromSymbol(symbol) {
     let tokenObj = null;
     Object.keys(Tokens).forEach(key => {
         if (Tokens[key] instanceof BaseToken) {
-            if (Tokens[key].symbol === symbol) {
+            if (key === symbol) {
                 tokenObj = _buildObjectFromSDKObject(Tokens[key], key);
             }
         }
     })
 
     return Cache.set(getObjectFromSymbol, tokenObj, [symbol]);
+}
+
+/**
+ * Takes in the SDKs BaseToken object and returns a representative version of the Object for display
+ *
+ * @param {Object} baseObj
+ * @returns {Object}
+ */
+function getJSONFromBaseObject(baseObj) {
+    let cachedRes = Cache.get(getJSONFromBaseObject, [JSON.stringify(baseObj)]);
+    if (cachedRes) {
+        return cachedRes;
+    }
+
+    let resObj = null;
+    for (let key of Object.keys(Tokens)) {
+        if (equal(Tokens[key], baseObj)) {
+            resObj = _buildObjectFromSDKObject(Tokens[key], key);
+            break;
+        }
+    }
+
+    return Cache.set(getJSONFromBaseObject, resObj, [JSON.stringify(baseObj)]);
 }
 
 /**
@@ -162,7 +196,7 @@ function getAllBridgeableTokens() {
     chainIds.forEach((chainId) => {
         let tokenList = SwapPools.getAllSwappableTokensForNetwork(parseInt(chainId));
         tokenList.forEach(tokenObj => {
-            resTokenSet.add(getObjectFromSymbol(tokenObj.symbol))
+            resTokenSet.add(getJSONFromBaseObject(tokenObj))
         })
     })
 
@@ -177,4 +211,5 @@ export {
     getChainAddressFromSymbol,
     getSymbolFromRequestQueryParam,
     getAllBridgeableTokens,
+    getJSONFromBaseObject
 }

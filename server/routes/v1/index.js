@@ -7,7 +7,6 @@ import {getChainsForToken} from "../../controllers/getChainsForToken.js"
 import {estimateBridgeOutputs} from "../../controllers/estimateBridgeOutputs.js"
 import {generateUnsignedBridgeTxn} from "../../controllers/generateUnsignedBridgeTxn.js"
 import {generateUnsignedBridgeApprovalTxn} from "../../controllers/generateUnsignedBridgeApprovalTxn.js"
-import {generateBridgeTxnParams} from "../../controllers/generateBridgeTxnParams.js"
 import {checkBridgeTransactionStatus} from "../../controllers/checkBridgeTransactionStatus.js"
 import {getStableSwapPools} from "../../controllers/getStableSwapPools.js"
 import {estimateSwapOutput} from "../../controllers/estimateSwapOutput.js"
@@ -298,93 +297,6 @@ router.get('/generate_unsigned_bridge_approval_txn',
         } catch (err) {
             res.status(400).json({"error": err.toString()});
         }
-});
-
-/**
- * @api {get} /v1/generate_bridge_txn_params Generate Bridge Transaction Parameters
- * @apiName generate_bridge_txn_params
- * @apiGroup API Endpoints
- *
- * @apiQuery {Number|String} fromChain Name or decimal/hex id of chain transaction is from
- * @apiQuery {Number|String} toChain Name or decimal/hex id of chain transaction is to
- * @apiQuery {String} fromToken Token user will send to the bridge on the source chain
- * @apiQuery {String} toToken Token user will receive from the bridge on the destination chain
- * @apiQuery {Number} amountFrom Amount of tokenFrom (denoted in wei) that the user will send to the bridge on the source chain
- * @apiQuery {String} [address] Optional, user can provide an address other than the one retrieved from signer to receive tokens
- *
- * @apiExample {curl} Example usage:
- *      curl --request GET 'https://syn-api-x.herokuapp.com/v1/generate_bridge_txn_params?fromChain=1&toChain=BSC&fromToken=USDC&toToken=USDC&amountFrom=1&amountTo=1'
- *
- * @apiSuccessExample Success-Response:
- *      HTTP/1.1 200 OK
- *      {
- *          "tokenFrom": {
- *              "name": "USD Circle",
- *              "symbol": "USDC",
- *              "addresses": {
- *                  "1": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
- *                  ...
- *              },
- *              "swapType": "USD",
- *              "isETH": false,
- *              "wrapperAddresses": {},
- *              "decimals": {
- *                  "1": 6,
- *                  ...
- *              }
- *          },
- *          "tokenTo": {
- *              "name": "USD Circle",
- *              "symbol": "USDC",
- *              "addresses": {
- *                  "1": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
- *                  ...
- *              },
- *              "swapType": "USD",
- *              "isETH": false,
- *              "wrapperAddresses": {},
- *              "decimals": {
- *                  "1": 6,
- *                  ...
- *              }
- *          },
- *          "chainIdTo": 56,
- *          "amountFrom": "1",
- *          "amountTo": "1"
- *      }
- *
- * @apiErrorExample {json} Error - Invalid Arguments:
- *     HTTP/1.1 400 Bad Request
- *     {
- *       "error": "Valid arguments for fromChain, toChain, fromToken, toToken, amountFrom and amountTo must be passed"
- *     }
- *
- * @apiSampleRequest /v1/generate_bridge_txn_params
- */
-router.get('/generate_bridge_txn_params',
-    query("fromChain").custom(chainParamValidator),
-    query("toChain").custom(chainParamValidator),
-    query("fromToken").custom(tokenParamValidator),
-    query("toToken").custom(tokenParamValidator),
-    query("amountFrom").custom(amountParamValidator),
-    query("amountTo").custom(amountParamValidator),
-    async (req, res) => {
-
-        try {
-            validationResult(req).throw();
-        } catch (err) {
-            res.status(400).json({"error": "Valid arguments for fromChain, toChain, fromToken, toToken, amountFrom and amountTo must be passed"});
-            return;
-        }
-
-        try {
-            const {fromChain, toChain, fromToken, toToken, amountFrom, amountTo, addressTo} = req.query
-            const params = await generateBridgeTxnParams(fromChain, toChain, fromToken, toToken, amountFrom, amountTo, addressTo)
-            res.status(200).json(params);
-        }  catch (err) {
-            res.status(400).json({"error": err.toString()});
-        }
-
 });
 
 /**
@@ -720,7 +632,7 @@ router.get('/get_network_swappable_tokens',
  * @apiSuccessExample Success-Response (Supported):
  *      HTTP/1.1 200 OK
  *      {
- *          "supported": true,
+ *          "supported": true
  *      }
  *
  * @apiErrorExample {json} Error - Invalid Arguments:
