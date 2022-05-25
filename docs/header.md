@@ -2,6 +2,8 @@
 
 * Does this API generate signed transactions ?
   * No, this API simply generates a raw transaction and returns the result. You must sign this either on the [frontend](https://ethereum.stackexchange.com/a/122932) using a Web3 provider or on the [backend](https://ethereum.stackexchange.com/a/52784) using your private keys and then potentially broadcast it.
+* `amountToReceived` in the API response is 0 or unexpected. Why is this  ?
+  * You must enter amounts corresponding to the `decimals` field of that token on a chain. Query for the token being bridged, find the `decimals` field for it on the chain, and the amount being entered should correspond to those many digits. Often, the decimals field is 18 so it's likely your amount would be 18 digits. 
 * How do I get Ether on a chain other than Ethereum, eg. Avalanche ?
   * Ether is Ethereum's native currency and hence is not an ERC-721 token. Ether is represented as different flavors of *Wrapped* Ether on other chains, which are ERC-721 tokens. Use the `get_bridgeable_tokens` for a Chain, find it's corresponding token that represents Ether (`WETH_E` for Avalanche, for eg.) and bridge to that!
 * Does anything special need to be done when we bridge Ether from Ethereum vs an ERC-721 token ?
@@ -13,5 +15,5 @@
 
 * `chain`/`chainFrom`/`chainTo`: Accepts a chain symbol (eg. *ETHEREUM*, *BSC*, *ARBITRUM*, etc.), a decimal (*1*, *56*, *42161*) or lower-case hexadecimal (*0x1*, *0x32*, *0xa4b1*) representation of Chain ID. Chain Symbols and Chain IDs can be found in the SDK. See [chainid.ts](https://github.com/synapsecns/sdk/blob/master/src/common/chainid.ts#L1).
 * `tokenFrom`/`tokenTo`: Accepts a token symbol (eg. *DAI*, *USDC*, *ETH*, etc.) or token address on chain (eg. *0x6b175474e89094c44da98b954eedeac495271d0f*). Token symbols and addresses can be found in the SDK. See [tokens.ts](https://github.com/synapsecns/sdk/blob/master/src/tokens.ts).
-* `amount`/`amountFrom`: Denoted in *wei*, accepts a decimal (eg. *100000000000*) or lower case hexadecimal number (eg. *0x174876e800*). Parsed as a [BigNumber](https://docs.ethers.io/v5/api/utils/bignumber/#BigNumber).
+* `amount`/`amountFrom`: Denoted in *wei*, accepts a decimal (eg. *100000000000*) or lower case hexadecimal number (eg. *0x174876e800*). Parsed as a [BigNumber](https://docs.ethers.io/v5/api/utils/bignumber/#BigNumber). Please note one of the FAQ statements. The amount should have as many digits specified in the `decimals` field for that token on the chain being bridged. Figure this out using the `get_chains_for_token` endpoint for the token in question. Often but not always, this is 18 decimals.
 
