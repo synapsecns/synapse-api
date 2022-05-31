@@ -536,11 +536,11 @@ router.get('/check_bridge_transaction_status',
  * @apiName get_network_swappable_tokens
  * @apiGroup API Endpoints
  *
- * @apiQuery {String} chainFrom To get a map of all swappable tokens for this chain to all chains
- * @apiQuery {String} [chainTo] Optional, if specified returns swappable tokens only between chainFrom and chainTo
+ * @apiQuery {String} fromChain To get a map of all swappable tokens for this chain to all chains
+ * @apiQuery {String} [toChain] Optional, if specified returns swappable tokens only between chainFrom and chainTo
  *
  * @apiExample {curl} Example usage:
- *      curl --request GET 'https://syn-api-x.herokuapp.com/v1/get_network_swappable_tokens?chainFrom=1&chainTo=43114'
+ *      curl --request GET 'https://syn-api-x.herokuapp.com/v1/get_network_swappable_tokens?fromChain=1&toChain=43114'
  *
  * @apiSuccessExample Success-Response:
  *      HTTP/1.1 200 OK
