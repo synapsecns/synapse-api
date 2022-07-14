@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@ethersproject/hash": "^5.5.0",
-    "@synapseprotocol/sdk": "0.95.1-alpha.17",
+    "@synapseprotocol/sdk": "0.95.1-alpha.9",
     "apidoc": "^0.50.5",
     "deep-equal": "^2.0.5",
     "dotenv": "^16.0.0",

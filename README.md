@@ -1,8 +1,10 @@
 # synapse-api
 
-Synapse REST API. Please refer to [FAQs](https://syn-api-dev.herokuapp.com/apidoc/#api-_header) before using the API or opening a discord ticket
+Synapse REST API
 
-* API: https://syn-api-dev.herokuapp.com/apidoc/
+* Development: https://syn-api-dev.herokuapp.com/apidoc/
+
+* Production: https://syn-api-x.herokuapp.com/apidoc/
 
 ### Local Setup
 * `npm i`
