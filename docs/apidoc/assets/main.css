@@ -1,0 +1,924 @@
+/**
+ * apidoc main css file
+ */
+
+/**
+ * Define colors
+ */
+:root {
+  --primary: rgb(145,52,234);
+  --white: #fff;
+  --black: #000;
+  --white-ish: rgb(232,232,232);
+  --dark-gray: rgb(156,159,167);
+  --dark-slate: rgb(15 23 42);
+  --light-slate: rgb(31,41,55);
+  --hover-gray: rgb(15 23 42);
+  --meth-get: green;
+  --meth-put: #e5c500;
+  --meth-post: #4070ec;
+  --meth-delete: #ed0039;
+  --red: #dc3545;
+}
+
+/*
+All headers
+ */
+h1, h2, h3, h4 {
+  color: var(--white-ish);
+}
+
+/*
+Input boxes inside query params,
+Success Response tab,
+Top version,
+API versions
+*/
+input, .input-group-addon, article > ul > li > a, #version, .version {
+  background-color:  rgb(31,41,55) !important;
+  color: white !important;
+  border-radius: 2px !important;
+}
+
+/*
+Sample request section
+ */
+.well {
+  background: rgb(15 23 42);;
+}
+
+/*
+Query params labels
+ */
+.well label {
+  color: var(--white-ish);
+}
+
+/*
+Header code segments
+ */
+#header code {
+  background: var(--light-slate);
+  color: var(--primary);
+}
+
+/*
+Header text
+ */
+#header ul {
+  color: var(--white-ish);
+}
+
+/*
+Header text
+ */
+#header em {
+  color: var(--dark-gray);
+}
+
+/* Success response and Error tabs*/
+.nav-tabs {
+  border-bottom: white !important;
+}
+
+.nav-tabs>li.active>a {
+  border-bottom-color: inherit !important;
+}
+
+.color-primary {
+  color: var(--primary);
+}
+
+.bg-primary {
+  background-color: var(--primary);
+}
+
+.bg-red {
+  color: var(--white);
+  background-color: var(--red);
+}
+
+.border-danger {
+  border: 1px solid var(--red);
+}
+
+/** for some reason the iOS safari style is applied on date inputs */
+input[type="date"] {
+  line-height: 1.4 !important;
+}
+
+/* ------------------------------------------------------------------------------------------
+ * Content
+ * ------------------------------------------------------------------------------------------ */
+@font-face {
+  font-family: 'Glyphicons Halflings';
+  src: url('./glyphicons-halflings-regular.eot');
+  src: url('./glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'),
+  url('./glyphicons-halflings-regular.woff') format('woff'),
+  url('./glyphicons-halflings-regular.ttf') format('truetype'),
+  url('./glyphicons-halflings-regular.svg#glyphicons-halflingsregular') format('svg');
+}
+
+body {
+  font-family: "Source Sans Pro", sans-serif;
+  background-color: var(--dark-slate);
+}
+
+a:focus {
+  background-color: var(--primary);
+}
+
+#content {
+  margin-top: 10px;
+  margin-left: 20%;
+  padding-left: 10px;
+}
+
+p {
+  font-size: 130%;
+  color: var(--white-ish);
+}
+
+section {
+  padding: 30px 0;
+}
+
+article {
+  border-top: 1px solid var(--white-ish);
+  padding: 14px 0 30px 0;
+  border-color: var(--primary);
+
+}
+
+table {
+  border: 1px solid #e3e3e3;
+  border-radius: 2px;
+  border-collapse: inherit;
+  width: 100%;
+  margin: 0 0 20px 0;
+}
+
+th {
+  background-color: var(--dark-slate);
+  color: var(--white-ish);
+  text-align: left;
+  padding: 5px 8px;
+  border: 1px solid var(--light-slate);
+}
+
+/*
+Table cell borders
+ */
+td {
+  padding: 5px;
+  border: 1px solid var(--light-slate);
+}
+
+/*
+Field, Type for query params
+ */
+td.code {
+  font-family: "Source Code Pro", monospace;
+  font-weight: 600;
+  color: var(--white-ish);
+}
+
+.label {
+  float: right;
+  margin-top: 4px;
+  user-select: none;
+}
+
+.label.optional {
+  /*background-color: white;*/
+  display: none;
+}
+
+.label.required {
+  background-color: var(--light-slate);
+  font-weight:normal;
+  padding: 3px;
+}
+
+.default-value,
+.type-size {
+  font-style: italic;
+  font-size: 95%;
+}
+
+.open-left {
+  right: 0;
+  left: auto;
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+.input-group-addon.sample-request-select {
+  padding: 0 6px;
+}
+
+.input-group-addon.sample-request-select select {
+  width: auto;
+  height: 32px;
+}
+
+.sample-request-input-Boolean-container {
+  width: 40px;
+  height: 34px;
+  background: var(--white);
+  border: 1px solid var(--white-ish);
+}
+
+.sample-request-input-Boolean-container > div {
+  margin-top: 7px;
+  text-align: center;
+}
+
+.sample-request-input-Boolean-container > div input {
+  margin: 0;
+}
+
+/* ------------------------------------------------------------------------------------------
+ * Request method (HTTP verb)
+ * ------------------------------------------------------------------------------------------ */
+.method {
+  font-weight: 600;
+  font-size: 15px;
+  display: inline-block;
+  margin: 0 0 5px 0;
+  padding: 4px 5px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  background-color: var(--dark-slate);
+  color: var(--white);
+}
+
+.meth-get {
+  background-color: var(--meth-get);
+}
+
+.meth-put {
+  background-color: var(--meth-put);
+}
+
+.meth-post {
+  background-color: var(--meth-post);
+}
+
+.meth-delete {
+  background-color: var(--meth-delete);
+}
+
+/* ------------------------------------------------------------------------------------------
+ * Sidenav
+ * ------------------------------------------------------------------------------------------ */
+.sidenav {
+  color: var(--white);
+  width: 20%;
+  position: fixed;
+  top: 50px;
+  left: 0;
+  bottom: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: var(--light-slate);
+}
+
+.sidenav > li > a {
+  color: var(--white);
+  display: block;
+  padding: 8px 13px;
+}
+
+/* non active sidenav link are highlighted on hover */
+.sidenav > li:not(.active) > a:hover {
+  background-color: var(--hover-gray);
+}
+
+.sidenav > li.nav-header {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.sidenav > li.nav-header > a {
+  padding: 5px 15px;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+
+.sidenav > li.active > a {
+  position: relative;
+  background-color: var(--primary);
+  color: var(--white-ish);
+}
+
+/*
+Cross in search
+ */
+#scrollingNav > div > span {
+  background: var(--light-slate);
+  color: var(--white-ish);
+}
+/**
+ * TODO: commented out for the moment
+.sidenav > li.has-modifications a {
+  border-right: 4px solid var(--main-gray);
+}
+
+.nav-list-item :not(.is-new) {
+  border-left: 4px solid var(--main-gray);
+}
+
+.sidenav > li.is-new a {
+  border-left: 4px solid var(--primary);
+}
+*/
+
+/* ------------------------------------------------------------------------------------------
+ * Side nav search
+ * ------------------------------------------------------------------------------------------ */
+.sidenav-search {
+  width: 20%;
+  left: 0px;
+  position: fixed;
+  padding: 16px 20px 10px 20px;
+  background-color: var(--light-slate);
+}
+
+.sidenav-search .search {
+  height: 26px;
+}
+
+.search-reset {
+  position: absolute;
+  display: block;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  right: 28px;
+  top: 17px;
+  background-color: #fff;
+}
+
+/* ------------------------------------------------------------------------------------------
+ * Compare
+ * ------------------------------------------------------------------------------------------ */
+
+ins {
+  background: #60d060;
+  text-decoration: none;
+  color: #000000;
+}
+
+del {
+  background: #f05050;
+  color: #000000;
+}
+
+.label-ins {
+  background-color: #60d060;
+}
+
+.label-del {
+  background-color: #f05050;
+  text-decoration: line-through;
+}
+
+pre.ins {
+  background-color: #60d060;
+}
+
+pre.del {
+  background-color: #f05050;
+  text-decoration: line-through;
+}
+
+table.ins th,
+table.ins td {
+  background-color: #60d060;
+}
+
+table.del th,
+table.del td {
+  background-color: #f05050;
+  text-decoration: line-through;
+}
+
+tr.ins td {
+  background-color: #60d060;
+}
+
+tr.del td {
+  background-color: #f05050;
+  text-decoration: line-through;
+}
+
+/* ------------------------------------------------------------------------------------------
+ * Spinner
+ * ------------------------------------------------------------------------------------------ */
+
+#loader {
+  position: absolute;
+  width: 100%;
+}
+
+#loader p {
+  padding-top: 80px;
+  margin-left: -4px;
+}
+
+.spinner {
+  margin: 200px auto;
+  width: 60px;
+  height: 60px;
+  position: relative;
+}
+
+.container1 > div, .container2 > div, .container3 > div {
+  width: 14px;
+  height: 14px;
+  background-color: #0088cc;
+  border-radius: 100%;
+  position: absolute;
+  -webkit-animation: bouncedelay 1.2s infinite ease-in-out;
+  animation: bouncedelay 1.2s infinite ease-in-out;
+  /* Prevent first frame from flickering when animation starts */
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+.spinner .spinner-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.container2 {
+  -webkit-transform: rotateZ(45deg);
+  transform: rotateZ(45deg);
+}
+
+.container3 {
+  -webkit-transform: rotateZ(90deg);
+  transform: rotateZ(90deg);
+}
+
+.circle1 { top: 0; left: 0; }
+.circle2 { top: 0; right: 0; }
+.circle3 { right: 0; bottom: 0; }
+.circle4 { left: 0; bottom: 0; }
+
+.container2 .circle1 {
+  -webkit-animation-delay: -1.1s;
+  animation-delay: -1.1s;
+}
+
+.container3 .circle1 {
+  -webkit-animation-delay: -1.0s;
+  animation-delay: -1.0s;
+}
+
+.container1 .circle2 {
+  -webkit-animation-delay: -0.9s;
+  animation-delay: -0.9s;
+}
+
+.container2 .circle2 {
+  -webkit-animation-delay: -0.8s;
+  animation-delay: -0.8s;
+}
+
+.container3 .circle2 {
+  -webkit-animation-delay: -0.7s;
+  animation-delay: -0.7s;
+}
+
+.container1 .circle3 {
+  -webkit-animation-delay: -0.6s;
+  animation-delay: -0.6s;
+}
+
+.container2 .circle3 {
+  -webkit-animation-delay: -0.5s;
+  animation-delay: -0.5s;
+}
+
+.container3 .circle3 {
+  -webkit-animation-delay: -0.4s;
+  animation-delay: -0.4s;
+}
+
+.container1 .circle4 {
+  -webkit-animation-delay: -0.3s;
+  animation-delay: -0.3s;
+}
+
+.container2 .circle4 {
+  -webkit-animation-delay: -0.2s;
+  animation-delay: -0.2s;
+}
+
+.container3 .circle4 {
+  -webkit-animation-delay: -0.1s;
+  animation-delay: -0.1s;
+}
+
+@-webkit-keyframes bouncedelay {
+  0%, 80%, 100% { -webkit-transform: scale(0.0) }
+  40% { -webkit-transform: scale(1.0) }
+}
+
+@keyframes bouncedelay {
+  0%, 80%, 100% {
+    transform: scale(0.0);
+    -webkit-transform: scale(0.0);
+  } 40% {
+      transform: scale(1.0);
+      -webkit-transform: scale(1.0);
+    }
+}
+
+/* ------------------------------------------------------------------------------------------
+ * Tabs
+ * ------------------------------------------------------------------------------------------ */
+ul.nav-tabs {
+  margin: 0;
+}
+
+p.deprecated span{
+  color: var(--red);
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+/**
+ * Footer
+ */
+#generator {
+  padding: 10px 0;
+}
+
+/* ------------------------------------------------------------------------------------------
+ * Print
+ * ------------------------------------------------------------------------------------------ */
+
+@media print {
+
+  #sidenav,
+  #version,
+  #versions,
+  section .version,
+  section .versions {
+    display: none;
+  }
+
+  #content {
+    margin-left: 0;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  a:after {
+    content: " [" attr(href) "] ";
+  }
+
+  p {
+    color: #000000
+  }
+
+  pre {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 10px;
+    border: #808080 1px solid;
+    border-radius: 6px;
+    position: relative;
+    margin: 10px 0 20px 0;
+  }
+
+} /* /@media print */
+
+/**
+ * Coldark Theme for Prism.js
+ * Theme variation: Dark
+ * Tested with HTML, CSS, JS, JSON, PHP, YAML, Bash script
+ * @author Armand Philippot <contact@armandphilippot.com>
+ * @homepage https://github.com/ArmandPhilippot/coldark-prism
+ * @license MIT
+ */
+code[class*="language-"],
+pre[class*="language-"] {
+  color: #e3eaf2;
+  background: none;
+  font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.5;
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection,
+pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection,
+code[class*="language-"] ::-moz-selection {
+  background: #3c526d;
+}
+
+pre[class*="language-"]::selection,
+pre[class*="language-"] ::selection,
+code[class*="language-"]::selection,
+code[class*="language-"] ::selection {
+  background: #3c526d;
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+  padding: 1em;
+  margin: 0.5em 0;
+  overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+  background: #111b27;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+  padding: 0.1em 0.3em;
+  border-radius: 0.3em;
+  white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #8da1b9;
+}
+
+.token.punctuation {
+  color: #e3eaf2;
+}
+
+.token.delimiter.important,
+.token.selector .parent,
+.token.tag,
+.token.tag .token.punctuation {
+  color: #66cccc;
+}
+
+.token.attr-name,
+.token.boolean,
+.token.boolean.important,
+.token.number,
+.token.constant,
+.token.selector .token.attribute {
+  color: #e6d37a;
+}
+
+.token.class-name,
+.token.key,
+.token.parameter,
+.token.property,
+.token.property-access,
+.token.variable {
+  color: #6cb8e6;
+}
+
+.token.attr-value,
+.token.inserted,
+.token.color,
+.token.selector .token.value,
+.token.string,
+.token.string .token.url-link {
+  color: #91d076;
+}
+
+.token.builtin,
+.token.keyword-array,
+.token.package,
+.token.regex {
+  color: #f4adf4;
+}
+
+.token.function,
+.token.selector .token.class,
+.token.selector .token.id {
+  color: #c699e3;
+}
+
+.token.atrule .token.rule,
+.token.combinator,
+.token.keyword,
+.token.operator,
+.token.pseudo-class,
+.token.pseudo-element,
+.token.selector,
+.token.unit {
+  color: #e9ae7e;
+}
+
+.token.deleted,
+.token.important {
+  color: #cd6660;
+}
+
+.token.keyword-this,
+.token.this {
+  color: #6cb8e6;
+}
+
+.token.important,
+.token.keyword-this,
+.token.this,
+.token.bold {
+  font-weight: bold;
+}
+
+.token.delimiter.important {
+  font-weight: inherit;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+.language-markdown .token.title,
+.language-markdown .token.title .token.punctuation {
+  color: #6cb8e6;
+  font-weight: bold;
+}
+
+.language-markdown .token.blockquote.punctuation {
+  color: #f4adf4;
+}
+
+.language-markdown .token.code {
+  color: #66cccc;
+}
+
+.language-markdown .token.hr.punctuation {
+  color: #6cb8e6;
+}
+
+.language-markdown .token.url .token.content {
+  color: #91d076;
+}
+
+.language-markdown .token.url-link {
+  color: #e6d37a;
+}
+
+.language-markdown .token.list.punctuation {
+  color: #f4adf4;
+}
+
+.language-markdown .token.table-header {
+  color: #e3eaf2;
+}
+
+.language-json .token.operator {
+  color: #e3eaf2;
+}
+
+.language-scss .token.variable {
+  color: #66cccc;
+}
+
+/* overrides color-values for the Show Invisibles plugin
+ * https://prismjs.com/plugins/show-invisibles/
+ */
+.token.token.tab:not(:empty):before,
+.token.token.cr:before,
+.token.token.lf:before,
+.token.token.space:before {
+  color: #8da1b9;
+}
+
+/* overrides color-values for the Toolbar plugin
+ * https://prismjs.com/plugins/toolbar/
+ */
+div.code-toolbar > .toolbar.toolbar > .toolbar-item > a,
+div.code-toolbar > .toolbar.toolbar > .toolbar-item > button {
+  color: #111b27;
+  background: #6cb8e6;
+}
+
+div.code-toolbar > .toolbar.toolbar > .toolbar-item > a:hover,
+div.code-toolbar > .toolbar.toolbar > .toolbar-item > a:focus,
+div.code-toolbar > .toolbar.toolbar > .toolbar-item > button:hover,
+div.code-toolbar > .toolbar.toolbar > .toolbar-item > button:focus {
+  color: #111b27;
+  background: #6cb8e6da;
+  text-decoration: none;
+}
+
+div.code-toolbar > .toolbar.toolbar > .toolbar-item > span,
+div.code-toolbar > .toolbar.toolbar > .toolbar-item > span:hover,
+div.code-toolbar > .toolbar.toolbar > .toolbar-item > span:focus {
+  color: #111b27;
+  background: #8da1b9;
+}
+
+/* overrides color-values for the Line Highlight plugin
+ * http://prismjs.com/plugins/line-highlight/
+ */
+.line-highlight.line-highlight {
+  background: #3c526d5f;
+  background: linear-gradient(to right, #3c526d5f 70%, #3c526d55);
+}
+
+.line-highlight.line-highlight:before,
+.line-highlight.line-highlight[data-end]:after {
+  background-color: #8da1b9;
+  color: #111b27;
+  box-shadow: 0 1px #3c526d;
+}
+
+pre[id].linkable-line-numbers.linkable-line-numbers span.line-numbers-rows > span:hover:before {
+  background-color: #8da1b918;
+}
+
+/* overrides color-values for the Line Numbers plugin
+ * http://prismjs.com/plugins/line-numbers/
+ */
+.line-numbers.line-numbers .line-numbers-rows {
+  border-right: 1px solid #0b121b;
+  background: #0b121b7a;
+}
+
+.line-numbers .line-numbers-rows > span:before {
+  color: #8da1b9da;
+}
+
+/* overrides color-values for the Match Braces plugin
+ * https://prismjs.com/plugins/match-braces/
+ */
+.rainbow-braces .token.token.punctuation.brace-level-1,
+.rainbow-braces .token.token.punctuation.brace-level-5,
+.rainbow-braces .token.token.punctuation.brace-level-9 {
+  color: #e6d37a;
+}
+
+.rainbow-braces .token.token.punctuation.brace-level-2,
+.rainbow-braces .token.token.punctuation.brace-level-6,
+.rainbow-braces .token.token.punctuation.brace-level-10 {
+  color: #f4adf4;
+}
+
+.rainbow-braces .token.token.punctuation.brace-level-3,
+.rainbow-braces .token.token.punctuation.brace-level-7,
+.rainbow-braces .token.token.punctuation.brace-level-11 {
+  color: #6cb8e6;
+}
+
+.rainbow-braces .token.token.punctuation.brace-level-4,
+.rainbow-braces .token.token.punctuation.brace-level-8,
+.rainbow-braces .token.token.punctuation.brace-level-12 {
+  color: #c699e3;
+}
+
+/* overrides color-values for the Diff Highlight plugin
+ * https://prismjs.com/plugins/diff-highlight/
+ */
+pre.diff-highlight > code .token.token.deleted:not(.prefix),
+pre > code.diff-highlight .token.token.deleted:not(.prefix) {
+  background-color: #cd66601f;
+}
+
+pre.diff-highlight > code .token.token.inserted:not(.prefix),
+pre > code.diff-highlight .token.token.inserted:not(.prefix) {
+  background-color: #91d0761f;
+}
+
+/* overrides color-values for the Command Line plugin
+ * https://prismjs.com/plugins/command-line/
+ */
+.command-line .command-line-prompt {
+  border-right: 1px solid #0b121b;
+}
+
+.command-line .command-line-prompt > span:before {
+  color: #8da1b9da;
+}
